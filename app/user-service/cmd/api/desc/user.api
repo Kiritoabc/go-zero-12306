@@ -1,0 +1,47 @@
+syntax = "v1"
+
+info(
+	title: "用户中心服务"
+	desc: "用户中心服务"
+	author: "菠萝"
+	email: "2493381254@qq.com"
+	version: "v1.0.0"
+)
+
+import (
+	"user/user.api"
+)
+
+//======================================> user v1 ===========================
+// no need login
+@server (
+	prefix : api/user-service
+	group: user
+)
+service User {
+
+	@doc "register"
+	@handler register
+	post /v1/register (RegisterReq) returns (RegisterResp)
+
+	@doc "login"
+	@handler login
+	post /v1/login (LoginReq) returns (LoginResp)
+
+	@doc "check login"
+	@handler checkLogin
+	get /check-login (CheckLoginReq)returns (CheckLoginResp)
+}
+
+// need login
+@server(
+	prefix : api/user-service
+	group: user
+	jwt : JwtAuth
+)
+service User {
+
+	@doc "logout"
+	@handler logout
+	get /logout (LogoutReq) returns (LogoutResp)
+}

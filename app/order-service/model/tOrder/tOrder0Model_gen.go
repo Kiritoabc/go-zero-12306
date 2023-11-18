@@ -60,6 +60,7 @@ type (
 	}
 )
 
+// todo: 添加后缀
 func newTOrder0Model(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) *defaultTOrder0Model {
 	return &defaultTOrder0Model{
 		CachedConn: sqlc.NewConn(conn, c, opts...),

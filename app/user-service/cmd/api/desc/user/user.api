@@ -1,0 +1,244 @@
+syntax = "v1"
+
+info(
+	title: "用户实例"
+	desc: "用户实例"
+	author: "菠萝"
+	email: "2493381254@qq.com"
+	version: "v1.0.0"
+)
+
+type User {
+	Id           int64  `json:"id"`           // ID
+	Username     string `json:"userName"`     // 用户名
+	RealName     string `json:"realName"`     // 真实姓名
+	Region       string `json:"region"`       // 国家/地区
+	IdType       int64  `json:"idType"`       // 证件类型
+	IdCard       string `json:"idCard"`       // 证件号
+	Phone        string `json:"phone"`        // 手机号
+	Telephone    string `json:"telephone"`    // 固定电话
+	Mail         string `json:"mail"`         // 邮箱
+	UserType     int64  `json:"userType"`     // 旅客类型
+	VerifyStatus int64  `json:"verifyStatus"` // 审核状态
+	PostCode     string `json:"postCode"`     // 邮编
+	Address      string `json:"address"`      // 地址
+}
+
+// login
+type (
+	LoginReq {
+		UserNameOrMailOrPhone string `json:"userNameOrMailOrPhone"`
+		Password              string `json:"password"`
+	}
+	LoginResp {
+		UserId      string `json:"userId"`
+		UserName    string `json:"userName"`
+		RealName    string `json:"realName"`
+		AccessToken string `json:"accessToken"`
+	}
+)
+// checkLogin
+type (
+	CheckLoginReq	 {
+		AccessToken string `form:"accessToken"`
+	}
+	CheckLoginResp {
+		UserId string `json:"userId"` // 用户id
+		UserName string `json:"userName"` // 用户名
+		RealName string  `json:"realName"` // 真实姓名
+		AccessToken string `json:"accessToken"` // Token
+	}
+)
+
+type AccessToken {
+	AccessToken string `form:"accessToken"`
+}
+
+// logout
+type (
+	LogoutReq {
+		AccessToken string `form:"accessToken"`
+	}
+	LogoutResp {
+	}
+)
+
+// register
+type (
+	RegisterReq {
+		UserName    string `json:"userName"`    // 用户命
+		Password    string `json:"password"`    // 密码
+		RealName    string `json:"realName"`    // 真实姓名
+		IdType      int64  `json:"idType"`      // 证件类型
+		IdCard      string `json:"idCard"`      //  证件号
+		Phone       string `json:"phone"`       // 手机号
+		Mail        string `json:"mail"`        // 邮箱
+		UserType    int64  `json:"userType"`    // 旅客类型
+		VerifyState int64  `json:"verifyState"` // 审核状态
+		PostCode    string `json:"postCode"`    // 邮编
+		Address     string `json:"address"`     // 地址
+		Region      string `json:"region"`      // 国家地区
+		Telephone   string `json:"telephone"`   // 固定电话
+	}
+	RegisterResp {
+		UserName string `json:"userName"` // 用户名
+		RealName string `json:"realName"` // 真实姓名
+		Phone    string `json:"phone"`    // 手机号
+	}
+)
+
+// queryUserByUsername
+type (
+	QueryUserReq {
+		UserName string `form:"userName"`
+	}
+	QueryUserResp {
+		UserName    string `json:"userName"`    // 用户命
+		RealName    string `json:"realName"`    // 真实姓名
+		IdType      int64  `json:"idType"`      // 证件类型
+		IdCard      string `json:"idCard"`      //  证件号
+		Phone       string `json:"phone"`       // 手机号
+		Mail        string `json:"mail"`        // 邮箱
+		UserType    int64  `json:"userType"`    // 旅客类型
+		VerifyState int64  `json:"verifyState"` // 审核状态
+		PostCode    string `json:"postCode"`    // 邮编
+		Address     string `json:"address"`     // 地址
+		Region      string `json:"region"`      // 国家地区
+		Telephone   string `json:"telephone"`   // 固定电话
+	}
+)
+
+// queryActualUserByUsername
+type (
+	UserQueryActualReq {
+		UserName string `form:"userName"`
+	}
+	UserQueryActualResp {
+		UserName    string `json:"userName"`    // 用户命
+		RealName    string `json:"realName"`    // 真实姓名
+		IdType      int64  `json:"idType"`      // 证件类型
+		IdCard      string `json:"idCard"`      //  证件号
+		Phone       string `json:"phone"`       // 手机号
+		Mail        string `json:"mail"`        // 邮箱
+		UserType    int64  `json:"userType"`    // 旅客类型
+		VerifyState int64  `json:"verifyState"` // 审核状态
+		PostCode    string `json:"postCode"`    // 邮编
+		Address     string `json:"address"`     // 地址
+		Region      string `json:"region"`      // 国家地区
+		Telephone   string `json:"telephone"`   // 固定电话
+	}
+)
+
+// hasUsername 检查用户名是否已存在
+type (
+	UserHasUsernameReq {
+		UserName string `form:"userName"`
+	}
+	UserHasUsernameResp {
+		Bool bool `json:"bool"`
+	}
+)
+
+// update
+type (
+	UserUpdateReq {
+		Id string `json:"id"` // 用户ID
+		UserName string `json:"userName"` // 用户名
+		Mail string `json:"mail"` // 邮箱
+		UserType int64 `json:"userType"` // 旅客类型
+		PostCode string `json:"postCode"` // 邮编
+		Address string `json:"address"` // 地址
+	}
+	UserUpdateResp {
+	}
+)
+
+// deletion
+type (
+	UserDeleteReq {
+		UserName string `json:"userName"` // 用户名
+	}
+	UserDeleteResp {
+
+	}
+)
+
+// listPassengerQueryByUsername
+type (
+	PassengerReq {
+	}
+	PassengerRespDTO {
+		Id string  `json:"id"` // 乘车人id
+		UserName string `json:"userName"` // 用户名
+		RealName string `json:"realName"` // 真实姓名
+		IdType int64  `json:"idType"` // 证件类型
+		IdCard string  `json:"idCard"` // 证件号类型
+		ActualIdCard string `json:"actualIdCard"` // 真实证件号码
+		DiscountType int64 `json:"discountType"` // 优惠类型
+		Phone string `json:"phone"` // 真实手机号
+		createDate string `json:"createDate"` // 添加日期
+		VerifyStatus int64 `json:"verifyStatus"` // 审核状态
+	}
+	PassengerResp {
+		List []PassengerRespDTO `json:"list"`
+	}
+)
+
+// listPassengerQueryByIds
+type (
+	PassengerQueryReq {
+		UserName string `form:"userName"`
+		Ids []int64 `form:"ids"`
+	}
+	PassengerActualRespDTO {
+		Id string `json:"id"`	// 乘车人id
+		UserName string `json:"userName"` // 用户名
+		RealName string `json:"realName"` // 真实姓名
+		IdType int64 `json:"idType"` // 证件类型
+		IdCard string `json:"idCard"` // 证件号码
+		DiscountType int64 `json:"discountType"` // 优惠类型
+		Phone string `json:"phone"` // 手机号
+		CreateDate string `json:"createDate"` //添加日期
+		VerifyStatus int64 `json:"verifyStatus"` // 审核状态
+	}
+	PassengerQueryResp {
+		List []PassengerActualRespDTO `json:"list"`
+	}
+)
+
+// savePassenger
+type (
+	SavePassengerReq {
+		Id string  `json:"id"` // 乘车人id
+		RealName string `json:"realName"` // 真实姓名
+		IdType int64  `json:"idType"` // 证件类型
+		IdCard string  `json:"idCard"` // 证件号类型
+		DiscountType int64 `json:"discountType"` // 优惠类型
+		Phone string `json:"phone"` // 真实手机号
+	}
+	SavePassengerResp {
+	}
+)
+
+// updatePassenger
+type (
+	UpdatePassengerReq {
+		Id string  `json:"id"` // 乘车人id
+		RealName string `json:"realName"` // 真实姓名
+		IdType int64  `json:"idType"` // 证件类型
+		IdCard string  `json:"idCard"` // 证件号类型
+		DiscountType int64 `json:"discountType"` // 优惠类型
+		Phone string `json:"phone"` // 真实手机号
+	}
+	UpdatePassengerResp {
+	}
+)
+
+// removePassenger
+type (
+	RemovePassengerReq {
+		Id string `json:"id"`
+	}
+	RemovePassengerResp {
+	}
+)
