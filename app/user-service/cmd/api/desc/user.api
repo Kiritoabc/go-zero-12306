@@ -15,7 +15,7 @@ import (
 //======================================> userLogin v1 ===========================
 // no need login
 @server (
-	prefix : api/user-service
+	prefix : /api/user-service
 	group: userLogin
 )
 service user {
@@ -31,7 +31,7 @@ service user {
 
 // need login
 @server(
-	prefix : api/user-service
+	prefix : /api/user-service
 	group: userLogin
 	jwt : JwtAuth
 )
@@ -44,7 +44,7 @@ service user {
 
 //======================================> userInfo v1 ===========================
 @server (
-	prefix : api/user-service
+	prefix : /api/user-service
 	group: userInfo
 	jwt : JwtAuth
 )
@@ -72,7 +72,7 @@ service user {
 }
 
 @server (
-	prefix : api/user-service
+	prefix : /api/user-service
 	group: userInfo
 )
 service user {
@@ -85,7 +85,7 @@ service user {
 //========================================> passgenger v1 ===========================
 
 @server (
-	prefix : api/user-service
+	prefix : /api/user-service
 	group :  passenger
 	jwt : JwtAuth
 )

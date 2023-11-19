@@ -1,6 +1,11 @@
 # 生成api业务代码 ， 进入"服务/cmd/api/desc"目录下，执行下面命令
 # goctl api go -api *.api -dir ../  --style=goZero
 
+
+# 生成md文档
+#  goctl api doc user.api --dir ../
+
+
 # 生成rpc业务代码
 # 【注】 需要安装下面3个插件
 #       protoc >= 3.13.0 ， 如果没安装请先安装 https://github.com/protocolbuffers/protobuf，下载解压到$GOPATH/bin下即可，前提是$GOPATH/bin已经加入$PATH中

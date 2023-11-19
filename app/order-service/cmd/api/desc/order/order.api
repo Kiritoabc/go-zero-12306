@@ -1,0 +1,145 @@
+syntax = "v1"
+
+info(
+    title: "支付服务"
+    desc: "支付服务"
+    author: "菠萝"
+    email: "2493381254@qq.com"
+    version: "v1.0.0"
+)
+
+
+// queryTicketOrderByOrderSn
+type (
+    QueryTicketOrderByOrderSnReq{
+        OrderSn string `json:"orderSn"`
+    }
+    QueryTicketOrderByOrderSnResp {
+        OrderSn string `json:"orderSn"` // 订单号
+        TrainId int64 `json:"trainId"` // 列车ID
+        Departure string `json:"departure"` // 出发站点
+        Arrival string `json:"arrival"` // 到达站点
+        RidingDate string `json:"ridingDate"` // 乘车日期
+        OrderTime string `json:"orderTime"` // 订票日期
+        TrainNumber string `json:"trainNumber"` // 列车车次
+        DepartureTime string `json:"departureTime"` // 出发时间
+        ArrivalTime string `json:"arrivalTime"` // 到达时间
+        PassengerDetails []TicketOrderPassengerDetailRespDTO `json:"passengerDetails"` //乘车人订单信息
+    }
+)
+
+// queryTicketItemOrderById
+type (
+    QueryTicketItemOrderByIdReq {
+        OrderSn string `json:"orderSn"` // 订单号
+        OrderItemRecordIds []int64 `json:"orderItemRecordIds"` // 子订单记录id
+    }
+    QueryTicketItemOrderByIdResp {
+        List []TicketOrderPassengerDetailRespDTO `json:"list"`
+    }
+    TicketOrderPassengerDetailRespDTO {
+        Id string `json:"id"` // ID
+        UserId string `json:"userId"` // 用户Id
+        Username string `json:"username"` // 用户名
+        SeatType int64 `json:"seatType"` // 席别类型
+        CarriageNumber string `json:"carriageNumber"` // 车厢号
+        SeatNumber string `json:"seatNumber"` // 座位号
+        RealName string `json:"realName"` // 真实姓名
+        IdType int64 `json:"idType"` // 证件类型
+        IdCard string `json:"idCard"` // 证件号
+        TicketType int64 `json:"ticketType"` // 车票类型 0：成人 1：儿童 2：学生 3：残疾军人
+        Amount int64 `json:"amount"` // 订单金额
+        Status int64 `json:"status"` // 车票状态
+        StatusName string `json:"statusName"` // 车票状态名称
+    }
+)
+
+// pageTicketOrder
+type (
+    PageTicketOrderReq {
+        UserId string `json:"userId"` // 用户唯一标识
+        StatusType int64 `json:"statusType"` // 状态类型 0：未完成 1：未出行 2：历史订单
+    }
+    PageTicketOrderResp {
+        Current int64 `json:"current"` // 当前页
+        Size int64 `json:"size"` // 每页显示条数
+        Total int64 `json:"total"` // 总数
+        records []QueryTicketItemOrderByIdResp `json:"records"` //查询数据列表
+    }
+)
+
+// pageSelfTicketOrder
+type (
+    TicketOrderSelfPageQueryReq {
+        Current int64 `json:"current"` // 当前页
+        Size int64 `json:"size"` // 每页显示的条数
+    }
+    TicketOrderSelfPageQueryResp {
+        Current int64 `json:"current"` // 当前页
+        Size int64 `json:"size"` // 每页显示条数
+        Total int64 `json:"total"` // 总数
+        records []TicketOrderDetailSelfRespDTO `json:"records"` //查询数据列表
+    }
+    TicketOrderDetailSelfRespDTO {
+        Departure string `json:"departure"` // 出发站点
+        Arrival string `json:"arrival"` // 到达站点
+        RidingDate string `json:"ridingDate"` // 乘车日期
+        TrainNumber string `json:"trainNumber"` // 乘车车次
+        DepartureTime string `json:"departureTime"` // 出发时间
+        ArrivalTime string `json:"arrivalTime"` // 到达时间
+        SeatType int64 `json:"seatType"` // 席别类型
+        CarriageNumber string `json:"carriageNumber"` // 车厢号
+        SeatNumber string `json:"seatNumber"` // 座位号
+        RealName string `json:"realName"` // 真实姓名
+        TicketType int64 `json:"ticketType"` // 车票类型 0：成人 1：儿童 2：学生 3：残疾军人
+        Amount int64 `json:"amount"` // 订单金额
+    }
+)
+
+// createTicketOrder
+type (
+    CreateTicketOrderReq {
+        UserId int64 `json:"userId"` // 用户Id
+        UserName string `json:"userName"` // 用户名
+        TrainId int64 `json:"trainId"` // 车次ID
+        Departure string `json:"departure"` // 出发站点
+        Arrival string `json:"arrival"` // 到达站点
+        Source int64 `json:"source"` // 订单来源
+        OrderTime string `json:"orderTime"` // 下单时间
+        RidingDate string `json:"ridingDate"` // 乘车日期
+        TrainNumber string `json:"trainNumber"` // 乘车车次
+        DepartureTime string `json:"departureTime"` // 出发时间
+        ArrivalTime string `json:"arrivalTime"` // 到达时间
+        TicketOrderItems []TicketOrderItemCreateReqDTO `json:"ticketOrderItems"` // 订单明细
+    }
+    TicketOrderItemCreateReqDTO {
+        CarriageNumber string `json:"carriageNumber"` // 车厢号
+        SeatType int64 `json:"seatType"` // 席别类型
+        SeatNumber string `json:"seatNumber"` // 座位号
+        PassengerId string `json:"passengerId"` // 乘车人ID
+        RealName string `json:"realName"` // 真实姓名
+        IdType int64 `json:"idType"` // 证件类型
+        IdCard string `json:"idCard"` // 证件号
+        Phone string `json:"phone"` // 手机号
+        Amount string `json:"amount"` // 订单金额
+        TicketType int64 `json:"ticketType"` // 车票类型
+    }
+    CreateTicketOrderResp {
+        Data string `json:"data"` // 返回数据
+    }
+)
+
+// closeTickOrder
+// cancelTickOrder
+type (
+    CancelTicketOrderReq {
+        OrderSn string `json:"orderSn"` // 订单号
+    }
+    CancelTicketOrderResp {
+        Bool bool `json:"bool"` //  是否成功
+    }
+)
+
+
+
+
