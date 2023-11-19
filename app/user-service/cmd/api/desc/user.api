@@ -12,17 +12,13 @@ import (
 	"user/user.api"
 )
 
-//======================================> user v1 ===========================
+//======================================> userLogin v1 ===========================
 // no need login
 @server (
 	prefix : api/user-service
-	group: user
+	group: userLogin
 )
-service User {
-
-	@doc "register"
-	@handler register
-	post /v1/register (RegisterReq) returns (RegisterResp)
+service user {
 
 	@doc "login"
 	@handler login
@@ -36,12 +32,83 @@ service User {
 // need login
 @server(
 	prefix : api/user-service
-	group: user
+	group: userLogin
 	jwt : JwtAuth
 )
-service User {
+service user {
 
 	@doc "logout"
 	@handler logout
 	get /logout (LogoutReq) returns (LogoutResp)
+}
+
+//======================================> userInfo v1 ===========================
+@server (
+	prefix : api/user-service
+	group: userInfo
+	jwt : JwtAuth
+)
+service user {
+
+	@doc "根据用户名查询用户信息"
+	@handler queryUserByUsername
+	get /query (QueryUserReq) returns (QueryUserResp)
+
+	@doc "根据用户名查询用户无脱敏信息"
+	@handler queryActualUserByUsername
+	get /actual/query (UserQueryActualReq) returns (UserQueryActualResp)
+
+	@doc "检查用户名是否已存在"
+	@handler hasUsername
+	get /has-username (UserHasUsernameReq) returns (UserHasUsernameResp)
+
+	@doc "修改用户"
+	@handler update
+	post /update (UserUpdateReq) returns (UserUpdateResp)
+
+	@doc "注销用户"
+	@handler deletion
+	post /deletion (UserDeleteReq) returns (UserDeleteResp)
+}
+
+@server (
+	prefix : api/user-service
+	group: userInfo
+)
+service user {
+
+	@doc "register"
+	@handler register
+	post /v1/register (RegisterReq) returns (RegisterResp)
+}
+
+//========================================> passgenger v1 ===========================
+
+@server (
+	prefix : api/user-service
+	group :  passenger
+	jwt : JwtAuth
+)
+service user{
+
+	@doc "根据用户名查询乘车人列表"
+	@handler listPassengerQueryByUsername
+	get /passenger/query (PassengerReq) returns (PassengerRespDTO)
+
+	@doc "根据乘车人 ID 集合查询乘车人列表"
+	@handler listPassengerQueryByIds
+	get /inner/passenger/actual/query/ids (PassengerQueryReq) returns (PassengerActualRespDTO)
+
+	@doc "新增乘车人"
+	@handler savePassenger
+	post /passenger/save (SavePassengerReq) returns (SavePassengerResp)
+
+	@doc "修改乘车人"
+	@handler updatePassenger
+	post /passenger/update (UpdatePassengerReq) returns (UpdatePassengerResp)
+
+	@doc "移除乘车人"
+	@handler removePassenger
+	post /passenger/remove (RemovePassengerReq) returns (RemovePassengerResp)
+
 }
