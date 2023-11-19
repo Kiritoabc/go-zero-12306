@@ -1,23 +1,62 @@
 syntax = "v1"
 
 info(
-    title: "支付中心服务"
-    desc: "支付中心服务"
-    author: "菠萝"
-    email: "2493381254@qq.com"
-    version: "v1.0.0"
+	title: "支付中心服务"
+	desc: "支付中心服务"
+	author: "菠萝"
+	email: "2493381254@qq.com"
+	version: "v1.0.0"
 )
 
 import "pay/pay/pay.api"
-import "pay/payCallback/payCallback"
+import "pay/payCallback/payCallback.api"
 import "pay/refund/refund.api"
 
 //=========================== pay v1.0.0 ==========================
+@server (
+	prefix : /api/pay-service
+	group : pay
+	jwt : JwtAuth
+)
+service pay{
 
+	@doc "公共支付接口,对接常用支付方式，比如：支付宝、微信以及银行卡等"
+	@handler pay
+	post /pay/create (PayReq) returns (PayResp)
 
+	@doc "跟据订单号查询支付单详情"
+	@handler getPayInfoByOrderSn
+	get /pay/query/order-sn (GetPayInfoByOrderSnReq) returns (GetPayInfoByOrderSnResp)
+
+	@doc "跟据支付流水号查询支付单详情"
+	@handler getPayInfoByPaySn
+	get /pay/query/pay-sn (GetPayInfoByPaySnReq) returns (GetPayInfoByPaySnResp)
+
+	@doc "公共退款接口,后续为了方便开发系列退款相关接口，已迁移 {@link RefundController#commonRefund(RefundReqDTO)}"
+	@handler refund
+	post /refund (RefundReq) returns (RefundResp)
+}
 
 //=========================== payCallback v1.0.0 ==========================
-
-
+@server (
+	prefix : /api/pay-service/callback
+	group : payCallback
+	jwt : JwtAuth
+)
+service pay {
+	@doc "支付宝回调,调用支付宝支付后，支付宝会调用此接口发送支付结果"
+	@handler callbackAlipay
+	post /alipay (CallbackAlipayReq) returns (CallbackAlipayResp)
+}
 
 //=========================== refund v1.0.0 ==========================
+@server (
+	prefix : /api/pay-service/common
+	group : refund
+	jwt : JwtAuth
+)
+service pay {
+	@doc "公共退款接口"
+	@handler commonRefund
+	post /path (RefundReq) returns (RefundResp)
+}
