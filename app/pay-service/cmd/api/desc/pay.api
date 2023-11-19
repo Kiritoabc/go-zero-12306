@@ -1,0 +1,23 @@
+syntax = "v1"
+
+info(
+    title: "支付中心服务"
+    desc: "支付中心服务"
+    author: "菠萝"
+    email: "2493381254@qq.com"
+    version: "v1.0.0"
+)
+
+import "pay/pay/pay.api"
+import "pay/payCallback/payCallback"
+import "pay/refund/refund.api"
+
+//=========================== pay v1.0.0 ==========================
+
+
+
+//=========================== payCallback v1.0.0 ==========================
+
+
+
+//=========================== refund v1.0.0 ==========================

@@ -1,0 +1,9 @@
+syntax = "v1"
+
+info(
+    title: "支付服务"
+    desc: "支付服务"
+    author: "菠萝"
+    email: "2493381254@qq.com"
+    version: "v1.0.0"
+)
