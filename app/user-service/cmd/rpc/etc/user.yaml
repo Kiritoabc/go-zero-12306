@@ -8,8 +8,13 @@ Mode: dev
 #  Key: user.rpc
 
 
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
+  AccessExpire: 31536000
+
 DB:
-  DataSource: root:PXDN93VRKUm8TeE7@tcp(mysql:3306)/looklook_usercenter?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: root:root@tcp(127.0.0.1:3306)/12306_user_0?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 Cache:
   - Host: redis:6379
-    Pass: G62m50oigInC30sf
+    Pass: "123456"
