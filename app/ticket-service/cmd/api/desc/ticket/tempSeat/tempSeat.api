@@ -1,9 +1,19 @@
 syntax = "v1"
 
 info(
-    title: "type title here"
-    desc: "type desc here"
-    author: "type author here"
-    email: "type email here"
-    version: "type version here"
+    title: "联调临时解决方案"
+    desc: "联调临时解决方案"
+    author: "菠萝"
+    email: "2493381254@qq.com"
+    version: "v1.0.0"
+)
+
+// purchaseTickets
+
+type (
+    PurchaseTicketsReq {
+        TrainId string `form:"trainId"`
+    }
+    PurchaseTicketsResp {
+    }
 )

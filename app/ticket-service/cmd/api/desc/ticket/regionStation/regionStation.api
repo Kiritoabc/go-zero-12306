@@ -1,9 +1,40 @@
 syntax = "v1"
 
 info(
-    title: "type title here"
-    desc: "type desc here"
-    author: "type author here"
-    email: "type email here"
-    version: "type version here"
+    title: "地区以及车站查询控制层服务"
+    desc: "地区以及车站查询控制层服务"
+    author: "菠萝"
+    email: "2493381254@qq.com"
+    version: "v1.0.0"
 )
+
+// listRegionStation
+type (
+    RegionStationQueryReqDTO {
+        QuerryType int64 `form:"querryType"` // 查询方式
+        Name string `form:"name"` //名称
+    }
+    RegionStationQueryResp {
+        List []RegionStationQueryRespDTO `json:"list"`
+    }
+    RegionStationQueryRespDTO {
+        Name string `json:"name"` //名称
+        Code string `json:"code"` //地区编码
+        Spell string `json:"spell"` //拼音
+    }
+)
+
+// listAllStation
+type (
+    StationQueryReq {
+    }
+
+    StationQueryRespDTO {
+        Name string `json:"name"` //名称
+        Code string `json:"code"` // 地区编码
+        Spell string `json:"spell"` // 拼音
+        RegionName string `json:"regionName"` // 城市名称
+    }
+)
+
+

@@ -3,7 +3,7 @@
 
 
 # 生成md文档
-#  goctl api doc user.api --dir ../
+#  goctl api doc *.api --dir ../
 
 
 # 生成rpc业务代码

@@ -1,9 +1,26 @@
 syntax = "v1"
 
 info(
-    title: "type title here"
-    desc: "type desc here"
-    author: "type author here"
-    email: "type email here"
-    version: "type version here"
+    title: "列车站点控制层"
+    desc: "列车站点控制层"
+    author: "菠萝"
+    email: "2493381254@qq.com"
+    version: "v1.0.0"
+)
+
+// listTrainStationQuery
+type (
+    ListTrainStationQueryReq {
+        TrainId string `form:"trainId"`
+    }
+    TrainStationQueryResp {
+        List []TrainStationQueryRespDTO `json:"list"`
+    }
+    TrainStationQueryRespDTO {
+        Sequence string `json:"sequence"` // 站序
+        Departure string `json:"departure"` // 站名
+        ArrivalTime string `json:"arrivalTime"` // 到站时间
+        DepartureTime string `json:"departureTime"` // 出发时间
+        StopoverTime int64 `json:"stopoverTime"` // 停留时间
+    }
 )
