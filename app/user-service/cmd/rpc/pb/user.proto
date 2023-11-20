@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+option go_package = "./pb";
+
+package pb;
+
+// model
+
+
+
+// req,resp
+message RegisterReq {
+    string userName = 1;
+    string password = 2;
+    string realName = 3;
+    int64 idType = 4;
+    string idCard = 5;
+    string phone = 6;
+    string mail = 7;
+    int64 userType = 8;
+    int64 verifyState = 9;
+    string postCode = 10;
+    string address = 11;
+    string region = 12;
+    string telephone = 13;
+}
+message RegisterResp {
+  string userName = 1;
+  string realName =2;
+  string phone = 3;
+}
+
+
+
+// service
+service  user {
+    rpc register(RegisterReq) returns (RegisterResp);
+}

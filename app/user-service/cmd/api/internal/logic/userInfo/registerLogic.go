@@ -2,11 +2,12 @@ package userInfo
 
 import (
 	"context"
+	"go-zero-12306/app/user-service/cmd/rpc/user"
 
+	"github.com/jinzhu/copier"
+	"github.com/zeromicro/go-zero/core/logx"
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type RegisterLogic struct {
@@ -25,6 +26,25 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 
 func (l *RegisterLogic) Register(req *types.RegisterReq) (resp *types.RegisterResp, err error) {
 	// todo: add your logic here and delete this line
-
+	registerResp, err := l.svcCtx.UserRpc.Register(l.ctx, &user.RegisterReq{
+		UserName:    req.UserName,
+		Password:    req.Password,
+		RealName:    req.RealName,
+		IdType:      req.IdType,
+		IdCard:      req.IdCard,
+		Phone:       req.Phone,
+		Mail:        req.Mail,
+		UserType:    req.UserType,
+		VerifyState: req.VerifyState,
+		PostCode:    req.PostCode,
+		Address:     req.Address,
+		Region:      req.Region,
+		Telephone:   req.Telephone,
+	})
+	if err != nil {
+		return nil, err
+	}
+	// copier
+	_ = copier.Copy(&resp, registerResp)
 	return
 }
