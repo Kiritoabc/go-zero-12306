@@ -1,5 +1,6 @@
 Name: user.rpc
 ListenOn: 0.0.0.0:2004
+Timeout: 10000
 Mode: dev
 
 #Etcd:
@@ -16,5 +17,5 @@ JwtAuth:
 DB:
   DataSource: root:root@tcp(127.0.0.1:3306)/12306_user_0?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 Cache:
-  - Host: redis:6379
+  - Host: 127.0.0.1:6379
     Pass: "123456"

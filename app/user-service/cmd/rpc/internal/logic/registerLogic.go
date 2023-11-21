@@ -3,9 +3,11 @@ package logic
 import (
 	"context"
 	"github.com/jinzhu/copier"
+	"github.com/pkg/errors"
 	"go-zero-12306/app/user-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
 	"go-zero-12306/app/user-service/model/tUser"
+	"go-zero-12306/common/xerr"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -29,10 +31,10 @@ func (l *RegisterLogic) Register(in *pb.RegisterReq) (*pb.RegisterResp, error) {
 	user := new(tUser.TUser0)
 	_ = copier.Copy(user, in)
 
-	_, _ = l.svcCtx.User0Model.Insert(l.ctx, user)
-	//if err != nil {
-	//	return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user Insert err:%v,user:%+v", err, user)
-	//}
+	_, err := l.svcCtx.User0Model.Insert(l.ctx, user)
+	if err != nil {
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user Insert err:%v,user:%+v", err, user)
+	}
 	return &pb.RegisterResp{
 		UserName: in.UserName,
 		RealName: in.RealName,
