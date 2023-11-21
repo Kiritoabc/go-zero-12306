@@ -32,6 +32,7 @@ type (
 		FindOneByUsernameDeletionTime(ctx context.Context, username sql.NullString, deletionTime int64) (*TUser0, error)
 		Update(ctx context.Context, data *TUser0) error
 		Delete(ctx context.Context, id int64) error
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
 	}
 
 	defaultTUser0Model struct {
@@ -66,6 +67,15 @@ func newTUser0Model(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) 
 		CachedConn: sqlc.NewConn(conn, c, opts...),
 		table:      "`t_user_0`",
 	}
+}
+
+// 开启事务
+func (m *defaultTUser0Model) Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error {
+
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+
 }
 
 func (m *defaultTUser0Model) Delete(ctx context.Context, id int64) error {

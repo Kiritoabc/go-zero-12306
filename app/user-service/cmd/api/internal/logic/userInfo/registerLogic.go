@@ -26,7 +26,8 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 
 func (l *RegisterLogic) Register(req *types.RegisterReq) (*types.RegisterResp, error) {
 	// todo: add your logic here and delete this line
-	registerResp, _ := l.svcCtx.UserRpc.Register(l.ctx, &user.RegisterReq{
+	// 调用rpc服务
+	registerResp, err := l.svcCtx.UserRpc.Register(l.ctx, &user.RegisterReq{
 		UserName:    req.UserName,
 		Password:    req.Password,
 		RealName:    req.RealName,
@@ -41,9 +42,9 @@ func (l *RegisterLogic) Register(req *types.RegisterReq) (*types.RegisterResp, e
 		Region:      req.Region,
 		Telephone:   req.Telephone,
 	})
-	//if err != nil {
-	//	return nil, err
-	//}
+	if err != nil {
+		return nil, err
+	}
 	// copier
 	var resp *types.RegisterResp
 	_ = copier.Copy(&resp, &registerResp)

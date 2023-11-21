@@ -9,16 +9,16 @@ import (
 */
 
 type CodeError struct {
-	errCode uint32
+	errCode string
 	errMsg  string
 }
 
-//返回给前端的错误码
-func (e *CodeError) GetErrCode() uint32 {
+// 返回给前端的错误码
+func (e *CodeError) GetErrCode() string {
 	return e.errCode
 }
 
-//返回给前端显示端错误信息
+// 返回给前端显示端错误信息
 func (e *CodeError) GetErrMsg() string {
 	return e.errMsg
 }
@@ -27,10 +27,10 @@ func (e *CodeError) Error() string {
 	return fmt.Sprintf("ErrCode:%d，ErrMsg:%s", e.errCode, e.errMsg)
 }
 
-func NewErrCodeMsg(errCode uint32, errMsg string) *CodeError {
+func NewErrCodeMsg(errCode string, errMsg string) *CodeError {
 	return &CodeError{errCode: errCode, errMsg: errMsg}
 }
-func NewErrCode(errCode uint32) *CodeError {
+func NewErrCode(errCode string) *CodeError {
 	return &CodeError{errCode: errCode, errMsg: MapErrMsg(errCode)}
 }
 

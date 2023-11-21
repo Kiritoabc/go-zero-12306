@@ -14,6 +14,13 @@ JwtAuth:
   AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
   AccessExpire: 31536000
 
+
+# redis
+Redis:
+  Host: 127.0.0.1:6379
+  Pass: "123456"
+
+
 DB:
   DataSource: root:root@tcp(127.0.0.1:3306)/12306_user_0?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 Cache:
