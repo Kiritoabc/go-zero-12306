@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -18,7 +19,7 @@ import (
 var (
 	tUser0FieldNames          = builder.RawFieldNames(&TUser0{})
 	tUser0Rows                = strings.Join(tUser0FieldNames, ",")
-	tUser0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUser0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
+	tUser0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUser0FieldNames, "`id`", "`create_time`", "`update_time`", "`address`", "`deletion_time`", "`del_flag`"), ",")
 	tUser0RowsWithPlaceHolder = strings.Join(stringx.Remove(tUser0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306User0TUser0IdPrefix                   = "cache:12306User0:tUser0:id:"
@@ -27,9 +28,9 @@ var (
 
 type (
 	tUser0Model interface {
-		Insert(ctx context.Context, data *TUser0) (sql.Result, error)
+		Insert(ctx context.Context, session sqlx.Session, data *TUser0) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*TUser0, error)
-		FindOneByUsernameDeletionTime(ctx context.Context, username sql.NullString, deletionTime int64) (*TUser0, error)
+		FindOneByUsernameDeletionTime(ctx context.Context, username string, deletionTime int64) (*TUser0, error)
 		Update(ctx context.Context, data *TUser0) error
 		Delete(ctx context.Context, id int64) error
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
@@ -41,24 +42,24 @@ type (
 	}
 
 	TUser0 struct {
-		Id           int64          `db:"id"`            // ID
-		Username     sql.NullString `db:"username"`      // 用户名
-		Password     sql.NullString `db:"password"`      // 密码
-		RealName     sql.NullString `db:"real_name"`     // 真实姓名
-		Region       string         `db:"region"`        // 国家/地区
-		IdType       sql.NullInt64  `db:"id_type"`       // 证件类型
-		IdCard       sql.NullString `db:"id_card"`       // 证件号
-		Phone        sql.NullString `db:"phone"`         // 手机号
-		Telephone    sql.NullString `db:"telephone"`     // 固定电话
-		Mail         sql.NullString `db:"mail"`          // 邮箱
-		UserType     sql.NullInt64  `db:"user_type"`     // 旅客类型
-		VerifyStatus sql.NullInt64  `db:"verify_status"` // 审核状态
-		PostCode     sql.NullString `db:"post_code"`     // 邮编
-		Address      sql.NullString `db:"address"`       // 地址
-		DeletionTime int64          `db:"deletion_time"` // 注销时间戳
-		CreateTime   sql.NullTime   `db:"create_time"`   // 创建时间
-		UpdateTime   sql.NullTime   `db:"update_time"`   // 修改时间
-		DelFlag      sql.NullInt64  `db:"del_flag"`      // 删除标识
+		Id           int64     `db:"id"`            // ID
+		Username     string    `db:"username"`      // 用户名
+		Password     string    `db:"password"`      // 密码
+		RealName     string    `db:"real_name"`     // 真实姓名
+		Region       string    `db:"region"`        // 国家/地区
+		IdType       int64     `db:"id_type"`       // 证件类型
+		IdCard       string    `db:"id_card"`       // 证件号
+		Phone        string    `db:"phone"`         // 手机号
+		Telephone    string    `db:"telephone"`     // 固定电话
+		Mail         string    `db:"mail"`          // 邮箱
+		UserType     int64     `db:"user_type"`     // 旅客类型
+		VerifyStatus int64     `db:"verify_status"` // 审核状态
+		PostCode     string    `db:"post_code"`     // 邮编
+		Address      string    `db:"address"`       // 地址
+		DeletionTime int64     `db:"deletion_time"` // 注销时间戳
+		CreateTime   time.Time `db:"create_time"`   // 创建时间
+		UpdateTime   time.Time `db:"update_time"`   // 修改时间
+		DelFlag      int64     `db:"del_flag"`      // 删除标识
 	}
 )
 
@@ -83,7 +84,6 @@ func (m *defaultTUser0Model) Delete(ctx context.Context, id int64) error {
 	if err != nil {
 		return err
 	}
-
 	_12306User0TUser0IdKey := fmt.Sprintf("%s%v", cache12306User0TUser0IdPrefix, id)
 	_12306User0TUser0UsernameDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUser0UsernameDeletionTimePrefix, data.Username, data.DeletionTime)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
@@ -110,7 +110,7 @@ func (m *defaultTUser0Model) FindOne(ctx context.Context, id int64) (*TUser0, er
 	}
 }
 
-func (m *defaultTUser0Model) FindOneByUsernameDeletionTime(ctx context.Context, username sql.NullString, deletionTime int64) (*TUser0, error) {
+func (m *defaultTUser0Model) FindOneByUsernameDeletionTime(ctx context.Context, username string, deletionTime int64) (*TUser0, error) {
 	_12306User0TUser0UsernameDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUser0UsernameDeletionTimePrefix, username, deletionTime)
 	var resp TUser0
 	err := m.QueryRowIndexCtx(ctx, &resp, _12306User0TUser0UsernameDeletionTimeKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
@@ -130,12 +130,15 @@ func (m *defaultTUser0Model) FindOneByUsernameDeletionTime(ctx context.Context, 
 	}
 }
 
-func (m *defaultTUser0Model) Insert(ctx context.Context, data *TUser0) (sql.Result, error) {
+func (m *defaultTUser0Model) Insert(ctx context.Context, session sqlx.Session, data *TUser0) (sql.Result, error) {
 	_12306User0TUser0IdKey := fmt.Sprintf("%s%v", cache12306User0TUser0IdPrefix, data.Id)
 	_12306User0TUser0UsernameDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUser0UsernameDeletionTimePrefix, data.Username, data.DeletionTime)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, tUser0RowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode, data.Address, data.DeletionTime, data.DelFlag)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, tUser0RowsExpectAutoSet)
+		if session != nil {
+			return session.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode)
+		}
+		return conn.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode)
 	}, _12306User0TUser0IdKey, _12306User0TUser0UsernameDeletionTimeKey)
 	return ret, err
 }

@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -38,12 +39,12 @@ type (
 	}
 
 	TUserDeletion struct {
-		Id         int64          `db:"id"`          // ID
-		IdType     sql.NullInt64  `db:"id_type"`     // 证件类型
-		IdCard     sql.NullString `db:"id_card"`     // 证件号
-		CreateTime sql.NullTime   `db:"create_time"` // 创建时间
-		UpdateTime sql.NullTime   `db:"update_time"` // 修改时间
-		DelFlag    sql.NullInt64  `db:"del_flag"`    // 删除标识
+		Id         int64     `db:"id"`          // ID
+		IdType     int64     `db:"id_type"`     // 证件类型
+		IdCard     string    `db:"id_card"`     // 证件号
+		CreateTime time.Time `db:"create_time"` // 创建时间
+		UpdateTime time.Time `db:"update_time"` // 修改时间
+		DelFlag    int64     `db:"del_flag"`    // 删除标识
 	}
 )
 
@@ -74,7 +75,7 @@ func (m *defaultTUserDeletionModel) FindOne(ctx context.Context, id int64) (*TUs
 	case nil:
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, sqlc.ErrNotFound
 	default:
 		return nil, err
 	}

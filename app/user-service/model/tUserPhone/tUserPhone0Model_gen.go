@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -27,9 +28,9 @@ var (
 
 type (
 	tUserPhone0Model interface {
-		Insert(ctx context.Context, data *TUserPhone0) (sql.Result, error)
+		Insert(ctx context.Context, sesson sqlx.Session, data *TUserPhone0) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*TUserPhone0, error)
-		FindOneByPhoneDeletionTime(ctx context.Context, phone sql.NullString, deletionTime int64) (*TUserPhone0, error)
+		FindOneByPhoneDeletionTime(ctx context.Context, phone string, deletionTime int64) (*TUserPhone0, error)
 		Update(ctx context.Context, data *TUserPhone0) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -40,13 +41,13 @@ type (
 	}
 
 	TUserPhone0 struct {
-		Id           int64          `db:"id"`            // ID
-		Username     sql.NullString `db:"username"`      // 用户名
-		Phone        sql.NullString `db:"phone"`         // 手机号
-		DeletionTime int64          `db:"deletion_time"` // 注销时间戳
-		CreateTime   sql.NullTime   `db:"create_time"`   // 创建时间
-		UpdateTime   sql.NullTime   `db:"update_time"`   // 修改时间
-		DelFlag      sql.NullInt64  `db:"del_flag"`      // 删除标识
+		Id           int64     `db:"id"`            // ID
+		Username     string    `db:"username"`      // 用户名
+		Phone        string    `db:"phone"`         // 手机号
+		DeletionTime int64     `db:"deletion_time"` // 注销时间戳
+		CreateTime   time.Time `db:"create_time"`   // 创建时间
+		UpdateTime   time.Time `db:"update_time"`   // 修改时间
+		DelFlag      int64     `db:"del_flag"`      // 删除标识
 	}
 )
 
@@ -89,7 +90,7 @@ func (m *defaultTUserPhone0Model) FindOne(ctx context.Context, id int64) (*TUser
 	}
 }
 
-func (m *defaultTUserPhone0Model) FindOneByPhoneDeletionTime(ctx context.Context, phone sql.NullString, deletionTime int64) (*TUserPhone0, error) {
+func (m *defaultTUserPhone0Model) FindOneByPhoneDeletionTime(ctx context.Context, phone string, deletionTime int64) (*TUserPhone0, error) {
 	_12306User0TUserPhone0PhoneDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUserPhone0PhoneDeletionTimePrefix, phone, deletionTime)
 	var resp TUserPhone0
 	err := m.QueryRowIndexCtx(ctx, &resp, _12306User0TUserPhone0PhoneDeletionTimeKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
@@ -109,11 +110,14 @@ func (m *defaultTUserPhone0Model) FindOneByPhoneDeletionTime(ctx context.Context
 	}
 }
 
-func (m *defaultTUserPhone0Model) Insert(ctx context.Context, data *TUserPhone0) (sql.Result, error) {
+func (m *defaultTUserPhone0Model) Insert(ctx context.Context, sesson sqlx.Session, data *TUserPhone0) (sql.Result, error) {
 	_12306User0TUserPhone0IdKey := fmt.Sprintf("%s%v", cache12306User0TUserPhone0IdPrefix, data.Id)
 	_12306User0TUserPhone0PhoneDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUserPhone0PhoneDeletionTimePrefix, data.Phone, data.DeletionTime)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, tUserPhone0RowsExpectAutoSet)
+		if sesson != nil {
+			return sesson.ExecCtx(ctx, query, data.Username, data.Phone, data.DeletionTime, data.DelFlag)
+		}
 		return conn.ExecCtx(ctx, query, data.Username, data.Phone, data.DeletionTime, data.DelFlag)
 	}, _12306User0TUserPhone0IdKey, _12306User0TUserPhone0PhoneDeletionTimeKey)
 	return ret, err

@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -38,18 +39,18 @@ type (
 	}
 
 	TPassenger0 struct {
-		Id           int64          `db:"id"`            // ID
-		Username     sql.NullString `db:"username"`      // 用户名
-		RealName     sql.NullString `db:"real_name"`     // 真实姓名
-		IdType       sql.NullInt64  `db:"id_type"`       // 证件类型
-		IdCard       sql.NullString `db:"id_card"`       // 证件号码
-		DiscountType sql.NullInt64  `db:"discount_type"` // 优惠类型
-		Phone        sql.NullString `db:"phone"`         // 手机号
-		CreateDate   sql.NullTime   `db:"create_date"`   // 添加日期
-		VerifyStatus sql.NullInt64  `db:"verify_status"` // 审核状态
-		CreateTime   sql.NullTime   `db:"create_time"`   // 创建时间
-		UpdateTime   sql.NullTime   `db:"update_time"`   // 修改时间
-		DelFlag      sql.NullInt64  `db:"del_flag"`      // 删除标识
+		Id           int64     `db:"id"`            // ID
+		Username     string    `db:"username"`      // 用户名
+		RealName     string    `db:"real_name"`     // 真实姓名
+		IdType       int64     `db:"id_type"`       // 证件类型
+		IdCard       string    `db:"id_card"`       // 证件号码
+		DiscountType int64     `db:"discount_type"` // 优惠类型
+		Phone        string    `db:"phone"`         // 手机号
+		CreateDate   time.Time `db:"create_date"`   // 添加日期
+		VerifyStatus int64     `db:"verify_status"` // 审核状态
+		CreateTime   time.Time `db:"create_time"`   // 创建时间
+		UpdateTime   time.Time `db:"update_time"`   // 修改时间
+		DelFlag      int64     `db:"del_flag"`      // 删除标识
 	}
 )
 

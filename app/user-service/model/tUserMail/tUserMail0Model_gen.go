@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -27,9 +28,9 @@ var (
 
 type (
 	tUserMail0Model interface {
-		Insert(ctx context.Context, data *TUserMail0) (sql.Result, error)
+		Insert(ctx context.Context, session sqlx.Session, data *TUserMail0) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*TUserMail0, error)
-		FindOneByMailDeletionTime(ctx context.Context, mail sql.NullString, deletionTime int64) (*TUserMail0, error)
+		FindOneByMailDeletionTime(ctx context.Context, mail string, deletionTime int64) (*TUserMail0, error)
 		Update(ctx context.Context, data *TUserMail0) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -40,13 +41,13 @@ type (
 	}
 
 	TUserMail0 struct {
-		Id           int64          `db:"id"`            // ID
-		Username     sql.NullString `db:"username"`      // 用户名
-		Mail         sql.NullString `db:"mail"`          // 邮箱
-		DeletionTime int64          `db:"deletion_time"` // 注销时间戳
-		CreateTime   sql.NullTime   `db:"create_time"`   // 创建时间
-		UpdateTime   sql.NullTime   `db:"update_time"`   // 修改时间
-		DelFlag      sql.NullInt64  `db:"del_flag"`      // 删除标识
+		Id           int64     `db:"id"`            // ID
+		Username     string    `db:"username"`      // 用户名
+		Mail         string    `db:"mail"`          // 邮箱
+		DeletionTime int64     `db:"deletion_time"` // 注销时间戳
+		CreateTime   time.Time `db:"create_time"`   // 创建时间
+		UpdateTime   time.Time `db:"update_time"`   // 修改时间
+		DelFlag      int64     `db:"del_flag"`      // 删除标识
 	}
 )
 
@@ -83,13 +84,13 @@ func (m *defaultTUserMail0Model) FindOne(ctx context.Context, id int64) (*TUserM
 	case nil:
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, sqlc.ErrNotFound
 	default:
 		return nil, err
 	}
 }
 
-func (m *defaultTUserMail0Model) FindOneByMailDeletionTime(ctx context.Context, mail sql.NullString, deletionTime int64) (*TUserMail0, error) {
+func (m *defaultTUserMail0Model) FindOneByMailDeletionTime(ctx context.Context, mail string, deletionTime int64) (*TUserMail0, error) {
 	_12306User0TUserMail0MailDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUserMail0MailDeletionTimePrefix, mail, deletionTime)
 	var resp TUserMail0
 	err := m.QueryRowIndexCtx(ctx, &resp, _12306User0TUserMail0MailDeletionTimeKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
@@ -103,17 +104,20 @@ func (m *defaultTUserMail0Model) FindOneByMailDeletionTime(ctx context.Context, 
 	case nil:
 		return &resp, nil
 	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
+		return nil, sqlc.ErrNotFound
 	default:
 		return nil, err
 	}
 }
 
-func (m *defaultTUserMail0Model) Insert(ctx context.Context, data *TUserMail0) (sql.Result, error) {
+func (m *defaultTUserMail0Model) Insert(ctx context.Context, session sqlx.Session, data *TUserMail0) (sql.Result, error) {
 	_12306User0TUserMail0IdKey := fmt.Sprintf("%s%v", cache12306User0TUserMail0IdPrefix, data.Id)
 	_12306User0TUserMail0MailDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUserMail0MailDeletionTimePrefix, data.Mail, data.DeletionTime)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, tUserMail0RowsExpectAutoSet)
+		if session != nil {
+			return session.ExecCtx(ctx, query, data.Username, data.Mail, data.DeletionTime, data.DelFlag)
+		}
 		return conn.ExecCtx(ctx, query, data.Username, data.Mail, data.DeletionTime, data.DelFlag)
 	}, _12306User0TUserMail0IdKey, _12306User0TUserMail0MailDeletionTimeKey)
 	return ret, err

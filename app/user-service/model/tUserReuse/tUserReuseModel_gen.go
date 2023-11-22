@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -21,7 +22,8 @@ var (
 	tUserReuseRowsExpectAutoSet   = strings.Join(stringx.Remove(tUserReuseFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	tUserReuseRowsWithPlaceHolder = strings.Join(stringx.Remove(tUserReuseFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
-	cache12306User0TUserReuseIdPrefix = "cache:12306User0:tUserReuse:id:"
+	cache12306User0TUserReuseIdPrefix       = "cache:12306User0:tUserReuse:id:"
+	cache12306User0TUserReuseUserNamePrefix = "cache:12306User0:tUserReuse:username:"
 )
 
 type (
@@ -30,6 +32,7 @@ type (
 		FindOne(ctx context.Context, id int64) (*TUserReuse, error)
 		Update(ctx context.Context, data *TUserReuse) error
 		Delete(ctx context.Context, id int64) error
+		DeleteByUserName(ctx context.Context, session sqlx.Session, username string) error
 	}
 
 	defaultTUserReuseModel struct {
@@ -38,11 +41,11 @@ type (
 	}
 
 	TUserReuse struct {
-		Id         int64          `db:"id"`          // ID
-		Username   sql.NullString `db:"username"`    // 用户名
-		CreateTime sql.NullTime   `db:"create_time"` // 创建时间
-		UpdateTime sql.NullTime   `db:"update_time"` // 修改时间
-		DelFlag    sql.NullInt64  `db:"del_flag"`    // 删除标识
+		Id         int64     `db:"id"`          // ID
+		Username   string    `db:"username"`    // 用户名
+		CreateTime time.Time `db:"create_time"` // 创建时间
+		UpdateTime time.Time `db:"update_time"` // 修改时间
+		DelFlag    int64     `db:"del_flag"`    // 删除标识
 	}
 )
 
@@ -51,6 +54,19 @@ func newTUserReuseModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Opti
 		CachedConn: sqlc.NewConn(conn, c, opts...),
 		table:      "`t_user_reuse`",
 	}
+}
+
+// 更具用户名删除
+func (m *defaultTUserReuseModel) DeleteByUserName(ctx context.Context, session sqlx.Session, username string) error {
+	_12306User0TUserReuseUserNamePrefix := fmt.Sprintf("%s%s", cache12306User0TUserReuseUserNamePrefix, username)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (sql.Result, error) {
+		query := fmt.Sprintf("delete from %s where username = ?", m.table)
+		if session != nil {
+			return session.ExecCtx(ctx, query, username)
+		}
+		return conn.ExecCtx(ctx, query, username)
+	}, _12306User0TUserReuseUserNamePrefix)
+	return err
 }
 
 func (m *defaultTUserReuseModel) Delete(ctx context.Context, id int64) error {
