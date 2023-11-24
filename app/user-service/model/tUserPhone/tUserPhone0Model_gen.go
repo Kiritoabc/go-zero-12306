@@ -24,6 +24,7 @@ var (
 
 	cache12306User0TUserPhone0IdPrefix                = "cache:12306User0:tUserPhone0:id:"
 	cache12306User0TUserPhone0PhoneDeletionTimePrefix = "cache:12306User0:tUserPhone0:phone:deletionTime:"
+	cache12306User0TUserPhone0PhonePrefix             = "cache:12306User0:tUserPhone0:phone:"
 )
 
 type (
@@ -33,6 +34,7 @@ type (
 		FindOneByPhoneDeletionTime(ctx context.Context, phone string, deletionTime int64) (*TUserPhone0, error)
 		Update(ctx context.Context, data *TUserPhone0) error
 		Delete(ctx context.Context, id int64) error
+		FindOneByPhone(ctx context.Context, phone string) (*TUserPhone0, error)
 	}
 
 	defaultTUserPhone0Model struct {
@@ -149,4 +151,25 @@ func (m *defaultTUserPhone0Model) queryPrimary(ctx context.Context, conn sqlx.Sq
 
 func (m *defaultTUserPhone0Model) tableName() string {
 	return m.table
+}
+
+// 自定义
+func (m *defaultTUserPhone0Model) FindOneByPhone(ctx context.Context, phone string) (*TUserPhone0, error) {
+	_12306User0TUserPhone0PhoneKey := fmt.Sprintf("%s%v", cache12306User0TUserPhone0PhonePrefix, phone)
+	var resp TUserPhone0
+	err := m.QueryRowIndexCtx(ctx, &resp, _12306User0TUserPhone0PhoneKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
+		query := fmt.Sprintf("select %s from %s where `phone` = ? limit 1", tUserPhone0Rows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, phone); err != nil {
+			return nil, err
+		}
+		return resp.Id, nil
+	}, m.queryPrimary)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }

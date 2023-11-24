@@ -12,5 +12,5 @@ JwtAuth:
 # Rpc
 UserRpcConf:
   Endpoints:
-    - 127.0.0.1:2004
+    - 127.0.0.1:9001
   NonBlock: true

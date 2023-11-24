@@ -30,6 +30,9 @@ func init() {
 	message[TELEPHONE_NOTNULL] = "固定电话不能为空"
 	message[VERIFY_STATE_NOTNULL] = "审核状态不能为空"
 	message[REAL_NAME_NOTNULL] = "真实姓名不能为空"
+
+	// 用户登录错误
+	message[LOGIN_MAIL_NOT_EXIST] = "用户名/手机号/邮箱不存在"
 }
 
 func MapErrMsg(errcode string) string {

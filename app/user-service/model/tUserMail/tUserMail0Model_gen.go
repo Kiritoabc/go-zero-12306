@@ -24,6 +24,7 @@ var (
 
 	cache12306User0TUserMail0IdPrefix               = "cache:12306User0:tUserMail0:id:"
 	cache12306User0TUserMail0MailDeletionTimePrefix = "cache:12306User0:tUserMail0:mail:deletionTime:"
+	cache12306User0TUserMail0MailPrefix             = "cache:12306User0:tUserMail0:mail:"
 )
 
 type (
@@ -31,6 +32,7 @@ type (
 		Insert(ctx context.Context, session sqlx.Session, data *TUserMail0) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*TUserMail0, error)
 		FindOneByMailDeletionTime(ctx context.Context, mail string, deletionTime int64) (*TUserMail0, error)
+		FindOneByMail(ctx context.Context, mail string) (*TUserMail0, error)
 		Update(ctx context.Context, data *TUserMail0) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -149,4 +151,25 @@ func (m *defaultTUserMail0Model) queryPrimary(ctx context.Context, conn sqlx.Sql
 
 func (m *defaultTUserMail0Model) tableName() string {
 	return m.table
+}
+
+// 自定义的查找
+func (m *defaultTUserMail0Model) FindOneByMail(ctx context.Context, mail string) (*TUserMail0, error) {
+	_12306User0TUserMail0MailKey := fmt.Sprintf("%s%v", cache12306User0TUserMail0MailDeletionTimePrefix, mail)
+	var resp TUserMail0
+	err := m.QueryRowIndexCtx(ctx, &resp, _12306User0TUserMail0MailKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
+		query := fmt.Sprintf("select %s from %s where `mail` = ? limit 1", tUserMail0Rows, m.table)
+		if err := conn.QueryRowCtx(ctx, &resp, query, mail); err != nil {
+			return nil, err
+		}
+		return resp.Id, nil
+	}, m.queryPrimary)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, sqlc.ErrNotFound
+	default:
+		return nil, err
+	}
 }

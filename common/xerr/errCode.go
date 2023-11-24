@@ -47,3 +47,6 @@ const TELEPHONE_NOTNULL = "A006013" //("A006013", "固定电话不能为空"),
 const VERIFY_STATE_NOTNULL = "A006014" //("A006014", "审核状态不能为空"),
 
 const REAL_NAME_NOTNULL = "A006015" //("A006015", "真实姓名不能为空");
+
+// 用户登录错误
+const LOGIN_MAIL_NOT_EXIST = "A006001" //用户登录时邮箱不存在

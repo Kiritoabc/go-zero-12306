@@ -30,9 +30,28 @@ message RegisterResp {
   string phone = 3;
 }
 
+message LoginReq {
+    string usernameOrMailOrPhone = 1;
+    string password = 2;
+}
 
-
+message LoginResp {
+     string userId = 1;
+     string username = 2;
+     string realName = 3;
+     string accessToken = 4;
+}
+message GenerateTokenReq {
+  int64 userId = 1;
+}
+message GenerateTokenResp {
+  string accessToken = 1;
+  int64  accessExpire = 2;
+  int64  refreshAfter = 3;
+}
 // service
 service  user {
     rpc register(RegisterReq) returns (RegisterResp);
+    rpc login(LoginReq) returns (LoginResp);
+  rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
 }
