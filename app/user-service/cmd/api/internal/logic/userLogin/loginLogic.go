@@ -2,6 +2,8 @@ package userLogin
 
 import (
 	"context"
+	"github.com/jinzhu/copier"
+	"go-zero-12306/app/user-service/cmd/rpc/user"
 
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -23,13 +25,17 @@ func NewLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *LoginLogic 
 	}
 }
 
-func (l *LoginLogic) Login(req *types.LoginReq) (resp *types.LoginResp, err error) {
-	// todo: add your logic here and delete this line
-	resp = &types.LoginResp{
-		UserId:      "1",
-		UserName:    "张三",
-		RealName:    "张三",
-		AccessToken: "ae0536f9-6450-4606-8e13-5a19ed505da0",
+func (l *LoginLogic) Login(req *types.LoginReq) (*types.LoginResp, error) {
+	// 调用rpc服务
+	loginResp, err := l.svcCtx.UserRpc.Login(l.ctx, &user.LoginReq{
+		UsernameOrMailOrPhone: req.UserNameOrMailOrPhone,
+		Password:              req.Password,
+	})
+	if err != nil {
+		return nil, err
 	}
-	return resp, nil
+
+	var resp types.LoginResp
+	_ = copier.Copy(&resp, loginResp)
+	return &resp, nil
 }

@@ -19,7 +19,7 @@ import (
 var (
 	tUserMail0FieldNames          = builder.RawFieldNames(&TUserMail0{})
 	tUserMail0Rows                = strings.Join(tUserMail0FieldNames, ",")
-	tUserMail0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUserMail0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
+	tUserMail0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUserMail0FieldNames, "`id`", "`update_at`", "`updated_at`", "`deletion_time`"), ",")
 	tUserMail0RowsWithPlaceHolder = strings.Join(stringx.Remove(tUserMail0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306User0TUserMail0IdPrefix               = "cache:12306User0:tUserMail0:id:"
@@ -116,11 +116,11 @@ func (m *defaultTUserMail0Model) Insert(ctx context.Context, session sqlx.Sessio
 	_12306User0TUserMail0IdKey := fmt.Sprintf("%s%v", cache12306User0TUserMail0IdPrefix, data.Id)
 	_12306User0TUserMail0MailDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUserMail0MailDeletionTimePrefix, data.Mail, data.DeletionTime)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, tUserMail0RowsExpectAutoSet)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?,?,?)", m.table, tUserMail0RowsExpectAutoSet)
 		if session != nil {
-			return session.ExecCtx(ctx, query, data.Username, data.Mail, data.DeletionTime, data.DelFlag)
+			return session.ExecCtx(ctx, query, data.Username, data.Mail, data.DeletionTime, data.DelFlag, time.Now(), time.Now())
 		}
-		return conn.ExecCtx(ctx, query, data.Username, data.Mail, data.DeletionTime, data.DelFlag)
+		return conn.ExecCtx(ctx, query, data.Username, data.Mail, data.DeletionTime, data.DelFlag, time.Now(), time.Now())
 	}, _12306User0TUserMail0IdKey, _12306User0TUserMail0MailDeletionTimeKey)
 	return ret, err
 }

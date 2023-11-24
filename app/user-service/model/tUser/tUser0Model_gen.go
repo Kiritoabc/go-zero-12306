@@ -19,7 +19,7 @@ import (
 var (
 	tUser0FieldNames          = builder.RawFieldNames(&TUser0{})
 	tUser0Rows                = strings.Join(tUser0FieldNames, ",")
-	tUser0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUser0FieldNames, "`id`", "`create_time`", "`update_time`", "`address`", "`deletion_time`", "`del_flag`"), ",")
+	tUser0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUser0FieldNames, "`id`", "`address`", "`deletion_time`", "`del_flag`", "`deletion_time`"), ",")
 	tUser0RowsWithPlaceHolder = strings.Join(stringx.Remove(tUser0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306User0TUser0IdPrefix                   = "cache:12306User0:tUser0:id:"
@@ -136,9 +136,9 @@ func (m *defaultTUser0Model) Insert(ctx context.Context, session sqlx.Session, d
 	_12306User0TUser0IdKey := fmt.Sprintf("%s%v", cache12306User0TUser0IdPrefix, data.Id)
 	_12306User0TUser0UsernameDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUser0UsernameDeletionTimePrefix, data.Username, data.DeletionTime)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, tUser0RowsExpectAutoSet)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)", m.table, tUser0RowsExpectAutoSet)
 		if session != nil {
-			return session.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode)
+			return session.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode, time.Now(), time.Now())
 		}
 		return conn.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode)
 	}, _12306User0TUser0IdKey, _12306User0TUser0UsernameDeletionTimeKey)
