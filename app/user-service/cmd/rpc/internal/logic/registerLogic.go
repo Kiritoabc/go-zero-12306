@@ -34,24 +34,26 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 }
 
 func (l *RegisterLogic) Register(in *pb.RegisterReq) (*pb.RegisterResp, error) {
-	// 0.参数检查(暂时不做考虑)
-	// 1.redisson上锁
-	g := godisson.NewGodisson(l.svcCtx.RedisClient, godisson.WithWatchDogTimeout(30*time.Second))
-	// lock with watchdog without retry
-	lock := g.NewRLock(constant.LOCK_USER_REGISTER + in.UserName)
-	err := lock.Lock()
-	if err == godisson.ErrLockNotObtained {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.HAS_USERNAME_NOTNULL), "用户名已存在:%v,用户名:%+v", err, in.UserName)
-	} else if err != nil {
-		return nil, errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "redis获取锁出错")
-	}
 	// 开启事务
 	if err := l.svcCtx.User0Model.Trans(l.ctx, func(ctx context.Context, session sqlx.Session) error {
+		// 0.参数检查(暂时不做考虑)
+		// 1.redisson上锁
+		g := godisson.NewGodisson(l.svcCtx.RedisClient, godisson.WithWatchDogTimeout(30*time.Second))
+		// lock with watchdog without retry
+		lock := g.NewRLock(constant.LOCK_USER_REGISTER + in.UserName)
+		err := lock.Lock()
+		// 7.解锁
+		defer lock.Unlock()
+		if err == godisson.ErrLockNotObtained {
+			return errors.Wrapf(xerr.NewErrCode(xerr.HAS_USERNAME_NOTNULL), "用户名已存在:%v,用户名:%+v", err, in.UserName)
+		} else if err != nil {
+			return errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "redis获取锁出错")
+		}
 		// 2.插入用户，判断用户名是否重复
 		user := new(tUser.TUser0)
 		_ = copier.Copy(&user, &in)
 		user.Password = tool.Md5ByString(in.Password)
-		_, err := l.svcCtx.User0Model.Insert(ctx, session, user)
+		_, err = l.svcCtx.User0Model.Insert(ctx, session, user)
 		// 这里应该判断一下是否是用户名重复
 		if err != nil {
 			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user Insert err:%v,user:%+v", err, user)
@@ -77,14 +79,11 @@ func (l *RegisterLogic) Register(in *pb.RegisterReq) (*pb.RegisterResp, error) {
 		if err != nil {
 			return err
 		}
-		// 6.设置布隆过滤器(go-zero在生成代码的时候已经帮我们自动实现了)
+		// todo: 6.设置布隆过滤器
 		return nil
 	}); err != nil {
 		return nil, err
 	}
-	// 7.解锁
-	defer lock.Unlock()
-
 	return &pb.RegisterResp{
 		UserName: in.UserName,
 		RealName: in.RealName,
