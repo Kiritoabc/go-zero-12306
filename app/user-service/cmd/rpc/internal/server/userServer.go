@@ -36,3 +36,8 @@ func (s *UserServer) GenerateToken(ctx context.Context, in *pb.GenerateTokenReq)
 	l := logic.NewGenerateTokenLogic(ctx, s.svcCtx)
 	return l.GenerateToken(in)
 }
+
+func (s *UserServer) CheckLogin(ctx context.Context, in *pb.CheckLoginReq) (*pb.LoginResp, error) {
+	l := logic.NewCheckLoginLogic(ctx, s.svcCtx)
+	return l.CheckLogin(in)
+}

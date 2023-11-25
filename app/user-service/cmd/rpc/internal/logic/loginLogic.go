@@ -2,14 +2,15 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/pkg/errors"
+	"github.com/zeromicro/go-zero/core/logx"
 	"go-zero-12306/app/user-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
 	"go-zero-12306/app/user-service/cmd/rpc/user"
 	"go-zero-12306/common/xerr"
 	"strconv"
-
-	"github.com/zeromicro/go-zero/core/logx"
+	"time"
 )
 
 type LoginLogic struct {
@@ -79,10 +80,20 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 	if err != nil {
 		return nil, errors.Wrapf(ErrGenerateTokenError, "GenerateToken userId : %d", userId)
 	}
-	return &pb.LoginResp{
+	loginresp := &pb.LoginResp{
 		UserId:      userId,
 		Username:    userDO.Username,
 		RealName:    userDO.RealName,
 		AccessToken: tokenResp.AccessToken,
-	}, nil
+	}
+	// 5. 将accessToken存入redis缓存
+	loginRespJson, err := json.Marshal(&loginresp)
+	if err != nil {
+		return nil, err
+	}
+	err = l.svcCtx.RedisClient.SetEX(l.ctx, tokenResp.AccessToken, loginRespJson, 10*time.Minute).Err()
+	if err != nil {
+		panic(err)
+	}
+	return loginresp, nil
 }

@@ -49,9 +49,13 @@ message GenerateTokenResp {
   int64  accessExpire = 2;
   int64  refreshAfter = 3;
 }
+message CheckLoginReq {
+  string accessToken = 1;
+}
 // service
 service  user {
     rpc register(RegisterReq) returns (RegisterResp);
     rpc login(LoginReq) returns (LoginResp);
-  rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
+    rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
+    rpc checkLogin(CheckLoginReq) returns (LoginResp);
 }

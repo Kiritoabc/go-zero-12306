@@ -2,6 +2,7 @@ package svc
 
 import (
 	"github.com/go-redis/redis/v8"
+	go_redis "github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"go-zero-12306/app/user-service/cmd/rpc/internal/config"
 	"go-zero-12306/app/user-service/model/tPassenger"
@@ -15,6 +16,7 @@ import (
 type ServiceContext struct {
 	Config            config.Config
 	RedisClient       *redis.Client
+	RedisClient1      *go_redis.Redis
 	Passenger0Model   tPassenger.TPassenger0Model
 	User0Model        tUser.TUser0Model
 	UserDeletionModel tUserDeletion.TUserDeletionModel
@@ -31,7 +33,11 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		RedisClient: redis.NewClient(&redis.Options{
 			Addr:     c.Redis.Host,
 			Password: c.Redis.Pass, // no password set
-			DB:       0,            // use default DB
+			DB:       1,            // use default DB
+		}),
+		RedisClient1: go_redis.New(c.Redis.Host, func(r *go_redis.Redis) {
+			r.Type = c.Redis.Type
+			r.Pass = c.Redis.Pass
 		}),
 		Passenger0Model:   tPassenger.NewTPassenger0Model(sqlCon, c.Cache),
 		User0Model:        tUser.NewTUser0Model(sqlCon, c.Cache),

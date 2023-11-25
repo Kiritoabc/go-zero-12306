@@ -13,6 +13,7 @@ import (
 )
 
 type (
+	CheckLoginReq     = pb.CheckLoginReq
 	GenerateTokenReq  = pb.GenerateTokenReq
 	GenerateTokenResp = pb.GenerateTokenResp
 	LoginReq          = pb.LoginReq
@@ -24,6 +25,7 @@ type (
 		Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 		GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
+		CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 	}
 
 	defaultUser struct {
@@ -50,4 +52,9 @@ func (m *defaultUser) Login(ctx context.Context, in *LoginReq, opts ...grpc.Call
 func (m *defaultUser) GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.GenerateToken(ctx, in, opts...)
+}
+
+func (m *defaultUser) CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.CheckLogin(ctx, in, opts...)
 }
