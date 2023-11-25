@@ -24,3 +24,22 @@
 > 在技术选型中，采用最新的 go-zero 微服务架构.(目前是确定使用这些技术，如果有大佬有更好的建议，欢迎提出)
 
 ![img.png](doc/img/技术架构图.png)
+
+
+
+# 目前接口完成情况
+
+- [x] UserLoginController
+
+  - [x] checkLogin
+  - [x] login
+  - [x] logout
+
+- [ ] UserInfoController
+
+  - [ ] queryUserByUsername
+  - [ ] queryActualUserByUsername
+  - [ ] hasUsername
+  - [x] register
+  - [ ] update
+  - [ ] deletion
