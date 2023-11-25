@@ -52,10 +52,16 @@ message GenerateTokenResp {
 message CheckLoginReq {
   string accessToken = 1;
 }
+message LogoutReq {
+  string accessToken = 1;
+}
+message voidResp {
+}
 // service
 service  user {
     rpc register(RegisterReq) returns (RegisterResp);
     rpc login(LoginReq) returns (LoginResp);
     rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
     rpc checkLogin(CheckLoginReq) returns (LoginResp);
+    rpc logout(LogoutReq) returns (voidResp);
 }

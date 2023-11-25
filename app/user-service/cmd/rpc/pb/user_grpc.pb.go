@@ -23,6 +23,7 @@ const (
 	User_Login_FullMethodName         = "/pb.user/login"
 	User_GenerateToken_FullMethodName = "/pb.user/generateToken"
 	User_CheckLogin_FullMethodName    = "/pb.user/checkLogin"
+	User_Logout_FullMethodName        = "/pb.user/logout"
 )
 
 // UserClient is the client API for User service.
@@ -33,6 +34,7 @@ type UserClient interface {
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 	GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
 	CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
+	Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*VoidResp, error)
 }
 
 type userClient struct {
@@ -79,6 +81,15 @@ func (c *userClient) CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...
 	return out, nil
 }
 
+func (c *userClient) Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*VoidResp, error) {
+	out := new(VoidResp)
+	err := c.cc.Invoke(ctx, User_Logout_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -87,6 +98,7 @@ type UserServer interface {
 	Login(context.Context, *LoginReq) (*LoginResp, error)
 	GenerateToken(context.Context, *GenerateTokenReq) (*GenerateTokenResp, error)
 	CheckLogin(context.Context, *CheckLoginReq) (*LoginResp, error)
+	Logout(context.Context, *LogoutReq) (*VoidResp, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -105,6 +117,9 @@ func (UnimplementedUserServer) GenerateToken(context.Context, *GenerateTokenReq)
 }
 func (UnimplementedUserServer) CheckLogin(context.Context, *CheckLoginReq) (*LoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CheckLogin not implemented")
+}
+func (UnimplementedUserServer) Logout(context.Context, *LogoutReq) (*VoidResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Logout not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -191,6 +206,24 @@ func _User_CheckLogin_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_Logout_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LogoutReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Logout(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_Logout_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Logout(ctx, req.(*LogoutReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -213,6 +246,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "checkLogin",
 			Handler:    _User_CheckLogin_Handler,
+		},
+		{
+			MethodName: "logout",
+			Handler:    _User_Logout_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

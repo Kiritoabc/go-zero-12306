@@ -18,14 +18,17 @@ type (
 	GenerateTokenResp = pb.GenerateTokenResp
 	LoginReq          = pb.LoginReq
 	LoginResp         = pb.LoginResp
+	LogoutReq         = pb.LogoutReq
 	RegisterReq       = pb.RegisterReq
 	RegisterResp      = pb.RegisterResp
+	VoidResp          = pb.VoidResp
 
 	User interface {
 		Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 		GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
 		CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
+		Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*VoidResp, error)
 	}
 
 	defaultUser struct {
@@ -57,4 +60,9 @@ func (m *defaultUser) GenerateToken(ctx context.Context, in *GenerateTokenReq, o
 func (m *defaultUser) CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.CheckLogin(ctx, in, opts...)
+}
+
+func (m *defaultUser) Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*VoidResp, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.Logout(ctx, in, opts...)
 }

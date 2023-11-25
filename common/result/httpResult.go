@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-zero-12306/common/xerr"
 	"net/http"
+	"strconv"
 
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -31,8 +32,8 @@ func HttpResult(r *http.Request, w http.ResponseWriter, resp interface{}, err er
 		} else {
 			if gstatus, ok := status.FromError(causeErr); ok { // grpc err错误
 				grpcCode := uint32(gstatus.Code())
-				if xerr.IsCodeErr(grpcCode) { //区分自定义错误跟系统底层、db等错误，底层、db错误不能返回给前端
-					errcode = grpcCode
+				if xerr.IsCodeErr(strconv.Itoa(int(grpcCode))) { //区分自定义错误跟系统底层、db等错误，底层、db错误不能返回给前端
+					errcode = strconv.Itoa(int(grpcCode))
 					errmsg = gstatus.Message()
 				}
 			}
@@ -64,8 +65,8 @@ func AuthHttpResult(r *http.Request, w http.ResponseWriter, resp interface{}, er
 		} else {
 			if gstatus, ok := status.FromError(causeErr); ok { // grpc err错误
 				grpcCode := uint32(gstatus.Code())
-				if xerr.IsCodeErr(grpcCode) { //区分自定义错误跟系统底层、db等错误，底层、db错误不能返回给前端
-					errcode = grpcCode
+				if xerr.IsCodeErr(strconv.Itoa(int(grpcCode))) { //区分自定义错误跟系统底层、db等错误，底层、db错误不能返回给前端
+					errcode = strconv.Itoa(int(grpcCode))
 					errmsg = gstatus.Message()
 				}
 			}

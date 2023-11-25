@@ -41,3 +41,8 @@ func (s *UserServer) CheckLogin(ctx context.Context, in *pb.CheckLoginReq) (*pb.
 	l := logic.NewCheckLoginLogic(ctx, s.svcCtx)
 	return l.CheckLogin(in)
 }
+
+func (s *UserServer) Logout(ctx context.Context, in *pb.LogoutReq) (*pb.VoidResp, error) {
+	l := logic.NewLogoutLogic(ctx, s.svcCtx)
+	return l.Logout(in)
+}

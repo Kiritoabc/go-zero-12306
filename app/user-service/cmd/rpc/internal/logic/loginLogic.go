@@ -91,6 +91,7 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 	if err != nil {
 		return nil, err
 	}
+	// todo ；暂时采用10分钟的测试
 	err = l.svcCtx.RedisClient.SetEX(l.ctx, tokenResp.AccessToken, loginRespJson, 10*time.Minute).Err()
 	if err != nil {
 		panic(err)
