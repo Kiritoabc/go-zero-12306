@@ -2,6 +2,7 @@ package userInfo
 
 import (
 	"context"
+	"go-zero-12306/app/user-service/cmd/rpc/pb"
 
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -23,8 +24,14 @@ func NewHasUsernameLogic(ctx context.Context, svcCtx *svc.ServiceContext) *HasUs
 	}
 }
 
-func (l *HasUsernameLogic) HasUsername(req *types.UserHasUsernameReq) (resp *types.UserHasUsernameResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+func (l *HasUsernameLogic) HasUsername(req *types.UserHasUsernameReq) (*types.UserHasUsernameResp, error) {
+	username, err := l.svcCtx.UserRpc.HasUsername(l.ctx, &pb.HasUsernameReq{
+		Username: req.UserName,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var resp types.UserHasUsernameResp
+	resp.Bool = username.Has
+	return &resp, err
 }

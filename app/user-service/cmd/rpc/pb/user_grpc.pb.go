@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	User_Register_FullMethodName      = "/pb.user/register"
+	User_HasUsername_FullMethodName   = "/pb.user/hasUsername"
 	User_Login_FullMethodName         = "/pb.user/login"
 	User_GenerateToken_FullMethodName = "/pb.user/generateToken"
 	User_CheckLogin_FullMethodName    = "/pb.user/checkLogin"
@@ -31,6 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type UserClient interface {
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
+	HasUsername(ctx context.Context, in *HasUsernameReq, opts ...grpc.CallOption) (*HasUsernameResp, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 	GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
 	CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
@@ -48,6 +50,15 @@ func NewUserClient(cc grpc.ClientConnInterface) UserClient {
 func (c *userClient) Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error) {
 	out := new(RegisterResp)
 	err := c.cc.Invoke(ctx, User_Register_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) HasUsername(ctx context.Context, in *HasUsernameReq, opts ...grpc.CallOption) (*HasUsernameResp, error) {
+	out := new(HasUsernameResp)
+	err := c.cc.Invoke(ctx, User_HasUsername_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -95,6 +106,7 @@ func (c *userClient) Logout(ctx context.Context, in *LogoutReq, opts ...grpc.Cal
 // for forward compatibility
 type UserServer interface {
 	Register(context.Context, *RegisterReq) (*RegisterResp, error)
+	HasUsername(context.Context, *HasUsernameReq) (*HasUsernameResp, error)
 	Login(context.Context, *LoginReq) (*LoginResp, error)
 	GenerateToken(context.Context, *GenerateTokenReq) (*GenerateTokenResp, error)
 	CheckLogin(context.Context, *CheckLoginReq) (*LoginResp, error)
@@ -108,6 +120,9 @@ type UnimplementedUserServer struct {
 
 func (UnimplementedUserServer) Register(context.Context, *RegisterReq) (*RegisterResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedUserServer) HasUsername(context.Context, *HasUsernameReq) (*HasUsernameResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method HasUsername not implemented")
 }
 func (UnimplementedUserServer) Login(context.Context, *LoginReq) (*LoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
@@ -148,6 +163,24 @@ func _User_Register_Handler(srv interface{}, ctx context.Context, dec func(inter
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).Register(ctx, req.(*RegisterReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_HasUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HasUsernameReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).HasUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_HasUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).HasUsername(ctx, req.(*HasUsernameReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -234,6 +267,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "register",
 			Handler:    _User_Register_Handler,
+		},
+		{
+			MethodName: "hasUsername",
+			Handler:    _User_HasUsername_Handler,
 		},
 		{
 			MethodName: "login",

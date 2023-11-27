@@ -39,7 +39,7 @@
 
   - [ ] queryUserByUsername
   - [ ] queryActualUserByUsername
-  - [ ] hasUsername
+  - [x] hasUsername
   - [x] register
   - [ ] update
   - [ ] deletion

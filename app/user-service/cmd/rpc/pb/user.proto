@@ -57,9 +57,16 @@ message LogoutReq {
 }
 message voidResp {
 }
+message hasUsernameReq {
+  string username = 1;
+}
+message hasUsernameResp {
+  bool has = 1;
+}
 // service
 service  user {
     rpc register(RegisterReq) returns (RegisterResp);
+    rpc hasUsername(hasUsernameReq) returns (hasUsernameResp);
     rpc login(LoginReq) returns (LoginResp);
     rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
     rpc checkLogin(CheckLoginReq) returns (LoginResp);

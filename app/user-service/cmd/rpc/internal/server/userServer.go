@@ -27,6 +27,11 @@ func (s *UserServer) Register(ctx context.Context, in *pb.RegisterReq) (*pb.Regi
 	return l.Register(in)
 }
 
+func (s *UserServer) HasUsername(ctx context.Context, in *pb.HasUsernameReq) (*pb.HasUsernameResp, error) {
+	l := logic.NewHasUsernameLogic(ctx, s.svcCtx)
+	return l.HasUsername(in)
+}
+
 func (s *UserServer) Login(ctx context.Context, in *pb.LoginReq) (*pb.LoginResp, error) {
 	l := logic.NewLoginLogic(ctx, s.svcCtx)
 	return l.Login(in)
