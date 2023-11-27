@@ -37,7 +37,7 @@
 
 - [ ] UserInfoController
 
-  - [ ] queryUserByUsername
+  - [x] queryUserByUsername
   - [ ] queryActualUserByUsername
   - [x] hasUsername
   - [x] register

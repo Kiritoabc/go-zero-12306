@@ -2,6 +2,8 @@ package userInfo
 
 import (
 	"context"
+	"github.com/jinzhu/copier"
+	"go-zero-12306/app/user-service/cmd/rpc/pb"
 
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -23,8 +25,13 @@ func NewQueryUserByUsernameLogic(ctx context.Context, svcCtx *svc.ServiceContext
 	}
 }
 
-func (l *QueryUserByUsernameLogic) QueryUserByUsername(req *types.QueryUserReq) (resp *types.QueryUserResp, err error) {
+func (l *QueryUserByUsernameLogic) QueryUserByUsername(req *types.QueryUserReq) (*types.QueryUserResp, error) {
 	// todo: add your logic here and delete this line
-
-	return
+	UserDO, err := l.svcCtx.UserRpc.QueryUserByUsername(l.ctx, &pb.UserNameReq{Username: req.UserName})
+	if err != nil {
+		return nil, err
+	}
+	var resp types.QueryUserResp
+	_ = copier.Copy(&resp, UserDO)
+	return &resp, nil
 }

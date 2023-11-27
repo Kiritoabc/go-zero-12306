@@ -32,6 +32,11 @@ func (s *UserServer) HasUsername(ctx context.Context, in *pb.HasUsernameReq) (*p
 	return l.HasUsername(in)
 }
 
+func (s *UserServer) QueryUserByUsername(ctx context.Context, in *pb.UserNameReq) (*pb.UserNameResp, error) {
+	l := logic.NewQueryUserByUsernameLogic(ctx, s.svcCtx)
+	return l.QueryUserByUsername(in)
+}
+
 func (s *UserServer) Login(ctx context.Context, in *pb.LoginReq) (*pb.LoginResp, error) {
 	l := logic.NewLoginLogic(ctx, s.svcCtx)
 	return l.Login(in)

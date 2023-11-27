@@ -23,11 +23,14 @@ type (
 	LogoutReq         = pb.LogoutReq
 	RegisterReq       = pb.RegisterReq
 	RegisterResp      = pb.RegisterResp
+	UserNameReq       = pb.UserNameReq
+	UserNameResp      = pb.UserNameResp
 	VoidResp          = pb.VoidResp
 
 	User interface {
 		Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
 		HasUsername(ctx context.Context, in *HasUsernameReq, opts ...grpc.CallOption) (*HasUsernameResp, error)
+		QueryUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*UserNameResp, error)
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 		GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
 		CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
@@ -53,6 +56,11 @@ func (m *defaultUser) Register(ctx context.Context, in *RegisterReq, opts ...grp
 func (m *defaultUser) HasUsername(ctx context.Context, in *HasUsernameReq, opts ...grpc.CallOption) (*HasUsernameResp, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.HasUsername(ctx, in, opts...)
+}
+
+func (m *defaultUser) QueryUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*UserNameResp, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.QueryUserByUsername(ctx, in, opts...)
 }
 
 func (m *defaultUser) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error) {

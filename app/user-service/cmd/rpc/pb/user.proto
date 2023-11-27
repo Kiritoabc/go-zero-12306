@@ -63,10 +63,29 @@ message hasUsernameReq {
 message hasUsernameResp {
   bool has = 1;
 }
+
+message UserNameReq{
+  string username = 1;
+}
+message UserNameResp {
+  string username = 1;
+  string realName = 2;
+  string region = 3;
+  int64 idType = 4;
+  string idCard = 5;
+   string phone = 6;
+   string telephone = 7;
+   string mail = 8;
+   int64 userType = 9;
+   int64 verifyStatus=10;
+   string postCode = 11;
+   string address = 12;
+}
 // service
 service  user {
     rpc register(RegisterReq) returns (RegisterResp);
     rpc hasUsername(hasUsernameReq) returns (hasUsernameResp);
+    rpc queryUserByUsername(UserNameReq) returns (UserNameResp);
     rpc login(LoginReq) returns (LoginResp);
     rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
     rpc checkLogin(CheckLoginReq) returns (LoginResp);
