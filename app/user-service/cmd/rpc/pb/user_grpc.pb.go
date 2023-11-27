@@ -19,13 +19,14 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	User_Register_FullMethodName            = "/pb.user/register"
-	User_HasUsername_FullMethodName         = "/pb.user/hasUsername"
-	User_QueryUserByUsername_FullMethodName = "/pb.user/queryUserByUsername"
-	User_Login_FullMethodName               = "/pb.user/login"
-	User_GenerateToken_FullMethodName       = "/pb.user/generateToken"
-	User_CheckLogin_FullMethodName          = "/pb.user/checkLogin"
-	User_Logout_FullMethodName              = "/pb.user/logout"
+	User_Register_FullMethodName                  = "/pb.user/register"
+	User_HasUsername_FullMethodName               = "/pb.user/hasUsername"
+	User_QueryUserByUsername_FullMethodName       = "/pb.user/queryUserByUsername"
+	User_QueryActualUserByUsername_FullMethodName = "/pb.user/queryActualUserByUsername"
+	User_Login_FullMethodName                     = "/pb.user/login"
+	User_GenerateToken_FullMethodName             = "/pb.user/generateToken"
+	User_CheckLogin_FullMethodName                = "/pb.user/checkLogin"
+	User_Logout_FullMethodName                    = "/pb.user/logout"
 )
 
 // UserClient is the client API for User service.
@@ -35,6 +36,7 @@ type UserClient interface {
 	Register(ctx context.Context, in *RegisterReq, opts ...grpc.CallOption) (*RegisterResp, error)
 	HasUsername(ctx context.Context, in *HasUsernameReq, opts ...grpc.CallOption) (*HasUsernameResp, error)
 	QueryUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*UserNameResp, error)
+	QueryActualUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*ActualUserNameResp, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 	GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
 	CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
@@ -70,6 +72,15 @@ func (c *userClient) HasUsername(ctx context.Context, in *HasUsernameReq, opts .
 func (c *userClient) QueryUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*UserNameResp, error) {
 	out := new(UserNameResp)
 	err := c.cc.Invoke(ctx, User_QueryUserByUsername_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) QueryActualUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*ActualUserNameResp, error) {
+	out := new(ActualUserNameResp)
+	err := c.cc.Invoke(ctx, User_QueryActualUserByUsername_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -119,6 +130,7 @@ type UserServer interface {
 	Register(context.Context, *RegisterReq) (*RegisterResp, error)
 	HasUsername(context.Context, *HasUsernameReq) (*HasUsernameResp, error)
 	QueryUserByUsername(context.Context, *UserNameReq) (*UserNameResp, error)
+	QueryActualUserByUsername(context.Context, *UserNameReq) (*ActualUserNameResp, error)
 	Login(context.Context, *LoginReq) (*LoginResp, error)
 	GenerateToken(context.Context, *GenerateTokenReq) (*GenerateTokenResp, error)
 	CheckLogin(context.Context, *CheckLoginReq) (*LoginResp, error)
@@ -138,6 +150,9 @@ func (UnimplementedUserServer) HasUsername(context.Context, *HasUsernameReq) (*H
 }
 func (UnimplementedUserServer) QueryUserByUsername(context.Context, *UserNameReq) (*UserNameResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method QueryUserByUsername not implemented")
+}
+func (UnimplementedUserServer) QueryActualUserByUsername(context.Context, *UserNameReq) (*ActualUserNameResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method QueryActualUserByUsername not implemented")
 }
 func (UnimplementedUserServer) Login(context.Context, *LoginReq) (*LoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
@@ -214,6 +229,24 @@ func _User_QueryUserByUsername_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(UserServer).QueryUserByUsername(ctx, req.(*UserNameReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_QueryActualUserByUsername_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserNameReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).QueryActualUserByUsername(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_QueryActualUserByUsername_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).QueryActualUserByUsername(ctx, req.(*UserNameReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -308,6 +341,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "queryUserByUsername",
 			Handler:    _User_QueryUserByUsername_Handler,
+		},
+		{
+			MethodName: "queryActualUserByUsername",
+			Handler:    _User_QueryActualUserByUsername_Handler,
 		},
 		{
 			MethodName: "login",

@@ -32,6 +32,6 @@ func (l *QueryUserByUsernameLogic) QueryUserByUsername(req *types.QueryUserReq) 
 		return nil, err
 	}
 	var resp types.QueryUserResp
-	_ = copier.Copy(&resp, UserDO)
+	_ = copier.Copy(&resp, &UserDO)
 	return &resp, nil
 }
