@@ -41,5 +41,5 @@
   - [x] queryActualUserByUsername
   - [x] hasUsername
   - [x] register
-  - [ ] update
+  - [x] update
   - [ ] deletion

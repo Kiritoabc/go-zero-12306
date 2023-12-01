@@ -24,6 +24,7 @@ const (
 	User_QueryUserByUsername_FullMethodName       = "/pb.user/queryUserByUsername"
 	User_QueryActualUserByUsername_FullMethodName = "/pb.user/queryActualUserByUsername"
 	User_UpdateUserInfo_FullMethodName            = "/pb.user/updateUserInfo"
+	User_Deletion_FullMethodName                  = "/pb.user/deletion"
 	User_Login_FullMethodName                     = "/pb.user/login"
 	User_GenerateToken_FullMethodName             = "/pb.user/generateToken"
 	User_CheckLogin_FullMethodName                = "/pb.user/checkLogin"
@@ -39,6 +40,7 @@ type UserClient interface {
 	QueryUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*UserNameResp, error)
 	QueryActualUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*ActualUserNameResp, error)
 	UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error)
+	Deletion(ctx context.Context, in *DeletionReq, opts ...grpc.CallOption) (*DeletionResp, error)
 	Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 	GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
 	CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
@@ -98,6 +100,15 @@ func (c *userClient) UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, 
 	return out, nil
 }
 
+func (c *userClient) Deletion(ctx context.Context, in *DeletionReq, opts ...grpc.CallOption) (*DeletionResp, error) {
+	out := new(DeletionResp)
+	err := c.cc.Invoke(ctx, User_Deletion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userClient) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error) {
 	out := new(LoginResp)
 	err := c.cc.Invoke(ctx, User_Login_FullMethodName, in, out, opts...)
@@ -143,6 +154,7 @@ type UserServer interface {
 	QueryUserByUsername(context.Context, *UserNameReq) (*UserNameResp, error)
 	QueryActualUserByUsername(context.Context, *UserNameReq) (*ActualUserNameResp, error)
 	UpdateUserInfo(context.Context, *UpdateUserInfoReq) (*UpdateUserInfoResp, error)
+	Deletion(context.Context, *DeletionReq) (*DeletionResp, error)
 	Login(context.Context, *LoginReq) (*LoginResp, error)
 	GenerateToken(context.Context, *GenerateTokenReq) (*GenerateTokenResp, error)
 	CheckLogin(context.Context, *CheckLoginReq) (*LoginResp, error)
@@ -168,6 +180,9 @@ func (UnimplementedUserServer) QueryActualUserByUsername(context.Context, *UserN
 }
 func (UnimplementedUserServer) UpdateUserInfo(context.Context, *UpdateUserInfoReq) (*UpdateUserInfoResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserInfo not implemented")
+}
+func (UnimplementedUserServer) Deletion(context.Context, *DeletionReq) (*DeletionResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Deletion not implemented")
 }
 func (UnimplementedUserServer) Login(context.Context, *LoginReq) (*LoginResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
@@ -284,6 +299,24 @@ func _User_UpdateUserInfo_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_Deletion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeletionReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).Deletion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_Deletion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).Deletion(ctx, req.(*DeletionReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _User_Login_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LoginReq)
 	if err := dec(in); err != nil {
@@ -382,6 +415,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "updateUserInfo",
 			Handler:    _User_UpdateUserInfo_Handler,
+		},
+		{
+			MethodName: "deletion",
+			Handler:    _User_Deletion_Handler,
 		},
 		{
 			MethodName: "login",

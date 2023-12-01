@@ -36,6 +36,7 @@ type (
 		Delete(ctx context.Context, id int64) error
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
 		FindOneByUsername(ctx context.Context, username string) (*TUser0, error)
+		DeleteWithSession(ctx context.Context, session sqlx.Session, id int64) error
 	}
 
 	defaultTUser0Model struct {
@@ -192,4 +193,21 @@ func (m *defaultTUser0Model) FindOneByUsername(ctx context.Context, username str
 	default:
 		return nil, err
 	}
+}
+
+func (m *defaultTUser0Model) DeleteWithSession(ctx context.Context, session sqlx.Session, id int64) error {
+	data, err := m.FindOne(ctx, id)
+	if err != nil {
+		return err
+	}
+	_12306User0TUser0IdKey := fmt.Sprintf("%s%v", cache12306User0TUser0IdPrefix, id)
+	_12306User0TUser0UsernameDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUser0UsernameDeletionTimePrefix, data.Username, data.DeletionTime)
+	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set `deletion_time` = ? , `del_flag`='1' where `id` = ? and `del_flag` = '0'", m.table)
+		if session != nil {
+			return session.ExecCtx(ctx, query, time.Now(), id)
+		}
+		return conn.ExecCtx(ctx, query, time.Now(), id)
+	}, _12306User0TUser0IdKey, _12306User0TUser0UsernameDeletionTimeKey)
+	return err
 }

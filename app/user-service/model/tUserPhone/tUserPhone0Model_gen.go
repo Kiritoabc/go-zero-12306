@@ -35,6 +35,7 @@ type (
 		Update(ctx context.Context, data *TUserPhone0) error
 		Delete(ctx context.Context, id int64) error
 		FindOneByPhone(ctx context.Context, phone string) (*TUserPhone0, error)
+		DeleteWithSession(ctx context.Context, session sqlx.Session, phone string) error
 	}
 
 	defaultTUserPhone0Model struct {
@@ -172,4 +173,15 @@ func (m *defaultTUserPhone0Model) FindOneByPhone(ctx context.Context, phone stri
 	default:
 		return nil, err
 	}
+}
+
+func (m *defaultTUserPhone0Model) DeleteWithSession(ctx context.Context, session sqlx.Session, phone string) error {
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("update %s set `deletion_time` = ?,`del_flag`='1' where `phone` = ? and `del_flag` = '0' ", m.table)
+		if session != nil {
+			return session.ExecCtx(ctx, query, time.Now(), phone)
+		}
+		return conn.ExecCtx(ctx, query, time.Now(), phone)
+	})
+	return err
 }

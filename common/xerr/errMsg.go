@@ -33,6 +33,7 @@ func init() {
 
 	// 用户登录错误
 	message[LOGIN_MAIL_NOT_EXIST] = "用户名/手机号/邮箱不存在"
+	message[NAME_ERROR] = "用户名错误"
 }
 
 func MapErrMsg(errcode string) string {

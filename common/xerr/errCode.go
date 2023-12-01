@@ -50,3 +50,5 @@ const REAL_NAME_NOTNULL = "A006015" //("A006015", "真实姓名不能为空");
 
 // 用户登录错误
 const LOGIN_MAIL_NOT_EXIST = "A006001" //用户登录时邮箱不存在
+
+const NAME_ERROR = "A006002" // 删除用户错误

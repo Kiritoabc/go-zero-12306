@@ -31,6 +31,7 @@ type (
 		FindOne(ctx context.Context, id int64) (*TUserDeletion, error)
 		Update(ctx context.Context, data *TUserDeletion) error
 		Delete(ctx context.Context, id int64) error
+		InsertWithSession(ctx context.Context, session sqlx.Session, data *TUserDeletion) (sql.Result, error)
 	}
 
 	defaultTUserDeletionModel struct {
@@ -110,4 +111,17 @@ func (m *defaultTUserDeletionModel) queryPrimary(ctx context.Context, conn sqlx.
 
 func (m *defaultTUserDeletionModel) tableName() string {
 	return m.table
+}
+
+// 自定义
+func (m *defaultTUserDeletionModel) InsertWithSession(ctx context.Context, session sqlx.Session, data *TUserDeletion) (sql.Result, error) {
+	_12306User0TUserDeletionIdKey := fmt.Sprintf("%s%v", cache12306User0TUserDeletionIdPrefix, data.Id)
+	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?)", m.table, tUserDeletionRowsExpectAutoSet)
+		if session != nil {
+			return session.ExecCtx(ctx, query, data.IdType, data.IdCard, data.DelFlag)
+		}
+		return conn.ExecCtx(ctx, query, data.IdType, data.IdCard, data.DelFlag)
+	}, _12306User0TUserDeletionIdKey)
+	return ret, err
 }

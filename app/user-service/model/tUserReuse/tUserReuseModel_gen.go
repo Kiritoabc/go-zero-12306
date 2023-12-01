@@ -19,7 +19,7 @@ import (
 var (
 	tUserReuseFieldNames          = builder.RawFieldNames(&TUserReuse{})
 	tUserReuseRows                = strings.Join(tUserReuseFieldNames, ",")
-	tUserReuseRowsExpectAutoSet   = strings.Join(stringx.Remove(tUserReuseFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
+	tUserReuseRowsExpectAutoSet   = strings.Join(stringx.Remove(tUserReuseFieldNames, "`id`"), ",")
 	tUserReuseRowsWithPlaceHolder = strings.Join(stringx.Remove(tUserReuseFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306User0TUserReuseIdPrefix       = "cache:12306User0:tUserReuse:id:"
@@ -28,7 +28,7 @@ var (
 
 type (
 	tUserReuseModel interface {
-		Insert(ctx context.Context, data *TUserReuse) (sql.Result, error)
+		Insert(ctx context.Context, session sqlx.Session, data *TUserReuse) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*TUserReuse, error)
 		Update(ctx context.Context, data *TUserReuse) error
 		Delete(ctx context.Context, id int64) error
@@ -95,11 +95,14 @@ func (m *defaultTUserReuseModel) FindOne(ctx context.Context, id int64) (*TUserR
 	}
 }
 
-func (m *defaultTUserReuseModel) Insert(ctx context.Context, data *TUserReuse) (sql.Result, error) {
+func (m *defaultTUserReuseModel) Insert(ctx context.Context, session sqlx.Session, data *TUserReuse) (sql.Result, error) {
 	_12306User0TUserReuseIdKey := fmt.Sprintf("%s%v", cache12306User0TUserReuseIdPrefix, data.Id)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?)", m.table, tUserReuseRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Username, data.DelFlag)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?,?,?)", m.table, tUserReuseRowsExpectAutoSet)
+		if session != nil {
+			return session.ExecCtx(ctx, query, data.Username, time.Now(), time.Now(), "0")
+		}
+		return conn.ExecCtx(ctx, query, data.Username, time.Now(), time.Now(), "0")
 	}, _12306User0TUserReuseIdKey)
 	return ret, err
 }

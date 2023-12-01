@@ -35,7 +35,7 @@ type (
 		FindOneByMail(ctx context.Context, mail string) (*TUserMail0, error)
 		Update(ctx context.Context, data *TUserMail0) error
 		Delete(ctx context.Context, id int64) error
-		DeleteByMail(ctx context.Context, mail string) error
+		DeleteByMail(ctx context.Context, session sqlx.Session, mail string) error
 	}
 
 	defaultTUserMail0Model struct {
@@ -175,11 +175,13 @@ func (m *defaultTUserMail0Model) FindOneByMail(ctx context.Context, mail string)
 	}
 }
 
-func (m *defaultTUserMail0Model) DeleteByMail(ctx context.Context, mail string) error {
-
+func (m *defaultTUserMail0Model) DeleteByMail(ctx context.Context, session sqlx.Session, mail string) error {
 	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `mail` = ?", m.table)
-		return conn.ExecCtx(ctx, query, mail)
+		query := fmt.Sprintf("update %s set `deletion_time` = ? , `del_flag` = '1' where `mail` = ? ans `del_falg` = '0'", m.table)
+		if session != nil {
+			return session.ExecCtx(ctx, query, time.Now(), mail)
+		}
+		return conn.ExecCtx(ctx, query, time.Now(), mail)
 	})
 	return err
 }

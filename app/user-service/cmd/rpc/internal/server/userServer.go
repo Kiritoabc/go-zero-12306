@@ -47,6 +47,11 @@ func (s *UserServer) UpdateUserInfo(ctx context.Context, in *pb.UpdateUserInfoRe
 	return l.UpdateUserInfo(in)
 }
 
+func (s *UserServer) Deletion(ctx context.Context, in *pb.DeletionReq) (*pb.DeletionResp, error) {
+	l := logic.NewDeletionLogic(ctx, s.svcCtx)
+	return l.Deletion(in)
+}
+
 func (s *UserServer) Login(ctx context.Context, in *pb.LoginReq) (*pb.LoginResp, error) {
 	l := logic.NewLoginLogic(ctx, s.svcCtx)
 	return l.Login(in)

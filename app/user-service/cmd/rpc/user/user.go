@@ -15,6 +15,8 @@ import (
 type (
 	ActualUserNameResp = pb.ActualUserNameResp
 	CheckLoginReq      = pb.CheckLoginReq
+	DeletionReq        = pb.DeletionReq
+	DeletionResp       = pb.DeletionResp
 	GenerateTokenReq   = pb.GenerateTokenReq
 	GenerateTokenResp  = pb.GenerateTokenResp
 	HasUsernameReq     = pb.HasUsernameReq
@@ -36,6 +38,7 @@ type (
 		QueryUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*UserNameResp, error)
 		QueryActualUserByUsername(ctx context.Context, in *UserNameReq, opts ...grpc.CallOption) (*ActualUserNameResp, error)
 		UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error)
+		Deletion(ctx context.Context, in *DeletionReq, opts ...grpc.CallOption) (*DeletionResp, error)
 		Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 		GenerateToken(ctx context.Context, in *GenerateTokenReq, opts ...grpc.CallOption) (*GenerateTokenResp, error)
 		CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
@@ -76,6 +79,11 @@ func (m *defaultUser) QueryActualUserByUsername(ctx context.Context, in *UserNam
 func (m *defaultUser) UpdateUserInfo(ctx context.Context, in *UpdateUserInfoReq, opts ...grpc.CallOption) (*UpdateUserInfoResp, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.UpdateUserInfo(ctx, in, opts...)
+}
+
+func (m *defaultUser) Deletion(ctx context.Context, in *DeletionReq, opts ...grpc.CallOption) (*DeletionResp, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.Deletion(ctx, in, opts...)
 }
 
 func (m *defaultUser) Login(ctx context.Context, in *LoginReq, opts ...grpc.CallOption) (*LoginResp, error) {
