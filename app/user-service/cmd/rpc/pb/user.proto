@@ -115,14 +115,35 @@ message DeletionReq {
 message DeletionResp {
 }
 
-message ParseTokenReq {
+//message ParseTokenReq {
+//
+//}
+//
+//message ParseTokenResp {
+//
+//}
 
+message ListPassengerQueryByUsernameReq {
+  string username = 1;
 }
 
-message ParseTokenResp {
-
+message ListPassengerQueryByUsernameResp {
+    repeated PassengerRespDTO list = 1;
 }
 
+message PassengerRespDTO {
+   string id =1;
+   string username=2;
+   string realName=3;
+   int64 idType=4;
+   string idCard=5;
+   string actualIdCard=6;
+   int64 discountType=7;
+   string phone=8;
+   string actualPhone=9;
+   string createDate=10; // Date
+   int64 verifyStatus=11;
+}
 // service
 service  user {
 
@@ -135,7 +156,11 @@ service  user {
 
     rpc login(LoginReq) returns (LoginResp);
     rpc generateToken(GenerateTokenReq) returns(GenerateTokenResp);
-    rpc parseToken(ParseTokenReq) returns(ParseTokenResp);
+//    rpc parseToken(ParseTokenReq) returns(ParseTokenResp);
     rpc checkLogin(CheckLoginReq) returns (LoginResp);
     rpc logout(LogoutReq) returns (voidResp);
+
+    rpc listPassengerQueryByUsername(ListPassengerQueryByUsernameReq) returns(ListPassengerQueryByUsernameResp);
+
 }
+

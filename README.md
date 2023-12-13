@@ -34,12 +34,18 @@
   - [x] checkLogin
   - [x] login
   - [x] logout
-
-- [ ] UserInfoController
+- [x] UserInfoController
 
   - [x] queryUserByUsername
   - [x] queryActualUserByUsername
   - [x] hasUsername
   - [x] register
   - [x] update
-  - [ ] deletion
+  - [x] deletion
+- [ ] PassengerController
+  - [ ] listPassengerQueryByUsername
+  - [ ] listPassengerQueryByIds
+  - [ ] savePassenger
+  - [ ] updatePassenger
+  - [ ] removePassenger
+

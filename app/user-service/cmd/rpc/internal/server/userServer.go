@@ -62,6 +62,7 @@ func (s *UserServer) GenerateToken(ctx context.Context, in *pb.GenerateTokenReq)
 	return l.GenerateToken(in)
 }
 
+// rpc parseToken(ParseTokenReq) returns(ParseTokenResp);
 func (s *UserServer) CheckLogin(ctx context.Context, in *pb.CheckLoginReq) (*pb.LoginResp, error) {
 	l := logic.NewCheckLoginLogic(ctx, s.svcCtx)
 	return l.CheckLogin(in)
@@ -70,4 +71,9 @@ func (s *UserServer) CheckLogin(ctx context.Context, in *pb.CheckLoginReq) (*pb.
 func (s *UserServer) Logout(ctx context.Context, in *pb.LogoutReq) (*pb.VoidResp, error) {
 	l := logic.NewLogoutLogic(ctx, s.svcCtx)
 	return l.Logout(in)
+}
+
+func (s *UserServer) ListPassengerQueryByUsername(ctx context.Context, in *pb.ListPassengerQueryByUsernameReq) (*pb.ListPassengerQueryByUsernameResp, error) {
+	l := logic.NewListPassengerQueryByUsernameLogic(ctx, s.svcCtx)
+	return l.ListPassengerQueryByUsername(in)
 }
