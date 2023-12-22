@@ -77,3 +77,8 @@ func (s *UserServer) ListPassengerQueryByUsername(ctx context.Context, in *pb.Li
 	l := logic.NewListPassengerQueryByUsernameLogic(ctx, s.svcCtx)
 	return l.ListPassengerQueryByUsername(in)
 }
+
+func (s *UserServer) ListPassengerQueryByIds(ctx context.Context, in *pb.ListPassengerQueryByIdsReq) (*pb.ListPassengerQueryByIdsResp, error) {
+	l := logic.NewListPassengerQueryByIdsLogic(ctx, s.svcCtx)
+	return l.ListPassengerQueryByIds(in)
+}

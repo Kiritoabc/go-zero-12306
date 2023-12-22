@@ -21,6 +21,9 @@ type (
 	GenerateTokenResp                = pb.GenerateTokenResp
 	HasUsernameReq                   = pb.HasUsernameReq
 	HasUsernameResp                  = pb.HasUsernameResp
+	ListPassengerQueryByIds          = pb.ListPassengerQueryByIds
+	ListPassengerQueryByIdsReq       = pb.ListPassengerQueryByIdsReq
+	ListPassengerQueryByIdsResp      = pb.ListPassengerQueryByIdsResp
 	ListPassengerQueryByUsernameReq  = pb.ListPassengerQueryByUsernameReq
 	ListPassengerQueryByUsernameResp = pb.ListPassengerQueryByUsernameResp
 	LoginReq                         = pb.LoginReq
@@ -48,6 +51,7 @@ type (
 		CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 		Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*VoidResp, error)
 		ListPassengerQueryByUsername(ctx context.Context, in *ListPassengerQueryByUsernameReq, opts ...grpc.CallOption) (*ListPassengerQueryByUsernameResp, error)
+		ListPassengerQueryByIds(ctx context.Context, in *ListPassengerQueryByIdsReq, opts ...grpc.CallOption) (*ListPassengerQueryByIdsResp, error)
 	}
 
 	defaultUser struct {
@@ -115,4 +119,9 @@ func (m *defaultUser) Logout(ctx context.Context, in *LogoutReq, opts ...grpc.Ca
 func (m *defaultUser) ListPassengerQueryByUsername(ctx context.Context, in *ListPassengerQueryByUsernameReq, opts ...grpc.CallOption) (*ListPassengerQueryByUsernameResp, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.ListPassengerQueryByUsername(ctx, in, opts...)
+}
+
+func (m *defaultUser) ListPassengerQueryByIds(ctx context.Context, in *ListPassengerQueryByIdsReq, opts ...grpc.CallOption) (*ListPassengerQueryByIdsResp, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.ListPassengerQueryByIds(ctx, in, opts...)
 }

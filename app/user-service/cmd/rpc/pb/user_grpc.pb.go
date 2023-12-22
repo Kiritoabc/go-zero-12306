@@ -30,6 +30,7 @@ const (
 	User_CheckLogin_FullMethodName                   = "/pb.user/checkLogin"
 	User_Logout_FullMethodName                       = "/pb.user/logout"
 	User_ListPassengerQueryByUsername_FullMethodName = "/pb.user/listPassengerQueryByUsername"
+	User_ListPassengerQueryByIds_FullMethodName      = "/pb.user/listPassengerQueryByIds"
 )
 
 // UserClient is the client API for User service.
@@ -48,6 +49,7 @@ type UserClient interface {
 	CheckLogin(ctx context.Context, in *CheckLoginReq, opts ...grpc.CallOption) (*LoginResp, error)
 	Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*VoidResp, error)
 	ListPassengerQueryByUsername(ctx context.Context, in *ListPassengerQueryByUsernameReq, opts ...grpc.CallOption) (*ListPassengerQueryByUsernameResp, error)
+	ListPassengerQueryByIds(ctx context.Context, in *ListPassengerQueryByIdsReq, opts ...grpc.CallOption) (*ListPassengerQueryByIdsResp, error)
 }
 
 type userClient struct {
@@ -157,6 +159,15 @@ func (c *userClient) ListPassengerQueryByUsername(ctx context.Context, in *ListP
 	return out, nil
 }
 
+func (c *userClient) ListPassengerQueryByIds(ctx context.Context, in *ListPassengerQueryByIdsReq, opts ...grpc.CallOption) (*ListPassengerQueryByIdsResp, error) {
+	out := new(ListPassengerQueryByIdsResp)
+	err := c.cc.Invoke(ctx, User_ListPassengerQueryByIds_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -173,6 +184,7 @@ type UserServer interface {
 	CheckLogin(context.Context, *CheckLoginReq) (*LoginResp, error)
 	Logout(context.Context, *LogoutReq) (*VoidResp, error)
 	ListPassengerQueryByUsername(context.Context, *ListPassengerQueryByUsernameReq) (*ListPassengerQueryByUsernameResp, error)
+	ListPassengerQueryByIds(context.Context, *ListPassengerQueryByIdsReq) (*ListPassengerQueryByIdsResp, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -212,6 +224,9 @@ func (UnimplementedUserServer) Logout(context.Context, *LogoutReq) (*VoidResp, e
 }
 func (UnimplementedUserServer) ListPassengerQueryByUsername(context.Context, *ListPassengerQueryByUsernameReq) (*ListPassengerQueryByUsernameResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPassengerQueryByUsername not implemented")
+}
+func (UnimplementedUserServer) ListPassengerQueryByIds(context.Context, *ListPassengerQueryByIdsReq) (*ListPassengerQueryByIdsResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListPassengerQueryByIds not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -424,6 +439,24 @@ func _User_ListPassengerQueryByUsername_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_ListPassengerQueryByIds_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListPassengerQueryByIdsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).ListPassengerQueryByIds(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_ListPassengerQueryByIds_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).ListPassengerQueryByIds(ctx, req.(*ListPassengerQueryByIdsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -474,6 +507,10 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "listPassengerQueryByUsername",
 			Handler:    _User_ListPassengerQueryByUsername_Handler,
+		},
+		{
+			MethodName: "listPassengerQueryByIds",
+			Handler:    _User_ListPassengerQueryByIds_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

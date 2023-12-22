@@ -144,6 +144,27 @@ message PassengerRespDTO {
    string createDate=10; // Date
    int64 verifyStatus=11;
 }
+
+
+message ListPassengerQueryByIdsReq {
+  string username = 1;
+  repeated int64  ids = 2;
+}
+message ListPassengerQueryByIdsResp {
+  repeated ListPassengerQueryByIds list = 1;
+}
+
+message ListPassengerQueryByIds {
+  string id =1;
+  string username=2;
+  string realName=3;
+  int64 idType=4;
+  string idCard=5;
+  int64 discountType=6;
+  string phone=7;
+  string createDate=8;
+  int64 verifyStatus=9;
+}
 // service
 service  user {
 
@@ -161,6 +182,6 @@ service  user {
     rpc logout(LogoutReq) returns (voidResp);
 
     rpc listPassengerQueryByUsername(ListPassengerQueryByUsernameReq) returns(ListPassengerQueryByUsernameResp);
-
+    rpc listPassengerQueryByIds(ListPassengerQueryByIdsReq) returns(ListPassengerQueryByIdsResp);
 }
 
