@@ -6,14 +6,14 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strings"
-	"time"
-
+	"github.com/Masterminds/squirrel"
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	"github.com/zeromicro/go-zero/core/stringx"
+	"strings"
+	"time"
 )
 
 var (
@@ -22,7 +22,8 @@ var (
 	tPassenger0RowsExpectAutoSet   = strings.Join(stringx.Remove(tPassenger0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
 	tPassenger0RowsWithPlaceHolder = strings.Join(stringx.Remove(tPassenger0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
-	cache12306User0TPassenger0IdPrefix = "cache:12306User0:tPassenger0:id:"
+	cache12306User0TPassenger0IdPrefix       = "cache:12306User0:tPassenger0:id:"
+	cache12306User0TPassenger0UsernamePrefix = "cache:12306User0:tPassenger0:username:"
 )
 
 type (
@@ -31,6 +32,8 @@ type (
 		FindOne(ctx context.Context, id int64) (*TPassenger0, error)
 		Update(ctx context.Context, data *TPassenger0) error
 		Delete(ctx context.Context, id int64) error
+		GetPassengerByUserName(ctx context.Context, username string) ([]*TPassenger0, error)
+		SelectBuilder() squirrel.SelectBuilder
 	}
 
 	defaultTPassenger0Model struct {
@@ -116,4 +119,19 @@ func (m *defaultTPassenger0Model) queryPrimary(ctx context.Context, conn sqlx.Sq
 
 func (m *defaultTPassenger0Model) tableName() string {
 	return m.table
+}
+
+// 自定义
+func (m *defaultTPassenger0Model) GetPassengerByUserName(ctx context.Context, username string) ([]*TPassenger0, error) {
+	var resp []*TPassenger0
+	_12306User0TPassenger0UsernameKey := fmt.Sprintf("%S%v", cache12306User0TPassenger0UsernamePrefix, username)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
+		query := fmt.Sprintf("select %s from %s where `username` = ?", tPassenger0Rows, m.table)
+		return nil, conn.QueryRowsCtx(ctx, &resp, query, username)
+	}, _12306User0TPassenger0UsernameKey)
+	return resp, err
+}
+
+func (m *defaultTPassenger0Model) SelectBuilder() squirrel.SelectBuilder {
+	return squirrel.Select().From(m.table)
 }

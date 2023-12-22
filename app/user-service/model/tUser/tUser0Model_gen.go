@@ -32,10 +32,10 @@ type (
 		Insert(ctx context.Context, session sqlx.Session, data *TUser0) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*TUser0, error)
 		FindOneByUsernameDeletionTime(ctx context.Context, username string, deletionTime int64) (*TUser0, error)
-		Update(ctx context.Context, data *TUser0) error
+		Update(ctx context.Context, session sqlx.Session, data *TUser0) error
 		Delete(ctx context.Context, id int64) error
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
-		FindOneByUsername(ctx context.Context, username string) (*TUser0, error)
+		FindOneByUsername(ctx context.Context, session sqlx.Session, username string) (*TUser0, error)
 		DeleteWithSession(ctx context.Context, session sqlx.Session, id int64) error
 	}
 
@@ -146,8 +146,8 @@ func (m *defaultTUser0Model) Insert(ctx context.Context, session sqlx.Session, d
 	return ret, err
 }
 
-func (m *defaultTUser0Model) Update(ctx context.Context, newData *TUser0) error {
-	data, err := m.FindOne(ctx, newData.Id)
+func (m *defaultTUser0Model) Update(ctx context.Context, session sqlx.Session, data *TUser0) error {
+	data, err := m.FindOne(ctx, data.Id)
 	if err != nil {
 		return err
 	}
@@ -156,7 +156,10 @@ func (m *defaultTUser0Model) Update(ctx context.Context, newData *TUser0) error 
 	_12306User0TUser0UsernameDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUser0UsernameDeletionTimePrefix, data.Username, data.DeletionTime)
 	_, err = m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
 		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tUser0RowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, newData.Username, newData.Password, newData.RealName, newData.Region, newData.IdType, newData.IdCard, newData.Phone, newData.Telephone, newData.Mail, newData.UserType, newData.VerifyStatus, newData.PostCode, newData.Address, newData.DeletionTime, newData.DelFlag, newData.Id)
+		if session != nil {
+			return session.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode, data.Address, data.DeletionTime, data.DelFlag, data.Id)
+		}
+		return conn.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode, data.Address, data.DeletionTime, data.DelFlag, data.Id)
 	}, _12306User0TUser0IdKey, _12306User0TUser0UsernameDeletionTimeKey)
 	return err
 }
@@ -175,16 +178,16 @@ func (m *defaultTUser0Model) tableName() string {
 }
 
 // 自定义
-func (m *defaultTUser0Model) FindOneByUsername(ctx context.Context, username string) (*TUser0, error) {
+func (m *defaultTUser0Model) FindOneByUsername(ctx context.Context, session sqlx.Session, username string) (*TUser0, error) {
 	_12306User0TUser0UsernameKey := fmt.Sprintf("%s%v", cache12306User0TUser0UsernamePrefix, username)
 	var resp TUser0
-	err := m.QueryRowIndexCtx(ctx, &resp, _12306User0TUser0UsernameKey, m.formatPrimary, func(ctx context.Context, conn sqlx.SqlConn, v any) (i any, e error) {
+	err := m.QueryRowCtx(ctx, &resp, _12306User0TUser0UsernameKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
 		query := fmt.Sprintf("select %s from %s where `username` = ? limit 1", tUser0Rows, m.table)
-		if err := conn.QueryRowCtx(ctx, &resp, query, username); err != nil {
-			return nil, err
+		if session != nil {
+			return session.QueryRowsCtx(ctx, &resp, query, username)
 		}
-		return resp.Id, nil
-	}, m.queryPrimary)
+		return conn.QueryRowCtx(ctx, &resp, query, username)
+	})
 	switch err {
 	case nil:
 		return &resp, nil

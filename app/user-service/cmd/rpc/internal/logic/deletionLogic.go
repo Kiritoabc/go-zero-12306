@@ -37,7 +37,7 @@ func (l *DeletionLogic) Deletion(in *pb.DeletionReq) (*pb.DeletionResp, error) {
 	// todo: add your logic here and delete this line
 	userId := ctxdata.GetUidFromCtx(l.ctx)
 	// 1.判断注销的用户是否是本身
-	user, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, in.Username)
+	user, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, nil, in.Username)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "DB error: %v", err.Error())
 	}

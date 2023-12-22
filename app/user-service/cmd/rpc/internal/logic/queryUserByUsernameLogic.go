@@ -29,7 +29,7 @@ func NewQueryUserByUsernameLogic(ctx context.Context, svcCtx *svc.ServiceContext
 func (l *QueryUserByUsernameLogic) QueryUserByUsername(in *pb.UserNameReq) (*pb.UserNameResp, error) {
 	// todo: add your logic here and delete this line
 	// 查询
-	User, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, in.Username)
+	User, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, nil, in.Username)
 	if err != nil {
 		return nil, err
 	}

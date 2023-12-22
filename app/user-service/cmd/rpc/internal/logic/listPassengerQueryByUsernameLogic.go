@@ -2,6 +2,9 @@ package logic
 
 import (
 	"context"
+	"fmt"
+	"github.com/jinzhu/copier"
+	"go-zero-12306/app/user-service/model/tPassenger"
 
 	"go-zero-12306/app/user-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
@@ -24,8 +27,20 @@ func NewListPassengerQueryByUsernameLogic(ctx context.Context, svcCtx *svc.Servi
 }
 
 func (l *ListPassengerQueryByUsernameLogic) ListPassengerQueryByUsername(in *pb.ListPassengerQueryByUsernameReq) (*pb.ListPassengerQueryByUsernameResp, error) {
-	// todo: add your logic here and delete this line
 	userName := in.Username
-
-	return &pb.ListPassengerQueryByUsernameResp{}, nil
+	//1. 更具用户名查询
+	// 使用了缓存
+	var passengerList []*tPassenger.TPassenger0
+	passengerList, err := l.svcCtx.Passenger0Model.GetPassengerByUserName(l.ctx, userName)
+	if err != nil {
+		return nil, err
+	}
+	var resp *pb.ListPassengerQueryByUsernameResp
+	// 赋值给resp
+	err = copier.Copy(&resp, &passengerList)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Print(passengerList, resp)
+	return resp, nil
 }

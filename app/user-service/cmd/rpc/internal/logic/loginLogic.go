@@ -64,7 +64,7 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 		username = usernameOrMailOrPhone
 	}
 	// 3. 查询
-	userDO, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, username)
+	userDO, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, nil, username)
 	if err != nil {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
 	}

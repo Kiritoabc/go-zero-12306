@@ -27,7 +27,7 @@ func (l *HasUsernameLogic) HasUsername(in *pb.HasUsernameReq) (*pb.HasUsernameRe
 	// 获取参数
 	username := in.Username
 	// 查询
-	hasUsername, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, username)
+	hasUsername, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, nil, username)
 	if err != nil {
 		return nil, err
 	}

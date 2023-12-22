@@ -2,6 +2,8 @@ package passenger
 
 import (
 	"context"
+	"github.com/jinzhu/copier"
+	"go-zero-12306/app/user-service/cmd/rpc/pb"
 
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -23,8 +25,17 @@ func NewListPassengerQueryByIdsLogic(ctx context.Context, svcCtx *svc.ServiceCon
 	}
 }
 
-func (l *ListPassengerQueryByIdsLogic) ListPassengerQueryByIds(req *types.PassengerQueryReq) (resp *types.PassengerActualRespDTO, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+func (l *ListPassengerQueryByIdsLogic) ListPassengerQueryByIds(req *types.PassengerQueryReq) (*types.PassengerQueryResp, error) {
+	listResp, err := l.svcCtx.UserRpc.ListPassengerQueryByUsername(l.ctx, &pb.ListPassengerQueryByUsernameReq{
+		Username: req.UserName,
+	})
+	if err != nil {
+		return nil, err
+	}
+	var resp types.PassengerQueryResp
+	err = copier.Copy(&resp, &listResp)
+	if err != nil {
+		return nil, err
+	}
+	return &resp, err
 }
