@@ -139,7 +139,7 @@ type UserDeleteResp struct {
 }
 
 type PassengerReq struct {
-	UserName string `json:"userName"`
+	UserName string `form:"userName"`
 }
 
 type PassengerRespDTO struct {

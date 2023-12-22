@@ -26,7 +26,6 @@ func NewListPassengerQueryByUsernameLogic(ctx context.Context, svcCtx *svc.Servi
 }
 
 func (l *ListPassengerQueryByUsernameLogic) ListPassengerQueryByUsername(req *types.PassengerReq) (*types.PassengerResp, error) {
-	// todo: add your logic here and delete this line
 	list, err := l.svcCtx.UserRpc.ListPassengerQueryByUsername(l.ctx, &pb.ListPassengerQueryByUsernameReq{
 		Username: req.UserName,
 	})
@@ -34,6 +33,8 @@ func (l *ListPassengerQueryByUsernameLogic) ListPassengerQueryByUsername(req *ty
 		return nil, err
 	}
 	var resp types.PassengerResp
-	_ = copier.Copy(&resp, list)
+	if list != nil {
+		_ = copier.Copy(&resp, &list)
+	}
 	return &resp, nil
 }

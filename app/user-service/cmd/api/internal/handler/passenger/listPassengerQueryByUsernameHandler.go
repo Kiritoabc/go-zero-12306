@@ -16,7 +16,6 @@ func ListPassengerQueryByUsernameHandler(svcCtx *svc.ServiceContext) http.Handle
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
-
 		l := passenger.NewListPassengerQueryByUsernameLogic(r.Context(), svcCtx)
 		resp, err := l.ListPassengerQueryByUsername(&req)
 		if err != nil {

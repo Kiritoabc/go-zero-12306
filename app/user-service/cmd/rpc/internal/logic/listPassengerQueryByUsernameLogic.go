@@ -2,7 +2,6 @@ package logic
 
 import (
 	"context"
-	"fmt"
 	"github.com/jinzhu/copier"
 	"go-zero-12306/app/user-service/model/tPassenger"
 
@@ -35,12 +34,12 @@ func (l *ListPassengerQueryByUsernameLogic) ListPassengerQueryByUsername(in *pb.
 	if err != nil {
 		return nil, err
 	}
-	var resp *pb.ListPassengerQueryByUsernameResp
+	var list []*pb.PassengerRespDTO
 	// 赋值给resp
-	err = copier.Copy(&resp, &passengerList)
-	if err != nil {
-		return nil, err
+	if passengerList != nil {
+		err = copier.Copy(&list, &passengerList)
 	}
-	fmt.Print(passengerList, resp)
-	return resp, nil
+	return &pb.ListPassengerQueryByUsernameResp{
+		List: list,
+	}, nil
 }
