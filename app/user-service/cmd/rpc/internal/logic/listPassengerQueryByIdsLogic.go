@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/jinzhu/copier"
 
 	"go-zero-12306/app/user-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
@@ -24,7 +25,28 @@ func NewListPassengerQueryByIdsLogic(ctx context.Context, svcCtx *svc.ServiceCon
 }
 
 func (l *ListPassengerQueryByIdsLogic) ListPassengerQueryByIds(in *pb.ListPassengerQueryByIdsReq) (*pb.ListPassengerQueryByIdsResp, error) {
-	// todo: add your logic here and delete this line
+	tPassenger0s, err := l.svcCtx.Passenger0Model.GetPassengerByUserName(l.ctx, in.Username)
+	if err != nil {
+		return nil, err
+	}
+	set := ConvertIntSlice2Map(in.Ids)
+	for i := 0; i < len(tPassenger0s); i++ {
+		if _, ok := set[tPassenger0s[i].Id]; !ok {
+			tPassenger0s = append(tPassenger0s[:i], tPassenger0s[i+1:]...)
+			i--
+		}
+	}
+	var list []*pb.ListPassengerQueryByIds
+	_ = copier.Copy(&list, &tPassenger0s)
+	return &pb.ListPassengerQueryByIdsResp{
+		List: list,
+	}, nil
+}
 
-	return &pb.ListPassengerQueryByIdsResp{}, nil
+func ConvertIntSlice2Map(s1 []int64) map[int64]bool {
+	set := make(map[int64]bool, len(s1))
+	for _, v := range s1 {
+		set[v] = true
+	}
+	return set
 }

@@ -29,9 +29,14 @@ type (
 	LoginReq                         = pb.LoginReq
 	LoginResp                        = pb.LoginResp
 	LogoutReq                        = pb.LogoutReq
+	PassengerDO                      = pb.PassengerDO
 	PassengerRespDTO                 = pb.PassengerRespDTO
 	RegisterReq                      = pb.RegisterReq
 	RegisterResp                     = pb.RegisterResp
+	RemovePassengerReq               = pb.RemovePassengerReq
+	SavePassengerReq                 = pb.SavePassengerReq
+	SavePassengerResp                = pb.SavePassengerResp
+	SelectPassengerReq               = pb.SelectPassengerReq
 	UpdateUserInfoReq                = pb.UpdateUserInfoReq
 	UpdateUserInfoResp               = pb.UpdateUserInfoResp
 	UserNameReq                      = pb.UserNameReq
@@ -52,6 +57,10 @@ type (
 		Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*VoidResp, error)
 		ListPassengerQueryByUsername(ctx context.Context, in *ListPassengerQueryByUsernameReq, opts ...grpc.CallOption) (*ListPassengerQueryByUsernameResp, error)
 		ListPassengerQueryByIds(ctx context.Context, in *ListPassengerQueryByIdsReq, opts ...grpc.CallOption) (*ListPassengerQueryByIdsResp, error)
+		SavePassenger(ctx context.Context, in *SavePassengerReq, opts ...grpc.CallOption) (*SavePassengerResp, error)
+		UpdatePassenger(ctx context.Context, in *SavePassengerReq, opts ...grpc.CallOption) (*SavePassengerResp, error)
+		RemovePassenger(ctx context.Context, in *RemovePassengerReq, opts ...grpc.CallOption) (*SavePassengerReq, error)
+		SelectPassenger(ctx context.Context, in *SelectPassengerReq, opts ...grpc.CallOption) (*PassengerDO, error)
 	}
 
 	defaultUser struct {
@@ -124,4 +133,24 @@ func (m *defaultUser) ListPassengerQueryByUsername(ctx context.Context, in *List
 func (m *defaultUser) ListPassengerQueryByIds(ctx context.Context, in *ListPassengerQueryByIdsReq, opts ...grpc.CallOption) (*ListPassengerQueryByIdsResp, error) {
 	client := pb.NewUserClient(m.cli.Conn())
 	return client.ListPassengerQueryByIds(ctx, in, opts...)
+}
+
+func (m *defaultUser) SavePassenger(ctx context.Context, in *SavePassengerReq, opts ...grpc.CallOption) (*SavePassengerResp, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.SavePassenger(ctx, in, opts...)
+}
+
+func (m *defaultUser) UpdatePassenger(ctx context.Context, in *SavePassengerReq, opts ...grpc.CallOption) (*SavePassengerResp, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.UpdatePassenger(ctx, in, opts...)
+}
+
+func (m *defaultUser) RemovePassenger(ctx context.Context, in *RemovePassengerReq, opts ...grpc.CallOption) (*SavePassengerReq, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.RemovePassenger(ctx, in, opts...)
+}
+
+func (m *defaultUser) SelectPassenger(ctx context.Context, in *SelectPassengerReq, opts ...grpc.CallOption) (*PassengerDO, error) {
+	client := pb.NewUserClient(m.cli.Conn())
+	return client.SelectPassenger(ctx, in, opts...)
 }

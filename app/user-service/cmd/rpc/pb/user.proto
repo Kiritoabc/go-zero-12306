@@ -165,8 +165,109 @@ message ListPassengerQueryByIds {
   string createDate=8;
   int64 verifyStatus=9;
 }
+
+message SavePassengerReq{
+
+   string id = 1;
+
+  /**
+   * 真实姓名
+   */
+   string realName = 2;
+
+  /**
+   * 证件类型
+   */
+   int64 idType = 3;
+
+  /**
+   * 证件号码
+   */
+   string idCard = 4;
+
+  /**
+   * 优惠类型
+   */
+   int64 discountType =5;
+
+  /**
+   * 手机号
+   */
+   string phone = 6;
+}
+message SavePassengerResp {
+}
+
+message RemovePassengerReq {
+  int64 id = 1;
+}
+message SelectPassengerReq {
+  string username = 1;
+  string passengerId = 2;
+}
+message PassengerDO {
+  /**
+   * id
+   */
+   int64 id =1;
+
+  /**
+   * 用户名
+   */
+   string username=2;
+
+  /**
+   * 真实姓名
+   */
+   string realName=3;
+
+  /**
+   * 证件类型
+   */
+   int64 idType=4;
+
+  /**
+   * 证件号码
+   */
+   string idCard=5;
+
+  /**
+   * 优惠类型
+   */
+   int64 discountType=6;
+
+  /**
+   * 手机号
+   */
+   string phone =7;
+
+  /**
+   * 添加日期
+   */
+   string createDate=8;
+
+  /**
+   * 审核状态
+   */
+   int64 verifyStatus=9;
+
+  /**
+ * 创建时间
+ */
+   int64 createTime=10;
+
+  /**
+   * 修改时间
+   */
+   int64 updateTime=11;
+
+  /**
+   * 删除标志
+   */
+   int64 delFlag=12;
+}
 // service
-service  user {
+service user {
 
     rpc register(RegisterReq) returns (RegisterResp);
     rpc hasUsername(hasUsernameReq) returns (hasUsernameResp);
@@ -183,5 +284,9 @@ service  user {
 
     rpc listPassengerQueryByUsername(ListPassengerQueryByUsernameReq) returns(ListPassengerQueryByUsernameResp);
     rpc listPassengerQueryByIds(ListPassengerQueryByIdsReq) returns(ListPassengerQueryByIdsResp);
+    rpc savePassenger(SavePassengerReq) returns (SavePassengerResp);
+    rpc updatePassenger(SavePassengerReq) returns (SavePassengerResp);
+    rpc removePassenger(RemovePassengerReq) returns(SavePassengerReq);
+    rpc selectPassenger(SelectPassengerReq) returns(PassengerDO);
 }
 

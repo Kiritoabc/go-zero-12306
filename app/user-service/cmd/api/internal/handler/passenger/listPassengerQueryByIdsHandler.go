@@ -16,7 +16,6 @@ func ListPassengerQueryByIdsHandler(svcCtx *svc.ServiceContext) http.HandlerFunc
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
-
 		l := passenger.NewListPassengerQueryByIdsLogic(r.Context(), svcCtx)
 		resp, err := l.ListPassengerQueryByIds(&req)
 		if err != nil {

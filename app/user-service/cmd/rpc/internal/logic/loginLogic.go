@@ -44,16 +44,16 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 	if mailFlag {
 		mailDO, err := l.svcCtx.UserMail0Model.FindOneByMail(l.ctx, usernameOrMailOrPhone)
 		if err != nil {
-			return nil, errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
+			return &pb.LoginResp{}, errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
 		}
 		if mailDO == nil {
-			return nil, errors.Wrapf(xerr.NewErrCode(xerr.LOGIN_MAIL_NOT_EXIST), "用户名/手机号/邮箱不存在")
+			return &pb.LoginResp{}, errors.Wrapf(xerr.NewErrCode(xerr.LOGIN_MAIL_NOT_EXIST), "用户名/手机号/邮箱不存在")
 		}
 		username = mailDO.Username
 	} else {
 		phoneDO, err := l.svcCtx.UserPhone0Model.FindOneByPhone(l.ctx, usernameOrMailOrPhone)
 		if err != nil {
-			return nil, errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
+			return &pb.LoginResp{}, errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
 		}
 		if phoneDO != nil {
 			username = phoneDO.Username
@@ -69,7 +69,7 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
 	}
 	if userDO == nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.LOGIN_MAIL_NOT_EXIST), "用户名/手机号/邮箱不存在")
+		return &pb.LoginResp{}, errors.Wrapf(xerr.NewErrCode(xerr.LOGIN_MAIL_NOT_EXIST), "用户名/手机号/邮箱不存在")
 	}
 	userId := strconv.FormatInt(userDO.Id, 10)
 	// 4. 生成 accessToken
@@ -89,7 +89,7 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 	// 5. 将accessToken存入redis缓存
 	loginRespJson, err := json.Marshal(&loginresp)
 	if err != nil {
-		return nil, err
+		return &pb.LoginResp{}, err
 	}
 	// todo ；暂时采用10分钟的测试
 	err = l.svcCtx.RedisClient.SetEX(l.ctx, tokenResp.AccessToken, loginRespJson, 10*time.Minute).Err()

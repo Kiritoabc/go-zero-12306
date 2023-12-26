@@ -82,3 +82,23 @@ func (s *UserServer) ListPassengerQueryByIds(ctx context.Context, in *pb.ListPas
 	l := logic.NewListPassengerQueryByIdsLogic(ctx, s.svcCtx)
 	return l.ListPassengerQueryByIds(in)
 }
+
+func (s *UserServer) SavePassenger(ctx context.Context, in *pb.SavePassengerReq) (*pb.SavePassengerResp, error) {
+	l := logic.NewSavePassengerLogic(ctx, s.svcCtx)
+	return l.SavePassenger(in)
+}
+
+func (s *UserServer) UpdatePassenger(ctx context.Context, in *pb.SavePassengerReq) (*pb.SavePassengerResp, error) {
+	l := logic.NewUpdatePassengerLogic(ctx, s.svcCtx)
+	return l.UpdatePassenger(in)
+}
+
+func (s *UserServer) RemovePassenger(ctx context.Context, in *pb.RemovePassengerReq) (*pb.SavePassengerReq, error) {
+	l := logic.NewRemovePassengerLogic(ctx, s.svcCtx)
+	return l.RemovePassenger(in)
+}
+
+func (s *UserServer) SelectPassenger(ctx context.Context, in *pb.SelectPassengerReq) (*pb.PassengerDO, error) {
+	l := logic.NewSelectPassengerLogic(ctx, s.svcCtx)
+	return l.SelectPassenger(in)
+}

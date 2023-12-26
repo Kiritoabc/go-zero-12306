@@ -31,6 +31,10 @@ const (
 	User_Logout_FullMethodName                       = "/pb.user/logout"
 	User_ListPassengerQueryByUsername_FullMethodName = "/pb.user/listPassengerQueryByUsername"
 	User_ListPassengerQueryByIds_FullMethodName      = "/pb.user/listPassengerQueryByIds"
+	User_SavePassenger_FullMethodName                = "/pb.user/savePassenger"
+	User_UpdatePassenger_FullMethodName              = "/pb.user/updatePassenger"
+	User_RemovePassenger_FullMethodName              = "/pb.user/removePassenger"
+	User_SelectPassenger_FullMethodName              = "/pb.user/selectPassenger"
 )
 
 // UserClient is the client API for User service.
@@ -50,6 +54,10 @@ type UserClient interface {
 	Logout(ctx context.Context, in *LogoutReq, opts ...grpc.CallOption) (*VoidResp, error)
 	ListPassengerQueryByUsername(ctx context.Context, in *ListPassengerQueryByUsernameReq, opts ...grpc.CallOption) (*ListPassengerQueryByUsernameResp, error)
 	ListPassengerQueryByIds(ctx context.Context, in *ListPassengerQueryByIdsReq, opts ...grpc.CallOption) (*ListPassengerQueryByIdsResp, error)
+	SavePassenger(ctx context.Context, in *SavePassengerReq, opts ...grpc.CallOption) (*SavePassengerResp, error)
+	UpdatePassenger(ctx context.Context, in *SavePassengerReq, opts ...grpc.CallOption) (*SavePassengerResp, error)
+	RemovePassenger(ctx context.Context, in *RemovePassengerReq, opts ...grpc.CallOption) (*SavePassengerReq, error)
+	SelectPassenger(ctx context.Context, in *SelectPassengerReq, opts ...grpc.CallOption) (*PassengerDO, error)
 }
 
 type userClient struct {
@@ -168,6 +176,42 @@ func (c *userClient) ListPassengerQueryByIds(ctx context.Context, in *ListPassen
 	return out, nil
 }
 
+func (c *userClient) SavePassenger(ctx context.Context, in *SavePassengerReq, opts ...grpc.CallOption) (*SavePassengerResp, error) {
+	out := new(SavePassengerResp)
+	err := c.cc.Invoke(ctx, User_SavePassenger_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) UpdatePassenger(ctx context.Context, in *SavePassengerReq, opts ...grpc.CallOption) (*SavePassengerResp, error) {
+	out := new(SavePassengerResp)
+	err := c.cc.Invoke(ctx, User_UpdatePassenger_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) RemovePassenger(ctx context.Context, in *RemovePassengerReq, opts ...grpc.CallOption) (*SavePassengerReq, error) {
+	out := new(SavePassengerReq)
+	err := c.cc.Invoke(ctx, User_RemovePassenger_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userClient) SelectPassenger(ctx context.Context, in *SelectPassengerReq, opts ...grpc.CallOption) (*PassengerDO, error) {
+	out := new(PassengerDO)
+	err := c.cc.Invoke(ctx, User_SelectPassenger_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserServer is the server API for User service.
 // All implementations must embed UnimplementedUserServer
 // for forward compatibility
@@ -185,6 +229,10 @@ type UserServer interface {
 	Logout(context.Context, *LogoutReq) (*VoidResp, error)
 	ListPassengerQueryByUsername(context.Context, *ListPassengerQueryByUsernameReq) (*ListPassengerQueryByUsernameResp, error)
 	ListPassengerQueryByIds(context.Context, *ListPassengerQueryByIdsReq) (*ListPassengerQueryByIdsResp, error)
+	SavePassenger(context.Context, *SavePassengerReq) (*SavePassengerResp, error)
+	UpdatePassenger(context.Context, *SavePassengerReq) (*SavePassengerResp, error)
+	RemovePassenger(context.Context, *RemovePassengerReq) (*SavePassengerReq, error)
+	SelectPassenger(context.Context, *SelectPassengerReq) (*PassengerDO, error)
 	mustEmbedUnimplementedUserServer()
 }
 
@@ -227,6 +275,18 @@ func (UnimplementedUserServer) ListPassengerQueryByUsername(context.Context, *Li
 }
 func (UnimplementedUserServer) ListPassengerQueryByIds(context.Context, *ListPassengerQueryByIdsReq) (*ListPassengerQueryByIdsResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListPassengerQueryByIds not implemented")
+}
+func (UnimplementedUserServer) SavePassenger(context.Context, *SavePassengerReq) (*SavePassengerResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SavePassenger not implemented")
+}
+func (UnimplementedUserServer) UpdatePassenger(context.Context, *SavePassengerReq) (*SavePassengerResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePassenger not implemented")
+}
+func (UnimplementedUserServer) RemovePassenger(context.Context, *RemovePassengerReq) (*SavePassengerReq, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemovePassenger not implemented")
+}
+func (UnimplementedUserServer) SelectPassenger(context.Context, *SelectPassengerReq) (*PassengerDO, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SelectPassenger not implemented")
 }
 func (UnimplementedUserServer) mustEmbedUnimplementedUserServer() {}
 
@@ -457,6 +517,78 @@ func _User_ListPassengerQueryByIds_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _User_SavePassenger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SavePassengerReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).SavePassenger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_SavePassenger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).SavePassenger(ctx, req.(*SavePassengerReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_UpdatePassenger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SavePassengerReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).UpdatePassenger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_UpdatePassenger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).UpdatePassenger(ctx, req.(*SavePassengerReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_RemovePassenger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemovePassengerReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).RemovePassenger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_RemovePassenger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).RemovePassenger(ctx, req.(*RemovePassengerReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _User_SelectPassenger_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SelectPassengerReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServer).SelectPassenger(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: User_SelectPassenger_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServer).SelectPassenger(ctx, req.(*SelectPassengerReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // User_ServiceDesc is the grpc.ServiceDesc for User service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -511,6 +643,22 @@ var User_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "listPassengerQueryByIds",
 			Handler:    _User_ListPassengerQueryByIds_Handler,
+		},
+		{
+			MethodName: "savePassenger",
+			Handler:    _User_SavePassenger_Handler,
+		},
+		{
+			MethodName: "updatePassenger",
+			Handler:    _User_UpdatePassenger_Handler,
+		},
+		{
+			MethodName: "removePassenger",
+			Handler:    _User_RemovePassenger_Handler,
+		},
+		{
+			MethodName: "selectPassenger",
+			Handler:    _User_SelectPassenger_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -160,8 +160,12 @@ type PassengerResp struct {
 }
 
 type PassengerQueryReq struct {
-	UserName string  `form:"userName"`
-	Ids      []int64 `form:"ids"`
+	UserName string `form:"userName"`
+	Ids      `form:"ids"`
+}
+
+type Ids struct {
+	Ids []int64
 }
 
 type PassengerActualRespDTO struct {
