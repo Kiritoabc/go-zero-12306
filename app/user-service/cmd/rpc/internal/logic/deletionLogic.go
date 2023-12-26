@@ -78,7 +78,7 @@ func (l *DeletionLogic) Deletion(in *pb.DeletionReq) (*pb.DeletionResp, error) {
 		// todo: 8.布隆过滤器删除
 		return nil
 	}); err != nil {
-		return nil, err
+		return &pb.DeletionResp{}, err
 	}
 
 	return &pb.DeletionResp{}, nil

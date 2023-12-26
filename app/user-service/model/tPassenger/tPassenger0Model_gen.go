@@ -34,6 +34,8 @@ type (
 		Delete(ctx context.Context, id int64) error
 		GetPassengerByUserName(ctx context.Context, username string) ([]*TPassenger0, error)
 		SelectBuilder() squirrel.SelectBuilder
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+		InsertWithTran(ctx context.Context, session sqlx.Session, data *TPassenger0) error
 	}
 
 	defaultTPassenger0Model struct {
@@ -134,4 +136,24 @@ func (m *defaultTPassenger0Model) GetPassengerByUserName(ctx context.Context, us
 
 func (m *defaultTPassenger0Model) SelectBuilder() squirrel.SelectBuilder {
 	return squirrel.Select().From(m.table)
+}
+
+// 事务
+func (m *defaultTPassenger0Model) Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error {
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+}
+
+func (m *defaultTPassenger0Model) InsertWithTran(ctx context.Context, session sqlx.Session, data *TPassenger0) error {
+	// 删除缓存
+	_12306User0TPassenger0UsernameKey := fmt.Sprintf("%S%v", cache12306User0TPassenger0UsernamePrefix, data.Username)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (sql.Result, error) {
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, tPassenger0RowsExpectAutoSet)
+		if session != nil {
+			return session.ExecCtx(ctx, query, data.Username, data.RealName, data.IdType, data.IdCard, data.DiscountType, data.Phone, data.CreateDate, data.VerifyStatus, data.DelFlag)
+		}
+		return conn.ExecCtx(ctx, query, data.Username, data.RealName, data.IdType, data.IdCard, data.DiscountType, data.Phone, data.CreateDate, data.VerifyStatus, data.DelFlag)
+	}, _12306User0TPassenger0UsernameKey)
+	return err
 }

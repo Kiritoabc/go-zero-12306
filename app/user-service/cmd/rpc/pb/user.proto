@@ -244,7 +244,7 @@ message PassengerDO {
   /**
    * 添加日期
    */
-   string createDate=8;
+   int64 createDate=8;
 
   /**
    * 审核状态

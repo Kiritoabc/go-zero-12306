@@ -1,6 +1,7 @@
 package passenger
 
 import (
+	"go-zero-12306/common/ctxdata"
 	"net/http"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
@@ -18,6 +19,7 @@ func SavePassengerHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		}
 
 		l := passenger.NewSavePassengerLogic(r.Context(), svcCtx)
+		ctxdata.GetUidFromCtx(r.Context())
 		resp, err := l.SavePassenger(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)

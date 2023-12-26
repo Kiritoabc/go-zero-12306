@@ -2,7 +2,7 @@ Name: user
 Host: 0.0.0.0
 Port: 8888
 Mode: dev
-Timeout: 10000
+Timeout: 100000
 #jwtAuth
 JwtAuth:
   AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
