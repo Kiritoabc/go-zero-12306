@@ -2,6 +2,8 @@ package passenger
 
 import (
 	"context"
+	"go-zero-12306/app/user-service/cmd/rpc/user"
+	"strconv"
 
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -23,8 +25,16 @@ func NewRemovePassengerLogic(ctx context.Context, svcCtx *svc.ServiceContext) *R
 	}
 }
 
-func (l *RemovePassengerLogic) RemovePassenger(req *types.RemovePassengerReq) (resp *types.RemovePassengerResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+func (l *RemovePassengerLogic) RemovePassenger(req *types.RemovePassengerReq) (*types.RemovePassengerResp, error) {
+	parseInt, err := strconv.ParseInt(req.Id, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+	_, err = l.svcCtx.UserRpc.RemovePassenger(l.ctx, &user.RemovePassengerReq{
+		Id: parseInt,
+	})
+	if err != nil {
+		return &types.RemovePassengerResp{}, err
+	}
+	return &types.RemovePassengerResp{}, nil
 }
