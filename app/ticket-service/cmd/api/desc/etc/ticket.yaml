@@ -1,3 +1,16 @@
 Name: ticket
 Host: 0.0.0.0
-Port: 8888
+Port: 8889
+Mode: dev
+Timeout: 100000
+
+#jwtAuth
+JwtAuth:
+  AccessSecret: ae0536f9-6450-4606-8e13-5a19ed505da0
+
+
+# Rpc
+TicketRpcConf:
+  Endpoints:
+    - 127.0.0.1:9002
+  NonBlock: true

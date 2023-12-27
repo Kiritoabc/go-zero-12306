@@ -31,6 +31,7 @@ func (l *HasUsernameLogic) HasUsername(req *types.UserHasUsernameReq) (*types.Us
 	if err != nil {
 		return nil, err
 	}
+
 	var resp types.UserHasUsernameResp
 	resp.Bool = username.Has
 	return &resp, err

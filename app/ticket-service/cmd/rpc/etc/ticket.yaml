@@ -1,12 +1,9 @@
-Name: user.rpc
-ListenOn: 0.0.0.0:9001
-Timeout: 10000
-Mode: dev
-
+Name: ticket.rpc
+ListenOn: 0.0.0.0:9002
 #Etcd:
 #  Hosts:
 #  - 127.0.0.1:2379
-#  Key: user.rpc
+#  Key: ticket.rpc
 
 
 #jwtAuth
@@ -20,11 +17,11 @@ Redis:
   Host: 127.0.0.1:6379
   Type: node
   Pass: "123456"
-  Key: user-rpc
+  Key: ticket-rpc
 
 
 DB:
-  DataSource: root:root@tcp(127.0.0.1:3306)/12306_user_0?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+  DataSource: root:root@tcp(127.0.0.1:3306)/12306_ticket?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
 Cache:
   - Host: 127.0.0.1:6379
     Pass: "123456"

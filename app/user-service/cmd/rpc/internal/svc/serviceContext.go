@@ -15,8 +15,8 @@ import (
 
 type ServiceContext struct {
 	Config            config.Config
-	RedisClient       *redis.Client
-	RedisClient1      *go_redis.Redis
+	RedisClient       *redis.Client   // cache
+	RedisClient1      *go_redis.Redis // redis
 	Passenger0Model   tPassenger.TPassenger0Model
 	User0Model        tUser.TUser0Model
 	UserDeletionModel tUserDeletion.TUserDeletionModel

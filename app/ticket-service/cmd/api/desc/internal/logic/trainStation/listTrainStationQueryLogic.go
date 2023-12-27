@@ -2,6 +2,7 @@ package trainStation
 
 import (
 	"context"
+	"go-zero-12306/app/ticket-service/cmd/rpc/ticket"
 
 	"go-zero-12306/app/ticket-service/cmd/api/desc/internal/svc"
 	"go-zero-12306/app/ticket-service/cmd/api/desc/internal/types"
@@ -25,6 +26,8 @@ func NewListTrainStationQueryLogic(ctx context.Context, svcCtx *svc.ServiceConte
 
 func (l *ListTrainStationQueryLogic) ListTrainStationQuery(req *types.ListTrainStationQueryReq) (resp *types.TrainStationQueryResp, err error) {
 	// todo: add your logic here and delete this line
-
+	l.svcCtx.TicketRpc.ListTrainStationQuery(l.ctx, &ticket.ListTrainStationQueryReq{
+		TrainId: req.TrainId,
+	})
 	return
 }

@@ -1,0 +1,46 @@
+syntax = "proto3";
+
+
+option go_package = "./pb";
+
+package pb;
+
+message ListTrainStationQueryReq {
+  string trainId = 1;
+}
+
+message ListTrainStationQueryResp {
+  repeated TrainStationQueryRespDTO trainStationQueryRespDTO = 1;
+}
+
+message TrainStationQueryRespDTO {
+  /**
+ * 站序
+ */
+   string sequence=1;
+
+  /**
+   * 站名
+   */
+   string departure=2;
+
+  /**
+   * 到站时间
+   */
+   int64 arrivalTime=3;
+
+  /**
+   * 出发时间
+   */
+   int64 departureTime=4;
+
+  /**
+   * 停留时间
+   */
+   int64 stopoverTime=5;
+}
+
+// service
+service ticket {
+    rpc listTrainStationQuery(ListTrainStationQueryReq) returns (ListTrainStationQueryResp);
+}

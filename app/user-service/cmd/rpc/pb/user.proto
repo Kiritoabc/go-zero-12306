@@ -5,9 +5,6 @@ option go_package = "./pb";
 package pb;
 
 // model
-
-
-
 // req,resp
 message RegisterReq {
     string userName = 1;

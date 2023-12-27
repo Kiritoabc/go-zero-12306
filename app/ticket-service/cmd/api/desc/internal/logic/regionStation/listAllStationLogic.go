@@ -25,6 +25,5 @@ func NewListAllStationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Li
 
 func (l *ListAllStationLogic) ListAllStation(req *types.StationQueryReq) (resp *types.StationQueryRespDTO, err error) {
 	// todo: add your logic here and delete this line
-
 	return
 }

@@ -42,10 +42,10 @@
   - [x] register
   - [x] update
   - [x] deletion
-- [ ] PassengerController
-  - [ ] listPassengerQueryByUsername
-  - [ ] listPassengerQueryByIds
-  - [ ] savePassenger
-  - [ ] updatePassenger
-  - [ ] removePassenger
+- [x] PassengerController
+  - [x] listPassengerQueryByUsername
+  - [x] listPassengerQueryByIds
+  - [x] savePassenger
+  - [x] updatePassenger
+  - [x] removePassenger
 
