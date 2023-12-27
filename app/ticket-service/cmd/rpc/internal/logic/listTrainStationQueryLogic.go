@@ -2,10 +2,11 @@ package logic
 
 import (
 	"context"
-	"strconv"
-
 	"go-zero-12306/app/ticket-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/ticket-service/cmd/rpc/pb"
+	"go-zero-12306/common/constant"
+	"strconv"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -39,8 +40,8 @@ func (l *ListTrainStationQueryLogic) ListTrainStationQuery(in *pb.ListTrainStati
 		var respDTO = &pb.TrainStationQueryRespDTO{}
 		respDTO.Sequence = list[i].Sequence
 		respDTO.Departure = list[i].Departure
-		respDTO.ArrivalTime = list[i].ArrivalTime.Unix()
-		respDTO.DepartureTime = list[i].DepartureTime.Unix()
+		respDTO.ArrivalTime = time.Unix(list[i].ArrivalTime.Unix(), 0).Format(constant.TimeTemplate_1)
+		respDTO.DepartureTime = time.Unix(list[i].DepartureTime.Unix(), 0).Format(constant.TimeTemplate_1)
 		respDTO.StopoverTime = list[i].StopoverTime.Int64
 		respList = append(respList, respDTO)
 	}

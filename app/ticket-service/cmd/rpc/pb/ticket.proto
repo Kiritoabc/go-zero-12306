@@ -27,12 +27,12 @@ message TrainStationQueryRespDTO {
   /**
    * 到站时间
    */
-   int64 arrivalTime=3;
+   string arrivalTime=3;
 
   /**
    * 出发时间
    */
-   int64 departureTime=4;
+   string departureTime=4;
 
   /**
    * 停留时间
