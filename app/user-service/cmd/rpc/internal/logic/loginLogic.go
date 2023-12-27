@@ -3,11 +3,13 @@ package logic
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 	"go-zero-12306/app/user-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
 	"go-zero-12306/app/user-service/cmd/rpc/user"
+	"go-zero-12306/common/globalkey"
 	"go-zero-12306/common/xerr"
 	"strconv"
 	"time"
@@ -92,7 +94,8 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 		return &pb.LoginResp{}, err
 	}
 	// todo ；暂时采用10分钟的测试
-	err = l.svcCtx.RedisClient.SetEX(l.ctx, tokenResp.AccessToken, loginRespJson, 10*time.Minute).Err()
+	userCacheTokenKey := fmt.Sprintf(globalkey.CacheUserTokenKey, userId)
+	err = l.svcCtx.RedisClient.SetEX(l.ctx, userCacheTokenKey, loginRespJson, 10*time.Minute).Err()
 	if err != nil {
 		panic(err)
 	}

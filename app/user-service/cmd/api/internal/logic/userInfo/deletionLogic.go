@@ -3,6 +3,7 @@ package userInfo
 import (
 	"context"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
+	"go-zero-12306/common/ctxdata"
 
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -27,6 +28,7 @@ func NewDeletionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Deletion
 func (l *DeletionLogic) Deletion(req *types.UserDeleteReq) (resp *types.UserDeleteResp, err error) {
 	_, err = l.svcCtx.UserRpc.Deletion(l.ctx, &pb.DeletionReq{
 		Username: req.UserName,
+		Id:       ctxdata.GetUidFromCtx(l.ctx),
 	})
 	if err != nil {
 		return nil, err

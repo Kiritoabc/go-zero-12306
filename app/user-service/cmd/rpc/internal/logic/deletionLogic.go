@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"fmt"
 	godisson "github.com/cheerego/go-redisson"
 	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
@@ -9,7 +10,7 @@ import (
 	"go-zero-12306/app/user-service/model/tUserDeletion"
 	"go-zero-12306/app/user-service/model/tUserReuse"
 	"go-zero-12306/common/constant"
-	"go-zero-12306/common/ctxdata"
+	"go-zero-12306/common/globalkey"
 	"go-zero-12306/common/xerr"
 	"time"
 
@@ -34,8 +35,7 @@ func NewDeletionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Deletion
 }
 
 func (l *DeletionLogic) Deletion(in *pb.DeletionReq) (*pb.DeletionResp, error) {
-	// todo: add your logic here and delete this line
-	userId := ctxdata.GetUidFromCtx(l.ctx)
+	userId := in.GetId()
 	// 1.判断注销的用户是否是本身
 	user, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, nil, in.Username)
 	if err != nil {
@@ -70,7 +70,8 @@ func (l *DeletionLogic) Deletion(in *pb.DeletionReq) (*pb.DeletionResp, error) {
 			l.svcCtx.UserMail0Model.DeleteByMail(context, session, user.Mail)
 		}
 		// 6.删除redis中的session
-		l.svcCtx.RedisClient.Del(l.ctx, ctxdata.GetAccessionFromCtx(l.ctx))
+		userCacheTokenKey := fmt.Sprintf(globalkey.CacheUserTokenKey, userId)
+		l.svcCtx.RedisClient.Del(l.ctx, userCacheTokenKey)
 		// 7.Resume插入
 		l.svcCtx.UserReuseModel.Insert(l.ctx, session, &tUserReuse.TUserReuse{
 			Username: user.Username,

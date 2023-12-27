@@ -20,10 +20,3 @@ func GetUidFromCtx(ctx context.Context) int64 {
 	}
 	return uid
 }
-
-func GetAccessionFromCtx(ctx context.Context) string {
-	if accession, ok := ctx.Value("accession").(string); ok {
-		return accession
-	}
-	return ""
-}

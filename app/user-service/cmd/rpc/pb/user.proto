@@ -110,18 +110,12 @@ message UpdateUserInfoResp {
 
 message DeletionReq {
   string username = 1;
+  int64 id = 2;
 }
 
 message DeletionResp {
 }
 
-//message ParseTokenReq {
-//
-//}
-//
-//message ParseTokenResp {
-//
-//}
 
 message ListPassengerQueryByUsernameReq {
   string username = 1;
