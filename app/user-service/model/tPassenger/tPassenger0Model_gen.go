@@ -20,7 +20,7 @@ var (
 	tPassenger0FieldNames          = builder.RawFieldNames(&TPassenger0{})
 	tPassenger0Rows                = strings.Join(tPassenger0FieldNames, ",")
 	tPassenger0RowsExpectAutoSet   = strings.Join(stringx.Remove(tPassenger0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
-	tPassenger0RowsWithPlaceHolder = strings.Join(stringx.Remove(tPassenger0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
+	tPassenger0RowsWithPlaceHolder = strings.Join(stringx.Remove(tPassenger0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`create_date`", "`update_at`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306User0TPassenger0IdPrefix       = "cache:12306User0:tPassenger0:id:"
 	cache12306User0TPassenger0UsernamePrefix = "cache:12306User0:tPassenger0:username:"
@@ -36,6 +36,7 @@ type (
 		SelectBuilder() squirrel.SelectBuilder
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
 		InsertWithTran(ctx context.Context, session sqlx.Session, data *TPassenger0) error
+		UpdateWithTran(ctx context.Context, session sqlx.Session, data *TPassenger0) error
 	}
 
 	defaultTPassenger0Model struct {
@@ -154,6 +155,19 @@ func (m *defaultTPassenger0Model) InsertWithTran(ctx context.Context, session sq
 			return session.ExecCtx(ctx, query, data.Username, data.RealName, data.IdType, data.IdCard, data.DiscountType, data.Phone, data.CreateDate, data.VerifyStatus, data.DelFlag)
 		}
 		return conn.ExecCtx(ctx, query, data.Username, data.RealName, data.IdType, data.IdCard, data.DiscountType, data.Phone, data.CreateDate, data.VerifyStatus, data.DelFlag)
+	}, _12306User0TPassenger0UsernameKey)
+	return err
+}
+
+func (m *defaultTPassenger0Model) UpdateWithTran(ctx context.Context, session sqlx.Session, data *TPassenger0) error {
+	// 删除缓存
+	_12306User0TPassenger0UsernameKey := fmt.Sprintf("%S%v", cache12306User0TPassenger0UsernamePrefix, data.Username)
+	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (sql.Result, error) {
+		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tPassenger0RowsWithPlaceHolder)
+		if session != nil {
+			return session.ExecCtx(ctx, query, data.Username, data.RealName, data.IdType, data.IdCard, data.DiscountType, data.Phone, data.VerifyStatus, data.UpdateTime, data.DelFlag, data.Id)
+		}
+		return conn.ExecCtx(ctx, query, data.Username, data.RealName, data.IdType, data.IdCard, data.DiscountType, data.Phone, data.VerifyStatus, data.UpdateTime, data.DelFlag)
 	}, _12306User0TPassenger0UsernameKey)
 	return err
 }

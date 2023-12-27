@@ -3,6 +3,8 @@ package passenger
 import (
 	"context"
 	"go-zero-12306/app/user-service/cmd/rpc/user"
+	"go-zero-12306/common/ctxdata"
+	"strconv"
 
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -26,7 +28,7 @@ func NewSavePassengerLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Sav
 
 func (l *SavePassengerLogic) SavePassenger(req *types.SavePassengerReq) (*types.SavePassengerResp, error) {
 	_, err := l.svcCtx.UserRpc.SavePassenger(l.ctx, &user.SavePassengerReq{
-		Id:           req.Id,
+		Id:           strconv.FormatInt(ctxdata.GetUidFromCtx(l.ctx), 10),
 		RealName:     req.RealName,
 		IdType:       req.IdType,
 		IdCard:       req.IdCard,
