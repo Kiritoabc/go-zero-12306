@@ -1,0 +1,86 @@
+syntax = "v1"
+
+info(
+	title: "车票服务"
+	desc: "车票服务"
+	author: "菠萝"
+	email: "2493381254@qq.com"
+	version: "v1.0.0"
+)
+
+import "regionStation/regionStation.api"
+import "tempSeat/tempSeat.api"
+import "ticket/ticket.api"
+import "trainStation/trainStation.api"
+//=========================================RegionStationController v1.0.0===========================================
+
+@server (
+	prefix : /api/ticket-service
+	group: regionStation
+	jwt : JwtAuth
+)
+service ticket {
+	@doc "查询车站&城市站点集合信息"
+	@handler listRegionStation
+	get /region-station/query (RegionStationQueryReqDTO) returns (RegionStationQueryResp)
+
+	@doc "查询车站站点集合信息"
+	@handler listAllStation
+	get /station/all (StationQueryReq) returns (StationQueryRespDTO)
+}
+
+//=======================================TempSeatController v1.0.0===================================================
+@server (
+	prefix : /api/ticket-service/temp
+	group: tempSeat
+	jwt : JwtAuth
+)
+service ticket {
+	@doc "座位重置"
+	@handler purchaseTickets
+	post /seat/reset (PurchaseTicketsReq) returns (PurchaseTicketsResp)
+}
+
+//========================================TicketController v1.0.0=======================================================
+@server (
+	prefix : /api/ticket-service/ticket
+	group: ticket
+	jwt : JwtAuth
+)
+service ticket {
+	@doc "根据条件查询车票"
+	@handler pageListTicketQuery
+	get /query (TicketPageQueryReqDTO) returns (TicketPageQueryRespDTO)
+
+	@doc "购买车票"
+	@handler purchaseTicketsV1
+	post /purchase (PurchaseTicketReqDTO) returns (TicketPurchaseRespDTO)
+
+	@doc "购买车票v2"
+	@handler purchaseTicketsV2
+	post /purchase/v2 (PurchaseTicketReqDTO) returns (TicketPurchaseRespDTO)
+
+	@doc "取消车票订单"
+	@handler cancelTicketOrder
+	post /cancel (CancelTicketOrderReqDTO) returns (CancelTicketOrderResp)
+
+	@doc "支付单详情查询"
+	@handler getPayInfo
+	get /pay/query (GetPayInfoReq) returns (PayInfoRespDTO)
+
+	@doc "公共退款接口"
+	@handler commonTicketRefund
+	post /refund (RefundTicketReqDTO) returns (RefundTicketRespDTO)
+}
+
+//========================================TrainStationController v1.0.0=================================================
+@server (
+	prefix : /api/ticket-service
+	group: trainStation
+	jwt : JwtAuth
+)
+service ticket {
+	@doc "根据列车 ID 查询站点信息"
+	@handler listTrainStationQuery
+	get /train-station/query (ListTrainStationQueryReq) returns (TrainStationQueryResp)
+}

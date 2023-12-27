@@ -6,7 +6,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/Masterminds/squirrel"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -26,10 +28,10 @@ var (
 
 type (
 	tTrainStationModel interface {
-		Insert(ctx context.Context, data *TTrainStation) (sql.Result, error)
-		FindOne(ctx context.Context, id int64) (*TTrainStation, error)
-		Update(ctx context.Context, data *TTrainStation) error
-		Delete(ctx context.Context, id int64) error
+		// 自定义
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+		SelectBuilder() squirrel.SelectBuilder
+		SlectListByTrainId(ctx context.Context, builder squirrel.SelectBuilder, id int64) ([]*TTrainStation, error)
 	}
 
 	defaultTTrainStationModel struct {
@@ -39,19 +41,19 @@ type (
 
 	TTrainStation struct {
 		Id            int64          `db:"id"`             // ID
-		TrainId       sql.NullInt64  `db:"train_id"`       // 车次ID
-		StationId     sql.NullInt64  `db:"station_id"`     // 车站ID
-		Sequence      sql.NullString `db:"sequence"`       // 站点顺序
-		Departure     sql.NullString `db:"departure"`      // 出发站点
+		TrainId       int64          `db:"train_id"`       // 车次ID
+		StationId     int64          `db:"station_id"`     // 车站ID
+		Sequence      string         `db:"sequence"`       // 站点顺序
+		Departure     string         `db:"departure"`      // 出发站点
 		Arrival       sql.NullString `db:"arrival"`        // 到达站点
-		StartRegion   sql.NullString `db:"start_region"`   // 起始城市
+		StartRegion   string         `db:"start_region"`   // 起始城市
 		EndRegion     sql.NullString `db:"end_region"`     // 终点城市
-		ArrivalTime   sql.NullTime   `db:"arrival_time"`   // 到站时间
-		DepartureTime sql.NullTime   `db:"departure_time"` // 出站时间
+		ArrivalTime   time.Time      `db:"arrival_time"`   // 到站时间
+		DepartureTime time.Time      `db:"departure_time"` // 出站时间
 		StopoverTime  sql.NullInt64  `db:"stopover_time"`  // 停留时间，单位分
-		CreateTime    sql.NullTime   `db:"create_time"`    // 创建时间
-		UpdateTime    sql.NullTime   `db:"update_time"`    // 修改时间
-		DelFlag       sql.NullInt64  `db:"del_flag"`       // 删除标识
+		CreateTime    time.Time      `db:"create_time"`    // 创建时间
+		UpdateTime    time.Time      `db:"update_time"`    // 修改时间
+		DelFlag       int64          `db:"del_flag"`       // 删除标识
 	}
 )
 
@@ -60,50 +62,6 @@ func newTTrainStationModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.O
 		CachedConn: sqlc.NewConn(conn, c, opts...),
 		table:      "`t_train_station`",
 	}
-}
-
-func (m *defaultTTrainStationModel) Delete(ctx context.Context, id int64) error {
-	_12306TicketTTrainStationIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationIdPrefix, id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id)
-	}, _12306TicketTTrainStationIdKey)
-	return err
-}
-
-func (m *defaultTTrainStationModel) FindOne(ctx context.Context, id int64) (*TTrainStation, error) {
-	_12306TicketTTrainStationIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationIdPrefix, id)
-	var resp TTrainStation
-	err := m.QueryRowCtx(ctx, &resp, _12306TicketTTrainStationIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", tTrainStationRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
-	})
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultTTrainStationModel) Insert(ctx context.Context, data *TTrainStation) (sql.Result, error) {
-	_12306TicketTTrainStationIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationIdPrefix, data.Id)
-	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, tTrainStationRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.TrainId, data.StationId, data.Sequence, data.Departure, data.Arrival, data.StartRegion, data.EndRegion, data.ArrivalTime, data.DepartureTime, data.StopoverTime, data.DelFlag)
-	}, _12306TicketTTrainStationIdKey)
-	return ret, err
-}
-
-func (m *defaultTTrainStationModel) Update(ctx context.Context, data *TTrainStation) error {
-	_12306TicketTTrainStationIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationIdPrefix, data.Id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tTrainStationRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.TrainId, data.StationId, data.Sequence, data.Departure, data.Arrival, data.StartRegion, data.EndRegion, data.ArrivalTime, data.DepartureTime, data.StopoverTime, data.DelFlag, data.Id)
-	}, _12306TicketTTrainStationIdKey)
-	return err
 }
 
 func (m *defaultTTrainStationModel) formatPrimary(primary any) string {
@@ -117,4 +75,32 @@ func (m *defaultTTrainStationModel) queryPrimary(ctx context.Context, conn sqlx.
 
 func (m *defaultTTrainStationModel) tableName() string {
 	return m.table
+}
+
+// 自定义
+// 事务
+func (m *defaultTTrainStationModel) Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error {
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+}
+
+func (m *defaultTTrainStationModel) SelectBuilder() squirrel.SelectBuilder {
+	return squirrel.Select().From(m.table)
+}
+
+func (m *defaultTTrainStationModel) SlectListByTrainId(ctx context.Context, builder squirrel.SelectBuilder, id int64) ([]*TTrainStation, error) {
+	builder = builder.Columns(tTrainStationRows)
+	query, values, err := builder.Where("`train_id` = ?", id).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp []*TTrainStation
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
 }
