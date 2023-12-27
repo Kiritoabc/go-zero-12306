@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"github.com/pkg/errors"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"go-zero-12306/app/ticket-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/ticket-service/cmd/rpc/pb"
 	"go-zero-12306/common/constant"
@@ -32,14 +34,19 @@ func (l *ListTrainStationQueryLogic) ListTrainStationQuery(in *pb.ListTrainStati
 		return &pb.ListTrainStationQueryResp{}, err
 	}
 	list, err := l.svcCtx.TTrainStationModel.SlectListByTrainId(l.ctx, builder, id64)
+	if errors.Is(err, sqlc.ErrNotFound) {
+		return &pb.ListTrainStationQueryResp{}, nil
+	}
 	if err != nil {
 		return &pb.ListTrainStationQueryResp{}, err
 	}
 	var respList = []*pb.TrainStationQueryRespDTO{}
+	// 赋值
 	for i := 0; i < len(list); i++ {
 		var respDTO = &pb.TrainStationQueryRespDTO{}
 		respDTO.Sequence = list[i].Sequence
 		respDTO.Departure = list[i].Departure
+		// 时间赋值
 		respDTO.ArrivalTime = time.Unix(list[i].ArrivalTime.Unix(), 0).Format(constant.TimeTemplate_1)
 		respDTO.DepartureTime = time.Unix(list[i].DepartureTime.Unix(), 0).Format(constant.TimeTemplate_1)
 		respDTO.StopoverTime = list[i].StopoverTime.Int64

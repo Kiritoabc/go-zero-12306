@@ -33,7 +33,9 @@ func (l *ListTrainStationQueryLogic) ListTrainStationQuery(req *types.ListTrainS
 		return nil, err
 	}
 	var list = []types.TrainStationQueryRespDTO{}
-	copier.Copy(&list, &data.TrainStationQueryRespDTO)
+	if data.TrainStationQueryRespDTO != nil {
+		copier.Copy(&list, &data.TrainStationQueryRespDTO)
+	}
 	return &types.TrainStationQueryResp{
 		List: list,
 	}, nil
