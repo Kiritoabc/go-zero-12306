@@ -10,6 +10,7 @@ import (
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
 	"go-zero-12306/app/user-service/cmd/rpc/user"
 	"go-zero-12306/common/globalkey"
+	"go-zero-12306/common/tool"
 	"go-zero-12306/common/xerr"
 	"strconv"
 	"time"
@@ -72,6 +73,10 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 	}
 	if userDO == nil {
 		return &pb.LoginResp{}, errors.Wrapf(xerr.NewErrCode(xerr.LOGIN_MAIL_NOT_EXIST), "用户名/手机号/邮箱不存在")
+	}
+	// 判断密码
+	if tool.Md5ByString(in.Password) != userDO.Password {
+		return &pb.LoginResp{}, errors.Wrapf(xerr.NewErrCode(xerr.LOGIN_MAIL_NOT_EXIST), "密码错误")
 	}
 	userId := strconv.FormatInt(userDO.Id, 10)
 	// 4. 生成 accessToken

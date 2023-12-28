@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
+	xhttp "github.com/zeromicro/x/http"
 	"go-zero-12306/app/user-service/cmd/api/internal/logic/userLogin"
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -19,9 +20,9 @@ func LoginHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		l := userLogin.NewLoginLogic(r.Context(), svcCtx)
 		resp, err := l.Login(&req)
 		if err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			xhttp.JsonBaseResponseCtx(r.Context(), w, err)
 		} else {
-			httpx.OkJsonCtx(r.Context(), w, resp)
+			xhttp.JsonBaseResponseCtx(r.Context(), w, resp)
 		}
 	}
 }

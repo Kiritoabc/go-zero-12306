@@ -5,12 +5,12 @@ go 1.21.1
 require (
 	github.com/Masterminds/squirrel v1.5.4
 	github.com/cheerego/go-redisson v0.0.6
-	github.com/deckarep/golang-set v1.8.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/pkg/errors v0.9.1
 	github.com/zeromicro/go-zero v1.6.0
+	github.com/zeromicro/x v0.0.0-20230424055333-01c7fb9548d4
 	google.golang.org/grpc v1.59.0
 	google.golang.org/protobuf v1.31.0
 )
