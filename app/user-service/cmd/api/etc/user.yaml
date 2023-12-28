@@ -9,8 +9,20 @@ JwtAuth:
 
 
 
-# Rpc
+# Rpc (直连方式)
+#UserRpcConf:
+#  Endpoints:
+#    - 127.0.0.1:9001
+#  NonBlock: true
+
+# RPC (采用Etcd)
 UserRpcConf:
-  Endpoints:
-    - 127.0.0.1:9001
-  NonBlock: true
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
+
+# 配置log
+Log:
+  ServiceName: user-api
+  Level: info

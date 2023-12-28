@@ -3,10 +3,10 @@ ListenOn: 0.0.0.0:9001
 Timeout: 10000
 Mode: dev
 
-#Etcd:
-#  Hosts:
-#  - 127.0.0.1:2379
-#  Key: user.rpc
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: user.rpc
 
 
 #jwtAuth
@@ -28,3 +28,7 @@ DB:
 Cache:
   - Host: 127.0.0.1:6379
     Pass: "123456"
+
+Log:
+  ServiceName: user-rpc
+  Level: info

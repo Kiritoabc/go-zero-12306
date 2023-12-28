@@ -1,9 +1,10 @@
 Name: ticket.rpc
 ListenOn: 0.0.0.0:9002
-#Etcd:
-#  Hosts:
-#  - 127.0.0.1:2379
-#  Key: ticket.rpc
+
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: ticket.rpc
 
 
 #jwtAuth
@@ -25,3 +26,7 @@ DB:
 Cache:
   - Host: 127.0.0.1:6379
     Pass: "123456"
+
+Log:
+  ServiceName: ticket-rpc
+  Level: info

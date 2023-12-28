@@ -10,7 +10,18 @@ JwtAuth:
 
 
 # Rpc
+#TicketRpcConf:
+#  Endpoints:
+#    - 127.0.0.1:9002
+#  NonBlock: true
+
 TicketRpcConf:
-  Endpoints:
-    - 127.0.0.1:9002
-  NonBlock: true
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: ticket.rpc
+
+# 配置log
+Log:
+  ServiceName: user-api
+  Level: info

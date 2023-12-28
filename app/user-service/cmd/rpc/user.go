@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-
 	"go-zero-12306/app/user-service/cmd/rpc/internal/config"
 	"go-zero-12306/app/user-service/cmd/rpc/internal/server"
 	"go-zero-12306/app/user-service/cmd/rpc/internal/svc"
