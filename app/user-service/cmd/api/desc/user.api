@@ -79,7 +79,7 @@ service user {
 
 	@doc "register"
 	@handler register
-	post /v1/register (RegisterReq) returns (RegisterResp)
+	post /register (RegisterReq) returns (RegisterResp)
 }
 
 //========================================> passgenger v1 ===========================

@@ -10,7 +10,7 @@ info(
 
 type User {
 	Id           int64  `json:"id"`           // ID
-	Username     string `json:"userName"`     // 用户名
+	Username     string `json:"username"`     // 用户名
 	RealName     string `json:"realName"`     // 真实姓名
 	Region       string `json:"region"`       // 国家/地区
 	IdType       int64  `json:"idType"`       // 证件类型
@@ -27,12 +27,12 @@ type User {
 // login
 type (
 	LoginReq {
-		UserNameOrMailOrPhone string `json:"userNameOrMailOrPhone"`
+		UserNameOrMailOrPhone string `json:"usernameOrMailOrPhone"`
 		Password              string `json:"password"`
 	}
 	LoginResp {
 		UserId      string `json:"userId"`
-		UserName    string `json:"userName"`
+		UserName    string `json:"username"`
 		RealName    string `json:"realName"`
 		AccessToken string `json:"accessToken"`
 	}
@@ -44,7 +44,7 @@ type (
 	}
 	CheckLoginResp {
 		UserId string `json:"userId"` // 用户id
-		UserName string `json:"userName"` // 用户名
+		UserName string `json:"username"` // 用户名
 		RealName string  `json:"realName"` // 真实姓名
 		AccessToken string `json:"accessToken"` // Token
 	}
@@ -66,22 +66,22 @@ type (
 // register
 type (
 	RegisterReq {
-		UserName    string `json:"userName"`    // 用户命
+		UserName    string `json:"username"`    // 用户命
 		Password    string `json:"password"`    // 密码
 		RealName    string `json:"realName"`    // 真实姓名
 		IdType      int64  `json:"idType"`      // 证件类型
 		IdCard      string `json:"idCard"`      //  证件号
 		Phone       string `json:"phone"`       // 手机号
 		Mail        string `json:"mail"`        // 邮箱
-		UserType    int64  `json:"userType"`    // 旅客类型
-		VerifyState int64  `json:"verifyState"` // 审核状态
-		PostCode    string `json:"postCode"`    // 邮编
-		Address     string `json:"address"`     // 地址
-		Region      string `json:"region"`      // 国家地区
-		Telephone   string `json:"telephone"`   // 固定电话
+		UserType    int64  `json:"userType, optional"`    // 旅客类型
+		VerifyState int64  `json:"verifyState,optional"` // 审核状态
+		PostCode    string `json:"postCode,optional"`    // 邮编
+		Address     string `json:"address,optional"`     // 地址
+		Region      string `json:"region,optional"`      // 国家地区
+		Telephone   string `json:"telephone,optional"`
 	}
 	RegisterResp {
-		UserName string `json:"userName"` // 用户名
+		UserName string `json:"username"` // 用户名
 		RealName string `json:"realName"` // 真实姓名
 		Phone    string `json:"phone"`    // 手机号
 	}
@@ -90,10 +90,10 @@ type (
 // queryUserByUsername
 type (
 	QueryUserReq {
-		UserName string `form:"userName"`
+		UserName string `form:"username"`
 	}
 	QueryUserResp {
-		UserName    string `json:"userName"`    // 用户命
+		UserName    string `json:"username"`    // 用户命
 		RealName    string `json:"realName"`    // 真实姓名
 		IdType      int64  `json:"idType"`      // 证件类型
 		IdCard      string `json:"idCard"`      //  证件号
@@ -111,10 +111,10 @@ type (
 // queryActualUserByUsername
 type (
 	UserQueryActualReq {
-		UserName string `form:"userName"`
+		UserName string `form:"username"`
 	}
 	UserQueryActualResp {
-		UserName    string `json:"userName"`    // 用户命
+		UserName    string `json:"username"`    // 用户命
 		RealName    string `json:"realName"`    // 真实姓名
 		IdType      int64  `json:"idType"`      // 证件类型
 		IdCard      string `json:"idCard"`      //  证件号
@@ -132,7 +132,7 @@ type (
 // hasUsername 检查用户名是否已存在
 type (
 	UserHasUsernameReq {
-		UserName string `form:"userName"`
+		UserName string `form:"username"`
 	}
 	UserHasUsernameResp {
 		Bool bool `json:"bool"`
@@ -143,7 +143,7 @@ type (
 type (
 	UserUpdateReq {
 		Id string `json:"id"` // 用户ID
-		UserName string `json:"userName"` // 用户名
+		UserName string `json:"username"` // 用户名
 		Mail string `json:"mail"` // 邮箱
 		UserType int64 `json:"userType"` // 旅客类型
 		PostCode string `json:"postCode"` // 邮编
@@ -156,7 +156,7 @@ type (
 // deletion
 type (
 	UserDeleteReq {
-		UserName string `json:"userName"` // 用户名
+		UserName string `json:"username"` // 用户名
 	}
 	UserDeleteResp {
 
@@ -166,10 +166,11 @@ type (
 // listPassengerQueryByUsername
 type (
 	PassengerReq {
+		UserName string  `json:"username"`
 	}
 	PassengerRespDTO {
 		Id string  `json:"id"` // 乘车人id
-		UserName string `json:"userName"` // 用户名
+		UserName string `json:"username"` // 用户名
 		RealName string `json:"realName"` // 真实姓名
 		IdType int64  `json:"idType"` // 证件类型
 		IdCard string  `json:"idCard"` // 证件号类型
@@ -187,12 +188,12 @@ type (
 // listPassengerQueryByIds
 type (
 	PassengerQueryReq {
-		UserName string `form:"userName"`
+		UserName string `form:"username"`
 		Ids []int64 `form:"ids"`
 	}
 	PassengerActualRespDTO {
 		Id string `json:"id"`	// 乘车人id
-		UserName string `json:"userName"` // 用户名
+		UserName string `json:"username"` // 用户名
 		RealName string `json:"realName"` // 真实姓名
 		IdType int64 `json:"idType"` // 证件类型
 		IdCard string `json:"idCard"` // 证件号码

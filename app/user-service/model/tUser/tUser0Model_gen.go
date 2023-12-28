@@ -19,7 +19,7 @@ import (
 var (
 	tUser0FieldNames          = builder.RawFieldNames(&TUser0{})
 	tUser0Rows                = strings.Join(tUser0FieldNames, ",")
-	tUser0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUser0FieldNames, "`id`", "`address`", "`deletion_time`", "`del_flag`", "`deletion_time`"), ",")
+	tUser0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUser0FieldNames, "`id`"), ",")
 	tUser0RowsWithPlaceHolder = strings.Join(stringx.Remove(tUser0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306User0TUser0IdPrefix                   = "cache:12306User0:tUser0:id:"
@@ -45,24 +45,24 @@ type (
 	}
 
 	TUser0 struct {
-		Id           int64     `db:"id"`            // ID
-		Username     string    `db:"username"`      // 用户名
-		Password     string    `db:"password"`      // 密码
-		RealName     string    `db:"real_name"`     // 真实姓名
-		Region       string    `db:"region"`        // 国家/地区
-		IdType       int64     `db:"id_type"`       // 证件类型
-		IdCard       string    `db:"id_card"`       // 证件号
-		Phone        string    `db:"phone"`         // 手机号
-		Telephone    string    `db:"telephone"`     // 固定电话
-		Mail         string    `db:"mail"`          // 邮箱
-		UserType     int64     `db:"user_type"`     // 旅客类型
-		VerifyStatus int64     `db:"verify_status"` // 审核状态
-		PostCode     string    `db:"post_code"`     // 邮编
-		Address      string    `db:"address"`       // 地址
-		DeletionTime int64     `db:"deletion_time"` // 注销时间戳
-		CreateTime   time.Time `db:"create_time"`   // 创建时间
-		UpdateTime   time.Time `db:"update_time"`   // 修改时间
-		DelFlag      int64     `db:"del_flag"`      // 删除标识
+		Id           int64          `db:"id"`            // ID
+		Username     string         `db:"username"`      // 用户名
+		Password     string         `db:"password"`      // 密码
+		RealName     string         `db:"real_name"`     // 真实姓名
+		Region       sql.NullString `db:"region"`        // 国家/地区
+		IdType       int64          `db:"id_type"`       // 证件类型
+		IdCard       string         `db:"id_card"`       // 证件号
+		Phone        string         `db:"phone"`         // 手机号
+		Telephone    string         `db:"telephone"`     // 固定电话
+		Mail         string         `db:"mail"`          // 邮箱
+		UserType     int64          `db:"user_type"`     // 旅客类型
+		VerifyStatus int64          `db:"verify_status"` // 审核状态
+		PostCode     string         `db:"post_code"`     // 邮编
+		Address      sql.NullString `db:"address"`       // 地址
+		DeletionTime int64          `db:"deletion_time"` // 注销时间戳
+		CreateTime   time.Time      `db:"create_time"`   // 创建时间
+		UpdateTime   time.Time      `db:"update_time"`   // 修改时间
+		DelFlag      int64          `db:"del_flag"`      // 删除标识
 	}
 )
 
@@ -134,15 +134,13 @@ func (m *defaultTUser0Model) FindOneByUsernameDeletionTime(ctx context.Context, 
 }
 
 func (m *defaultTUser0Model) Insert(ctx context.Context, session sqlx.Session, data *TUser0) (sql.Result, error) {
-	_12306User0TUser0IdKey := fmt.Sprintf("%s%v", cache12306User0TUser0IdPrefix, data.Id)
-	_12306User0TUser0UsernameDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUser0UsernameDeletionTimePrefix, data.Username, data.DeletionTime)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)", m.table, tUser0RowsExpectAutoSet)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)", m.table, tUser0RowsExpectAutoSet)
 		if session != nil {
-			return session.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode, time.Now(), time.Now())
+			return session.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode, time.Now(), time.Now(), 0)
 		}
-		return conn.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode)
-	}, _12306User0TUser0IdKey, _12306User0TUser0UsernameDeletionTimeKey)
+		return conn.ExecCtx(ctx, query, data.Username, data.Password, data.RealName, data.Region, data.IdType, data.IdCard, data.Phone, data.Telephone, data.Mail, data.UserType, data.VerifyStatus, data.PostCode, time.Now(), time.Now(), 0)
+	})
 	return ret, err
 }
 

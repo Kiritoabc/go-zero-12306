@@ -40,7 +40,65 @@ message TrainStationQueryRespDTO {
    int64 stopoverTime=5;
 }
 
+message ListRegionStationReq {
+  int64 queryType = 1;
+  string name =2;
+}
+
+message ListRegionStationResp {
+  repeated TrainStationQueryRespDTO trainStationQueryRespDTO = 1;
+}
+message RegionStationQueryRespDTO {
+  /**
+  * 名称
+  */
+  string name = 1;
+  /**
+   * 地区编码
+   */
+  string code = 2;
+  // 拼音
+  string spell =3;
+}
+
+message ListAllStationReq {
+
+}
+
+message ListAllStationResp {
+  repeated StationQueryRespDTO stationQueryRespDTO = 1;
+}
+message StationQueryRespDTO {
+  /**
+* 名称
+*/
+  string name = 1;
+  /**
+   * 地区编码
+   */
+  string code = 2;
+  /**
+    * 拼音
+   */
+  string spell =3;
+  /**
+   * 城市名称
+   */
+  string regionName =4;
+
+}
 // service
 service ticket {
-    rpc listTrainStationQuery(ListTrainStationQueryReq) returns (ListTrainStationQueryResp);
+  //
+  rpc listTrainStationQuery(ListTrainStationQueryReq) returns (ListTrainStationQueryResp);
+
+
+  /**
+    * 查询车站&城市站点集合信息
+    */
+  rpc listRegionStation(ListRegionStationReq) returns (ListRegionStationResp);
+  /**
+    * 查询车站站点集合信息
+    */
+  rpc listAllStation(ListAllStationReq) returns (ListAllStationResp);
 }

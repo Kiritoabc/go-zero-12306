@@ -169,7 +169,7 @@ type RegisterResp struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	UserName string `protobuf:"bytes,1,opt,name=userName,proto3" json:"userName,omitempty"`
+	UserName string `protobuf:"bytes,1,opt,name=userName,proto3" json:"username,omitempty"`
 	RealName string `protobuf:"bytes,2,opt,name=realName,proto3" json:"realName,omitempty"`
 	Phone    string `protobuf:"bytes,3,opt,name=phone,proto3" json:"phone,omitempty"`
 }

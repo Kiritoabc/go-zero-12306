@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"go-zero-12306/app/user-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
 	"go-zero-12306/app/user-service/cmd/rpc/user"
@@ -55,7 +56,8 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 		username = mailDO.Username
 	} else {
 		phoneDO, err := l.svcCtx.UserPhone0Model.FindOneByPhone(l.ctx, usernameOrMailOrPhone)
-		if err != nil {
+
+		if err != nil && !errors.Is(err, sqlc.ErrNotFound) {
 			return &pb.LoginResp{}, errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
 		}
 		if phoneDO != nil {
@@ -68,12 +70,13 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 	}
 	// 3. 查询
 	userDO, err := l.svcCtx.User0Model.FindOneByUsername(l.ctx, nil, username)
-	if err != nil {
-		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
-	}
 	if userDO == nil {
 		return &pb.LoginResp{}, errors.Wrapf(xerr.NewErrCode(xerr.LOGIN_MAIL_NOT_EXIST), "用户名/手机号/邮箱不存在")
 	}
+	if err != nil {
+		return nil, errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "数据库查找失败")
+	}
+
 	// 判断密码
 	if tool.Md5ByString(in.Password) != userDO.Password {
 		return &pb.LoginResp{}, errors.Wrapf(xerr.NewErrCode(xerr.LOGIN_MAIL_NOT_EXIST), "密码错误")

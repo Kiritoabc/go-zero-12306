@@ -1,14 +1,15 @@
 package result
 
 type ResponseSuccessBean struct {
-	Code string      `json:"code"`
-	Msg  string      `json:"msg"`
-	Data interface{} `json:"data"`
+	Success bool        `json:"success"`
+	Code    string      `json:"code"`
+	Msg     string      `json:"msg"`
+	Data    interface{} `json:"data"`
 }
 type NullJson struct{}
 
 func Success(data interface{}) *ResponseSuccessBean {
-	return &ResponseSuccessBean{"200", "OK", data}
+	return &ResponseSuccessBean{true, "200", "OK", data}
 }
 
 type ResponseErrorBean struct {

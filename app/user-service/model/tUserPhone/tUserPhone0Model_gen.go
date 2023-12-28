@@ -19,7 +19,7 @@ import (
 var (
 	tUserPhone0FieldNames          = builder.RawFieldNames(&TUserPhone0{})
 	tUserPhone0Rows                = strings.Join(tUserPhone0FieldNames, ",")
-	tUserPhone0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUserPhone0FieldNames, "`id`", "`created_at`", "`update_at`", "`updated_at`", "`deletion_time`"), ",")
+	tUserPhone0RowsExpectAutoSet   = strings.Join(stringx.Remove(tUserPhone0FieldNames, "`id`"), ",")
 	tUserPhone0RowsWithPlaceHolder = strings.Join(stringx.Remove(tUserPhone0FieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306User0TUserPhone0IdPrefix                = "cache:12306User0:tUserPhone0:id:"
@@ -114,15 +114,13 @@ func (m *defaultTUserPhone0Model) FindOneByPhoneDeletionTime(ctx context.Context
 }
 
 func (m *defaultTUserPhone0Model) Insert(ctx context.Context, sesson sqlx.Session, data *TUserPhone0) (sql.Result, error) {
-	_12306User0TUserPhone0IdKey := fmt.Sprintf("%s%v", cache12306User0TUserPhone0IdPrefix, data.Id)
-	_12306User0TUserPhone0PhoneDeletionTimeKey := fmt.Sprintf("%s%v:%v", cache12306User0TUserPhone0PhoneDeletionTimePrefix, data.Phone, data.DeletionTime)
 	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?,?,?)", m.table, tUserPhone0Rows)
+		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?,?,?)", m.table, tUserPhone0RowsExpectAutoSet)
 		if sesson != nil {
-			return sesson.ExecCtx(ctx, query, data.Username, data.Phone, data.DeletionTime, data.DelFlag, time.Now(), time.Now())
+			return sesson.ExecCtx(ctx, query, data.Username, data.Phone, data.DeletionTime, time.Now(), time.Now(), data.DelFlag)
 		}
-		return conn.ExecCtx(ctx, query, data.Username, data.Phone, data.DeletionTime, data.DelFlag, time.Now(), time.Now())
-	}, _12306User0TUserPhone0IdKey, _12306User0TUserPhone0PhoneDeletionTimeKey)
+		return conn.ExecCtx(ctx, query, data.Username, data.Phone, data.DeletionTime, time.Now(), time.Now(), data.DelFlag)
+	})
 	return ret, err
 }
 

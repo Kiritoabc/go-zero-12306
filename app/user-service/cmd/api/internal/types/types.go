@@ -3,7 +3,7 @@ package types
 
 type User struct {
 	Id           int64  `json:"id"`           // ID
-	Username     string `json:"userName"`     // 用户名
+	Username     string `json:"username"`     // 用户名
 	RealName     string `json:"realName"`     // 真实姓名
 	Region       string `json:"region"`       // 国家/地区
 	IdType       int64  `json:"idType"`       // 证件类型
@@ -18,13 +18,13 @@ type User struct {
 }
 
 type LoginReq struct {
-	UserNameOrMailOrPhone string `json:"userNameOrMailOrPhone"`
+	UserNameOrMailOrPhone string `json:"usernameOrMailOrPhone"`
 	Password              string `json:"password"`
 }
 
 type LoginResp struct {
 	UserId      string `json:"userId"`
-	UserName    string `json:"userName"`
+	UserName    string `json:"username"`
 	RealName    string `json:"realName"`
 	AccessToken string `json:"accessToken"`
 }
@@ -35,7 +35,7 @@ type CheckLoginReq struct {
 
 type CheckLoginResp struct {
 	UserId      string `json:"userId"`      // 用户id
-	UserName    string `json:"userName"`    // 用户名
+	UserName    string `json:"username"`    // 用户名
 	RealName    string `json:"realName"`    // 真实姓名
 	AccessToken string `json:"accessToken"` // Token
 }
@@ -52,33 +52,33 @@ type LogoutResp struct {
 }
 
 type RegisterReq struct {
-	UserName    string `json:"userName"`    // 用户命
-	Password    string `json:"password"`    // 密码
-	RealName    string `json:"realName"`    // 真实姓名
-	IdType      int64  `json:"idType"`      // 证件类型
-	IdCard      string `json:"idCard"`      //  证件号
-	Phone       string `json:"phone"`       // 手机号
-	Mail        string `json:"mail"`        // 邮箱
-	UserType    int64  `json:"userType"`    // 旅客类型
-	VerifyState int64  `json:"verifyState"` // 审核状态
-	PostCode    string `json:"postCode"`    // 邮编
-	Address     string `json:"address"`     // 地址
-	Region      string `json:"region"`      // 国家地区
-	Telephone   string `json:"telephone"`   // 固定电话
+	UserName    string `json:"username"`             // 用户命
+	Password    string `json:"password"`             // 密码
+	RealName    string `json:"realName"`             // 真实姓名
+	IdType      int64  `json:"idType"`               // 证件类型
+	IdCard      string `json:"idCard"`               //  证件号
+	Phone       string `json:"phone"`                // 手机号
+	Mail        string `json:"mail"`                 // 邮箱
+	UserType    int64  `json:"userType, optional"`   // 旅客类型
+	VerifyState int64  `json:"verifyState,optional"` // 审核状态
+	PostCode    string `json:"postCode,optional"`    // 邮编
+	Address     string `json:"address,optional"`     // 地址
+	Region      string `json:"region,optional"`      // 国家地区
+	Telephone   string `json:"telephone,optional"`
 }
 
 type RegisterResp struct {
-	UserName string `json:"userName"` // 用户名
+	UserName string `json:"username"` // 用户名
 	RealName string `json:"realName"` // 真实姓名
 	Phone    string `json:"phone"`    // 手机号
 }
 
 type QueryUserReq struct {
-	UserName string `form:"userName"`
+	UserName string `form:"username"`
 }
 
 type QueryUserResp struct {
-	UserName    string `json:"userName"`    // 用户命
+	UserName    string `json:"username"`    // 用户命
 	RealName    string `json:"realName"`    // 真实姓名
 	IdType      int64  `json:"idType"`      // 证件类型
 	IdCard      string `json:"idCard"`      //  证件号
@@ -93,11 +93,11 @@ type QueryUserResp struct {
 }
 
 type UserQueryActualReq struct {
-	UserName string `form:"userName"`
+	UserName string `form:"username"`
 }
 
 type UserQueryActualResp struct {
-	UserName    string `json:"userName"`    // 用户命
+	UserName    string `json:"username"`    // 用户命
 	RealName    string `json:"realName"`    // 真实姓名
 	IdType      int64  `json:"idType"`      // 证件类型
 	IdCard      string `json:"idCard"`      //  证件号
@@ -112,7 +112,7 @@ type UserQueryActualResp struct {
 }
 
 type UserHasUsernameReq struct {
-	UserName string `form:"userName"`
+	UserName string `form:"username"`
 }
 
 type UserHasUsernameResp struct {
@@ -121,7 +121,7 @@ type UserHasUsernameResp struct {
 
 type UserUpdateReq struct {
 	Id       string `json:"id"`       // 用户ID
-	UserName string `json:"userName"` // 用户名
+	UserName string `json:"username"` // 用户名
 	Mail     string `json:"mail"`     // 邮箱
 	UserType int64  `json:"userType"` // 旅客类型
 	PostCode string `json:"postCode"` // 邮编
@@ -132,19 +132,19 @@ type UserUpdateResp struct {
 }
 
 type UserDeleteReq struct {
-	UserName string `json:"userName"` // 用户名
+	UserName string `json:"username"` // 用户名
 }
 
 type UserDeleteResp struct {
 }
 
 type PassengerReq struct {
-	UserName string `form:"userName"`
+	UserName string `json:"username"`
 }
 
 type PassengerRespDTO struct {
 	Id           string `json:"id"`           // 乘车人id
-	UserName     string `json:"userName"`     // 用户名
+	UserName     string `json:"username"`     // 用户名
 	RealName     string `json:"realName"`     // 真实姓名
 	IdType       int64  `json:"idType"`       // 证件类型
 	IdCard       string `json:"idCard"`       // 证件号类型
@@ -160,17 +160,13 @@ type PassengerResp struct {
 }
 
 type PassengerQueryReq struct {
-	UserName string `form:"userName"`
-	Ids      `form:"ids"`
-}
-
-type Ids struct {
-	Ids []int64
+	UserName string  `form:"username"`
+	Ids      []int64 `form:"ids"`
 }
 
 type PassengerActualRespDTO struct {
 	Id           string `json:"id"`           // 乘车人id
-	UserName     string `json:"userName"`     // 用户名
+	UserName     string `json:"username"`     // 用户名
 	RealName     string `json:"realName"`     // 真实姓名
 	IdType       int64  `json:"idType"`       // 证件类型
 	IdCard       string `json:"idCard"`       // 证件号码

@@ -22,7 +22,7 @@ message RegisterReq {
     string telephone = 13;
 }
 message RegisterResp {
-  string userName = 1;
+  string username = 1;
   string realName =2;
   string phone = 3;
 }

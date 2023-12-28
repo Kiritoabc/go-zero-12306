@@ -26,7 +26,6 @@ func NewQueryUserByUsernameLogic(ctx context.Context, svcCtx *svc.ServiceContext
 }
 
 func (l *QueryUserByUsernameLogic) QueryUserByUsername(req *types.QueryUserReq) (*types.QueryUserResp, error) {
-	// todo: add your logic here and delete this line
 	UserDO, err := l.svcCtx.UserRpc.QueryUserByUsername(l.ctx, &pb.UserNameReq{Username: req.UserName})
 	if err != nil {
 		return nil, err

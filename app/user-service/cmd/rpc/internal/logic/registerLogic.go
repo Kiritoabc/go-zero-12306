@@ -53,7 +53,7 @@ func (l *RegisterLogic) Register(in *pb.RegisterReq) (*pb.RegisterResp, error) {
 		user := new(tUser.TUser0)
 		_ = copier.Copy(&user, &in)
 		user.Password = tool.Md5ByString(in.Password)
-		_, err = l.svcCtx.User0Model.Insert(ctx, session, user)
+		_, err = l.svcCtx.User0Model.Insert(ctx, session, user) // 插入用户
 		// 这里应该判断一下是否是用户名重复
 		if err != nil {
 			return errors.Wrapf(xerr.NewErrCode(xerr.DB_ERROR), "Register db user Insert err:%v,user:%+v", err, user)
