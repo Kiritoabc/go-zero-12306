@@ -87,6 +87,7 @@ message StationQueryRespDTO {
   string regionName =4;
 
 }
+// goctl rpc protoc ticket.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../ --style=goZer
 // service
 service ticket {
   //

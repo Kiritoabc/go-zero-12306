@@ -158,9 +158,7 @@ message ListPassengerQueryByIds {
 }
 
 message SavePassengerReq{
-
    string id = 1;
-
   /**
    * 真实姓名
    */

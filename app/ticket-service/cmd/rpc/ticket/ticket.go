@@ -13,12 +13,21 @@ import (
 )
 
 type (
+	ListAllStationReq         = pb.ListAllStationReq
+	ListAllStationResp        = pb.ListAllStationResp
+	ListRegionStationReq      = pb.ListRegionStationReq
+	ListRegionStationResp     = pb.ListRegionStationResp
 	ListTrainStationQueryReq  = pb.ListTrainStationQueryReq
 	ListTrainStationQueryResp = pb.ListTrainStationQueryResp
+	RegionStationQueryRespDTO = pb.RegionStationQueryRespDTO
+	StationQueryRespDTO       = pb.StationQueryRespDTO
 	TrainStationQueryRespDTO  = pb.TrainStationQueryRespDTO
 
 	Ticket interface {
+		//
 		ListTrainStationQuery(ctx context.Context, in *ListTrainStationQueryReq, opts ...grpc.CallOption) (*ListTrainStationQueryResp, error)
+		ListRegionStation(ctx context.Context, in *ListRegionStationReq, opts ...grpc.CallOption) (*ListRegionStationResp, error)
+		ListAllStation(ctx context.Context, in *ListAllStationReq, opts ...grpc.CallOption) (*ListAllStationResp, error)
 	}
 
 	defaultTicket struct {
@@ -35,4 +44,14 @@ func NewTicket(cli zrpc.Client) Ticket {
 func (m *defaultTicket) ListTrainStationQuery(ctx context.Context, in *ListTrainStationQueryReq, opts ...grpc.CallOption) (*ListTrainStationQueryResp, error) {
 	client := pb.NewTicketClient(m.cli.Conn())
 	return client.ListTrainStationQuery(ctx, in, opts...)
+}
+
+func (m *defaultTicket) ListRegionStation(ctx context.Context, in *ListRegionStationReq, opts ...grpc.CallOption) (*ListRegionStationResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.ListRegionStation(ctx, in, opts...)
+}
+
+func (m *defaultTicket) ListAllStation(ctx context.Context, in *ListAllStationReq, opts ...grpc.CallOption) (*ListAllStationResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.ListAllStation(ctx, in, opts...)
 }

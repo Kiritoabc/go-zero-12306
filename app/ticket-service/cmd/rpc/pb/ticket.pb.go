@@ -203,6 +203,340 @@ func (x *TrainStationQueryRespDTO) GetStopoverTime() int64 {
 	return 0
 }
 
+type ListRegionStationReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	QueryType int64  `protobuf:"varint,1,opt,name=queryType,proto3" json:"queryType,omitempty"`
+	Name      string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+}
+
+func (x *ListRegionStationReq) Reset() {
+	*x = ListRegionStationReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ticket_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListRegionStationReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRegionStationReq) ProtoMessage() {}
+
+func (x *ListRegionStationReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ticket_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRegionStationReq.ProtoReflect.Descriptor instead.
+func (*ListRegionStationReq) Descriptor() ([]byte, []int) {
+	return file_ticket_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ListRegionStationReq) GetQueryType() int64 {
+	if x != nil {
+		return x.QueryType
+	}
+	return 0
+}
+
+func (x *ListRegionStationReq) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type ListRegionStationResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	TrainStationQueryRespDTO []*TrainStationQueryRespDTO `protobuf:"bytes,1,rep,name=trainStationQueryRespDTO,proto3" json:"trainStationQueryRespDTO,omitempty"`
+}
+
+func (x *ListRegionStationResp) Reset() {
+	*x = ListRegionStationResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ticket_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListRegionStationResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRegionStationResp) ProtoMessage() {}
+
+func (x *ListRegionStationResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ticket_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRegionStationResp.ProtoReflect.Descriptor instead.
+func (*ListRegionStationResp) Descriptor() ([]byte, []int) {
+	return file_ticket_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ListRegionStationResp) GetTrainStationQueryRespDTO() []*TrainStationQueryRespDTO {
+	if x != nil {
+		return x.TrainStationQueryRespDTO
+	}
+	return nil
+}
+
+type RegionStationQueryRespDTO struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// *
+	// 名称
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// *
+	// 地区编码
+	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	// 拼音
+	Spell string `protobuf:"bytes,3,opt,name=spell,proto3" json:"spell,omitempty"`
+}
+
+func (x *RegionStationQueryRespDTO) Reset() {
+	*x = RegionStationQueryRespDTO{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ticket_proto_msgTypes[5]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *RegionStationQueryRespDTO) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegionStationQueryRespDTO) ProtoMessage() {}
+
+func (x *RegionStationQueryRespDTO) ProtoReflect() protoreflect.Message {
+	mi := &file_ticket_proto_msgTypes[5]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegionStationQueryRespDTO.ProtoReflect.Descriptor instead.
+func (*RegionStationQueryRespDTO) Descriptor() ([]byte, []int) {
+	return file_ticket_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *RegionStationQueryRespDTO) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *RegionStationQueryRespDTO) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *RegionStationQueryRespDTO) GetSpell() string {
+	if x != nil {
+		return x.Spell
+	}
+	return ""
+}
+
+type ListAllStationReq struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+}
+
+func (x *ListAllStationReq) Reset() {
+	*x = ListAllStationReq{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ticket_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListAllStationReq) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAllStationReq) ProtoMessage() {}
+
+func (x *ListAllStationReq) ProtoReflect() protoreflect.Message {
+	mi := &file_ticket_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAllStationReq.ProtoReflect.Descriptor instead.
+func (*ListAllStationReq) Descriptor() ([]byte, []int) {
+	return file_ticket_proto_rawDescGZIP(), []int{6}
+}
+
+type ListAllStationResp struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	StationQueryRespDTO []*StationQueryRespDTO `protobuf:"bytes,1,rep,name=stationQueryRespDTO,proto3" json:"stationQueryRespDTO,omitempty"`
+}
+
+func (x *ListAllStationResp) Reset() {
+	*x = ListAllStationResp{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ticket_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *ListAllStationResp) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAllStationResp) ProtoMessage() {}
+
+func (x *ListAllStationResp) ProtoReflect() protoreflect.Message {
+	mi := &file_ticket_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAllStationResp.ProtoReflect.Descriptor instead.
+func (*ListAllStationResp) Descriptor() ([]byte, []int) {
+	return file_ticket_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ListAllStationResp) GetStationQueryRespDTO() []*StationQueryRespDTO {
+	if x != nil {
+		return x.StationQueryRespDTO
+	}
+	return nil
+}
+
+type StationQueryRespDTO struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// *
+	// 名称
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// *
+	// 地区编码
+	Code string `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
+	// *
+	// 拼音
+	Spell string `protobuf:"bytes,3,opt,name=spell,proto3" json:"spell,omitempty"`
+	// *
+	// 城市名称
+	RegionName string `protobuf:"bytes,4,opt,name=regionName,proto3" json:"regionName,omitempty"`
+}
+
+func (x *StationQueryRespDTO) Reset() {
+	*x = StationQueryRespDTO{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_ticket_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StationQueryRespDTO) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StationQueryRespDTO) ProtoMessage() {}
+
+func (x *StationQueryRespDTO) ProtoReflect() protoreflect.Message {
+	mi := &file_ticket_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StationQueryRespDTO.ProtoReflect.Descriptor instead.
+func (*StationQueryRespDTO) Descriptor() ([]byte, []int) {
+	return file_ticket_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *StationQueryRespDTO) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *StationQueryRespDTO) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *StationQueryRespDTO) GetSpell() string {
+	if x != nil {
+		return x.Spell
+	}
+	return ""
+}
+
+func (x *StationQueryRespDTO) GetRegionName() string {
+	if x != nil {
+		return x.RegionName
+	}
+	return ""
+}
+
 var File_ticket_proto protoreflect.FileDescriptor
 
 var file_ticket_proto_rawDesc = []byte{
@@ -230,14 +564,55 @@ var file_ticket_proto_rawDesc = []byte{
 	0x0d, 0x64, 0x65, 0x70, 0x61, 0x72, 0x74, 0x75, 0x72, 0x65, 0x54, 0x69, 0x6d, 0x65, 0x12, 0x22,
 	0x0a, 0x0c, 0x73, 0x74, 0x6f, 0x70, 0x6f, 0x76, 0x65, 0x72, 0x54, 0x69, 0x6d, 0x65, 0x18, 0x05,
 	0x20, 0x01, 0x28, 0x03, 0x52, 0x0c, 0x73, 0x74, 0x6f, 0x70, 0x6f, 0x76, 0x65, 0x72, 0x54, 0x69,
-	0x6d, 0x65, 0x32, 0x5e, 0x0a, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x74, 0x12, 0x54, 0x0a, 0x15,
-	0x6c, 0x69, 0x73, 0x74, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x1c, 0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x54,
-	0x72, 0x61, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x52, 0x65, 0x71, 0x1a, 0x1d, 0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x54, 0x72, 0x61,
+	0x6d, 0x65, 0x22, 0x48, 0x0a, 0x14, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x67, 0x69, 0x6f, 0x6e,
+	0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x12, 0x1c, 0x0a, 0x09, 0x71, 0x75,
+	0x65, 0x72, 0x79, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52, 0x09, 0x71,
+	0x75, 0x65, 0x72, 0x79, 0x54, 0x79, 0x70, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x22, 0x71, 0x0a, 0x15,
+	0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x12, 0x58, 0x0a, 0x18, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x53, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x44, 0x54,
+	0x4f, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x70, 0x62, 0x2e, 0x54, 0x72, 0x61,
 	0x69, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65,
-	0x73, 0x70, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x73, 0x70, 0x44, 0x54, 0x4f, 0x52, 0x18, 0x74, 0x72, 0x61, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x44, 0x54, 0x4f, 0x22,
+	0x59, 0x0a, 0x19, 0x52, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x44, 0x54, 0x4f, 0x12, 0x12, 0x0a, 0x04,
+	0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65,
+	0x12, 0x12, 0x0a, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
+	0x63, 0x6f, 0x64, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x70, 0x65, 0x6c, 0x6c, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x05, 0x73, 0x70, 0x65, 0x6c, 0x6c, 0x22, 0x13, 0x0a, 0x11, 0x4c, 0x69,
+	0x73, 0x74, 0x41, 0x6c, 0x6c, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x22,
+	0x5f, 0x0a, 0x12, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x6c, 0x6c, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x12, 0x49, 0x0a, 0x13, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x44, 0x54, 0x4f, 0x18, 0x01, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x17, 0x2e, 0x70, 0x62, 0x2e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x44, 0x54, 0x4f, 0x52, 0x13, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x44, 0x54, 0x4f,
+	0x22, 0x73, 0x0a, 0x13, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x52, 0x65, 0x73, 0x70, 0x44, 0x54, 0x4f, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x63,
+	0x6f, 0x64, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x63, 0x6f, 0x64, 0x65, 0x12,
+	0x14, 0x0a, 0x05, 0x73, 0x70, 0x65, 0x6c, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
+	0x73, 0x70, 0x65, 0x6c, 0x6c, 0x12, 0x1e, 0x0a, 0x0a, 0x72, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x4e,
+	0x61, 0x6d, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x72, 0x65, 0x67, 0x69, 0x6f,
+	0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x32, 0xe9, 0x01, 0x0a, 0x06, 0x74, 0x69, 0x63, 0x6b, 0x65, 0x74,
+	0x12, 0x54, 0x0a, 0x15, 0x6c, 0x69, 0x73, 0x74, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x53, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x1c, 0x2e, 0x70, 0x62, 0x2e, 0x4c,
+	0x69, 0x73, 0x74, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x52, 0x65, 0x71, 0x1a, 0x1d, 0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73,
+	0x74, 0x54, 0x72, 0x61, 0x69, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x52, 0x65, 0x73, 0x70, 0x12, 0x48, 0x0a, 0x11, 0x6c, 0x69, 0x73, 0x74, 0x52, 0x65,
+	0x67, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x2e, 0x70, 0x62,
+	0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52, 0x65, 0x67, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x71, 0x1a, 0x19, 0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x52,
+	0x65, 0x67, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x12, 0x3f, 0x0a, 0x0e, 0x6c, 0x69, 0x73, 0x74, 0x41, 0x6c, 0x6c, 0x53, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x15, 0x2e, 0x70, 0x62, 0x2e, 0x4c, 0x69, 0x73, 0x74, 0x41, 0x6c, 0x6c, 0x53,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x1a, 0x16, 0x2e, 0x70, 0x62, 0x2e, 0x4c,
+	0x69, 0x73, 0x74, 0x41, 0x6c, 0x6c, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
+	0x70, 0x42, 0x06, 0x5a, 0x04, 0x2e, 0x2f, 0x70, 0x62, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -252,21 +627,33 @@ func file_ticket_proto_rawDescGZIP() []byte {
 	return file_ticket_proto_rawDescData
 }
 
-var file_ticket_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
+var file_ticket_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_ticket_proto_goTypes = []interface{}{
 	(*ListTrainStationQueryReq)(nil),  // 0: pb.ListTrainStationQueryReq
 	(*ListTrainStationQueryResp)(nil), // 1: pb.ListTrainStationQueryResp
 	(*TrainStationQueryRespDTO)(nil),  // 2: pb.TrainStationQueryRespDTO
+	(*ListRegionStationReq)(nil),      // 3: pb.ListRegionStationReq
+	(*ListRegionStationResp)(nil),     // 4: pb.ListRegionStationResp
+	(*RegionStationQueryRespDTO)(nil), // 5: pb.RegionStationQueryRespDTO
+	(*ListAllStationReq)(nil),         // 6: pb.ListAllStationReq
+	(*ListAllStationResp)(nil),        // 7: pb.ListAllStationResp
+	(*StationQueryRespDTO)(nil),       // 8: pb.StationQueryRespDTO
 }
 var file_ticket_proto_depIdxs = []int32{
 	2, // 0: pb.ListTrainStationQueryResp.trainStationQueryRespDTO:type_name -> pb.TrainStationQueryRespDTO
-	0, // 1: pb.ticket.listTrainStationQuery:input_type -> pb.ListTrainStationQueryReq
-	1, // 2: pb.ticket.listTrainStationQuery:output_type -> pb.ListTrainStationQueryResp
-	2, // [2:3] is the sub-list for method output_type
-	1, // [1:2] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	2, // 1: pb.ListRegionStationResp.trainStationQueryRespDTO:type_name -> pb.TrainStationQueryRespDTO
+	8, // 2: pb.ListAllStationResp.stationQueryRespDTO:type_name -> pb.StationQueryRespDTO
+	0, // 3: pb.ticket.listTrainStationQuery:input_type -> pb.ListTrainStationQueryReq
+	3, // 4: pb.ticket.listRegionStation:input_type -> pb.ListRegionStationReq
+	6, // 5: pb.ticket.listAllStation:input_type -> pb.ListAllStationReq
+	1, // 6: pb.ticket.listTrainStationQuery:output_type -> pb.ListTrainStationQueryResp
+	4, // 7: pb.ticket.listRegionStation:output_type -> pb.ListRegionStationResp
+	7, // 8: pb.ticket.listAllStation:output_type -> pb.ListAllStationResp
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_ticket_proto_init() }
@@ -311,6 +698,78 @@ func file_ticket_proto_init() {
 				return nil
 			}
 		}
+		file_ticket_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListRegionStationReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ticket_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListRegionStationResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ticket_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*RegionStationQueryRespDTO); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ticket_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListAllStationReq); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ticket_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ListAllStationResp); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_ticket_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StationQueryRespDTO); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -318,7 +777,7 @@ func file_ticket_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_ticket_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   3,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

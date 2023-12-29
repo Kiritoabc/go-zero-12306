@@ -26,3 +26,13 @@ func (s *TicketServer) ListTrainStationQuery(ctx context.Context, in *pb.ListTra
 	l := logic.NewListTrainStationQueryLogic(ctx, s.svcCtx)
 	return l.ListTrainStationQuery(in)
 }
+
+func (s *TicketServer) ListRegionStation(ctx context.Context, in *pb.ListRegionStationReq) (*pb.ListRegionStationResp, error) {
+	l := logic.NewListRegionStationLogic(ctx, s.svcCtx)
+	return l.ListRegionStation(in)
+}
+
+func (s *TicketServer) ListAllStation(ctx context.Context, in *pb.ListAllStationReq) (*pb.ListAllStationResp, error) {
+	l := logic.NewListAllStationLogic(ctx, s.svcCtx)
+	return l.ListAllStation(in)
+}

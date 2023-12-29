@@ -20,6 +20,8 @@ const _ = grpc.SupportPackageIsVersion7
 
 const (
 	Ticket_ListTrainStationQuery_FullMethodName = "/pb.ticket/listTrainStationQuery"
+	Ticket_ListRegionStation_FullMethodName     = "/pb.ticket/listRegionStation"
+	Ticket_ListAllStation_FullMethodName        = "/pb.ticket/listAllStation"
 )
 
 // TicketClient is the client API for Ticket service.
@@ -27,6 +29,12 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TicketClient interface {
 	ListTrainStationQuery(ctx context.Context, in *ListTrainStationQueryReq, opts ...grpc.CallOption) (*ListTrainStationQueryResp, error)
+	// *
+	// 查询车站&城市站点集合信息
+	ListRegionStation(ctx context.Context, in *ListRegionStationReq, opts ...grpc.CallOption) (*ListRegionStationResp, error)
+	// *
+	// 查询车站站点集合信息
+	ListAllStation(ctx context.Context, in *ListAllStationReq, opts ...grpc.CallOption) (*ListAllStationResp, error)
 }
 
 type ticketClient struct {
@@ -46,11 +54,35 @@ func (c *ticketClient) ListTrainStationQuery(ctx context.Context, in *ListTrainS
 	return out, nil
 }
 
+func (c *ticketClient) ListRegionStation(ctx context.Context, in *ListRegionStationReq, opts ...grpc.CallOption) (*ListRegionStationResp, error) {
+	out := new(ListRegionStationResp)
+	err := c.cc.Invoke(ctx, Ticket_ListRegionStation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ticketClient) ListAllStation(ctx context.Context, in *ListAllStationReq, opts ...grpc.CallOption) (*ListAllStationResp, error) {
+	out := new(ListAllStationResp)
+	err := c.cc.Invoke(ctx, Ticket_ListAllStation_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TicketServer is the server API for Ticket service.
 // All implementations must embed UnimplementedTicketServer
 // for forward compatibility
 type TicketServer interface {
 	ListTrainStationQuery(context.Context, *ListTrainStationQueryReq) (*ListTrainStationQueryResp, error)
+	// *
+	// 查询车站&城市站点集合信息
+	ListRegionStation(context.Context, *ListRegionStationReq) (*ListRegionStationResp, error)
+	// *
+	// 查询车站站点集合信息
+	ListAllStation(context.Context, *ListAllStationReq) (*ListAllStationResp, error)
 	mustEmbedUnimplementedTicketServer()
 }
 
@@ -60,6 +92,12 @@ type UnimplementedTicketServer struct {
 
 func (UnimplementedTicketServer) ListTrainStationQuery(context.Context, *ListTrainStationQueryReq) (*ListTrainStationQueryResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListTrainStationQuery not implemented")
+}
+func (UnimplementedTicketServer) ListRegionStation(context.Context, *ListRegionStationReq) (*ListRegionStationResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListRegionStation not implemented")
+}
+func (UnimplementedTicketServer) ListAllStation(context.Context, *ListAllStationReq) (*ListAllStationResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAllStation not implemented")
 }
 func (UnimplementedTicketServer) mustEmbedUnimplementedTicketServer() {}
 
@@ -92,6 +130,42 @@ func _Ticket_ListTrainStationQuery_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ticket_ListRegionStation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListRegionStationReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).ListRegionStation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_ListRegionStation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).ListRegionStation(ctx, req.(*ListRegionStationReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Ticket_ListAllStation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAllStationReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).ListAllStation(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_ListAllStation_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).ListAllStation(ctx, req.(*ListAllStationReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ticket_ServiceDesc is the grpc.ServiceDesc for Ticket service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +176,14 @@ var Ticket_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "listTrainStationQuery",
 			Handler:    _Ticket_ListTrainStationQuery_Handler,
+		},
+		{
+			MethodName: "listRegionStation",
+			Handler:    _Ticket_ListRegionStation_Handler,
+		},
+		{
+			MethodName: "listAllStation",
+			Handler:    _Ticket_ListAllStation_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
