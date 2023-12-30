@@ -102,4 +102,6 @@ service ticket {
     * 查询车站站点集合信息
     */
   rpc listAllStation(ListAllStationReq) returns (ListAllStationResp);
+
+
 }
