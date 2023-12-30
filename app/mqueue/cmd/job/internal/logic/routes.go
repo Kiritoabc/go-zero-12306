@@ -25,5 +25,12 @@ func (l *CronJob) Register() *asynq.ServeMux {
 	// scheduler job
 	//mux.Handle()
 	mux.Handle(jobtype.PrintJob, NewPrintJobHandler(l.svcCtx))
+
+	// scheduler job
+	mux.Handle(jobtype.RegionTrainStationJob, NewRegionTrainStationHandler(l.svcCtx))
+
+	//
+	mux.Handle(jobtype.TrainStationDetailJob, NewTrainStationDetailJobHandler(l.svcCtx))
+
 	return mux
 }
