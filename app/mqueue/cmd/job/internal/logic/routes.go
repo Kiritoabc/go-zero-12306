@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/hibiken/asynq"
 	"go-zero-12306/app/mqueue/cmd/job/internal/svc"
+	"go-zero-12306/app/mqueue/cmd/job/jobtype"
 )
 
 type CronJob struct {
@@ -23,6 +24,6 @@ func (l *CronJob) Register() *asynq.ServeMux {
 	mux := asynq.NewServeMux()
 	// scheduler job
 	//mux.Handle()
-
+	mux.Handle(jobtype.PrintJob, NewPrintJobHandler(l.svcCtx))
 	return mux
 }
