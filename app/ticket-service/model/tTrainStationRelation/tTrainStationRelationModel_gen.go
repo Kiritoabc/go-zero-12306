@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/Masterminds/squirrel"
 	"strings"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
@@ -18,7 +19,7 @@ import (
 var (
 	tTrainStationRelationFieldNames          = builder.RawFieldNames(&TTrainStationRelation{})
 	tTrainStationRelationRows                = strings.Join(tTrainStationRelationFieldNames, ",")
-	tTrainStationRelationRowsExpectAutoSet   = strings.Join(stringx.Remove(tTrainStationRelationFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
+	tTrainStationRelationRowsExpectAutoSet   = strings.Join(stringx.Remove(tTrainStationRelationFieldNames, "`id`"), ",")
 	tTrainStationRelationRowsWithPlaceHolder = strings.Join(stringx.Remove(tTrainStationRelationFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306TicketTTrainStationRelationIdPrefix = "cache:12306Ticket:tTrainStationRelation:id:"
@@ -26,10 +27,9 @@ var (
 
 type (
 	tTrainStationRelationModel interface {
-		Insert(ctx context.Context, data *TTrainStationRelation) (sql.Result, error)
-		FindOne(ctx context.Context, id int64) (*TTrainStationRelation, error)
-		Update(ctx context.Context, data *TTrainStationRelation) error
-		Delete(ctx context.Context, id int64) error
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+		SelectBuilder() squirrel.SelectBuilder
+		SelectSratr2End(cxt context.Context, builder squirrel.SelectBuilder, startRegion string, endRegion string) ([]*TTrainStationRelation, error)
 	}
 
 	defaultTTrainStationRelationModel struct {
@@ -61,50 +61,6 @@ func newTTrainStationRelationModel(conn sqlx.SqlConn, c cache.CacheConf, opts ..
 	}
 }
 
-func (m *defaultTTrainStationRelationModel) Delete(ctx context.Context, id int64) error {
-	_12306TicketTTrainStationRelationIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationRelationIdPrefix, id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id)
-	}, _12306TicketTTrainStationRelationIdKey)
-	return err
-}
-
-func (m *defaultTTrainStationRelationModel) FindOne(ctx context.Context, id int64) (*TTrainStationRelation, error) {
-	_12306TicketTTrainStationRelationIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationRelationIdPrefix, id)
-	var resp TTrainStationRelation
-	err := m.QueryRowCtx(ctx, &resp, _12306TicketTTrainStationRelationIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", tTrainStationRelationRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
-	})
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultTTrainStationRelationModel) Insert(ctx context.Context, data *TTrainStationRelation) (sql.Result, error) {
-	_12306TicketTTrainStationRelationIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationRelationIdPrefix, data.Id)
-	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, tTrainStationRelationRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.TrainId, data.Departure, data.Arrival, data.StartRegion, data.EndRegion, data.DepartureFlag, data.ArrivalFlag, data.DepartureTime, data.ArrivalTime, data.DelFlag)
-	}, _12306TicketTTrainStationRelationIdKey)
-	return ret, err
-}
-
-func (m *defaultTTrainStationRelationModel) Update(ctx context.Context, data *TTrainStationRelation) error {
-	_12306TicketTTrainStationRelationIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationRelationIdPrefix, data.Id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tTrainStationRelationRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.TrainId, data.Departure, data.Arrival, data.StartRegion, data.EndRegion, data.DepartureFlag, data.ArrivalFlag, data.DepartureTime, data.ArrivalTime, data.DelFlag, data.Id)
-	}, _12306TicketTTrainStationRelationIdKey)
-	return err
-}
-
 func (m *defaultTTrainStationRelationModel) formatPrimary(primary any) string {
 	return fmt.Sprintf("%s%v", cache12306TicketTTrainStationRelationIdPrefix, primary)
 }
@@ -116,4 +72,30 @@ func (m *defaultTTrainStationRelationModel) queryPrimary(ctx context.Context, co
 
 func (m *defaultTTrainStationRelationModel) tableName() string {
 	return m.table
+}
+
+// 自定义
+func (m *defaultTTrainStationRelationModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+}
+func (m *defaultTTrainStationRelationModel) SelectBuilder() squirrel.SelectBuilder {
+	return squirrel.Select().From(m.table)
+}
+
+func (m *defaultTTrainStationRelationModel) SelectSratr2End(ctx context.Context, builder squirrel.SelectBuilder, startRegion string, endRegion string) ([]*TTrainStationRelation, error) {
+	builder = builder.Columns(tTrainStationRelationRows)
+	query, value, err := builder.Where("start_region = ? and end_region = ?", startRegion, endRegion).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp []*TTrainStationRelation
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, value...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
 }

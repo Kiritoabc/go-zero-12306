@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/Masterminds/squirrel"
 	"strings"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
@@ -18,7 +19,7 @@ import (
 var (
 	tRegionFieldNames          = builder.RawFieldNames(&TRegion{})
 	tRegionRows                = strings.Join(tRegionFieldNames, ",")
-	tRegionRowsExpectAutoSet   = strings.Join(stringx.Remove(tRegionFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
+	tRegionRowsExpectAutoSet   = strings.Join(stringx.Remove(tRegionFieldNames, "`id`"), ",")
 	tRegionRowsWithPlaceHolder = strings.Join(stringx.Remove(tRegionFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306TicketTRegionIdPrefix = "cache:12306Ticket:tRegion:id:"
@@ -26,10 +27,9 @@ var (
 
 type (
 	tRegionModel interface {
-		Insert(ctx context.Context, data *TRegion) (sql.Result, error)
-		FindOne(ctx context.Context, id int64) (*TRegion, error)
-		Update(ctx context.Context, data *TRegion) error
-		Delete(ctx context.Context, id int64) error
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+		SelectBuilder() squirrel.SelectBuilder
+		FindAll(ctx context.Context, builder squirrel.SelectBuilder, orderBy string) ([]*TRegion, error)
 	}
 
 	defaultTRegionModel struct {
@@ -58,50 +58,6 @@ func newTRegionModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option)
 	}
 }
 
-func (m *defaultTRegionModel) Delete(ctx context.Context, id int64) error {
-	_12306TicketTRegionIdKey := fmt.Sprintf("%s%v", cache12306TicketTRegionIdPrefix, id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id)
-	}, _12306TicketTRegionIdKey)
-	return err
-}
-
-func (m *defaultTRegionModel) FindOne(ctx context.Context, id int64) (*TRegion, error) {
-	_12306TicketTRegionIdKey := fmt.Sprintf("%s%v", cache12306TicketTRegionIdPrefix, id)
-	var resp TRegion
-	err := m.QueryRowCtx(ctx, &resp, _12306TicketTRegionIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", tRegionRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
-	})
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultTRegionModel) Insert(ctx context.Context, data *TRegion) (sql.Result, error) {
-	_12306TicketTRegionIdKey := fmt.Sprintf("%s%v", cache12306TicketTRegionIdPrefix, data.Id)
-	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, tRegionRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Name, data.FullName, data.Code, data.Initial, data.Spell, data.PopularFlag, data.DelFlag)
-	}, _12306TicketTRegionIdKey)
-	return ret, err
-}
-
-func (m *defaultTRegionModel) Update(ctx context.Context, data *TRegion) error {
-	_12306TicketTRegionIdKey := fmt.Sprintf("%s%v", cache12306TicketTRegionIdPrefix, data.Id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tRegionRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.Name, data.FullName, data.Code, data.Initial, data.Spell, data.PopularFlag, data.DelFlag, data.Id)
-	}, _12306TicketTRegionIdKey)
-	return err
-}
-
 func (m *defaultTRegionModel) formatPrimary(primary any) string {
 	return fmt.Sprintf("%s%v", cache12306TicketTRegionIdPrefix, primary)
 }
@@ -113,4 +69,37 @@ func (m *defaultTRegionModel) queryPrimary(ctx context.Context, conn sqlx.SqlCon
 
 func (m *defaultTRegionModel) tableName() string {
 	return m.table
+}
+
+// 自定义
+func (m *defaultTRegionModel) Trans(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error {
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+}
+
+func (m *defaultTRegionModel) SelectBuilder() squirrel.SelectBuilder {
+	return squirrel.Select().From(m.table)
+}
+
+func (m *defaultTRegionModel) FindAll(ctx context.Context, builder squirrel.SelectBuilder, orderBy string) ([]*TRegion, error) {
+	builder = builder.Columns(tRegionRows)
+	if orderBy == "" {
+		builder = builder.OrderBy("id DESC")
+	} else {
+		builder = builder.OrderBy(orderBy)
+	}
+
+	query, values, err := builder.Where("del_flag = ?", 0).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp []*TRegion
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
 }

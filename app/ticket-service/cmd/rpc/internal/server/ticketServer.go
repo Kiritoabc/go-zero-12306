@@ -36,3 +36,8 @@ func (s *TicketServer) ListAllStation(ctx context.Context, in *pb.ListAllStation
 	l := logic.NewListAllStationLogic(ctx, s.svcCtx)
 	return l.ListAllStation(in)
 }
+
+func (s *TicketServer) RegionTrainStationJob(ctx context.Context, in *pb.RegionTrainStationJobReq) (*pb.RegionTrainStationJobResp, error) {
+	l := logic.NewRegionTrainStationJobLogic(ctx, s.svcCtx)
+	return l.RegionTrainStationJob(in)
+}

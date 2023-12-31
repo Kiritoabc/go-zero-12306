@@ -87,13 +87,19 @@ message StationQueryRespDTO {
   string regionName =4;
 
 }
-// goctl rpc protoc ticket.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../ --style=goZer
+
+message RegionTrainStationJobReq {
+}
+
+message RegionTrainStationJobResp {
+}
+
+
+//  goctl rpc protoc ticket.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../ --style=goZero
 // service
 service ticket {
   //
   rpc listTrainStationQuery(ListTrainStationQueryReq) returns (ListTrainStationQueryResp);
-
-
   /**
     * 查询车站&城市站点集合信息
     */
@@ -103,5 +109,9 @@ service ticket {
     */
   rpc listAllStation(ListAllStationReq) returns (ListAllStationResp);
 
+  /**
+   * 定时任务prc
+   */
+  rpc regionTrainStationJob(RegionTrainStationJobReq) returns (RegionTrainStationJobResp);
 
 }

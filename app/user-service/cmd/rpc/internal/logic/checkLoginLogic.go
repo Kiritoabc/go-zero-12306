@@ -27,7 +27,6 @@ func NewCheckLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CheckL
 }
 
 func (l *CheckLoginLogic) CheckLogin(in *pb.CheckLoginReq) (*pb.LoginResp, error) {
-	// todo: add your logic here and delete this line
 	// 获取到token
 	accessToken := in.AccessToken
 	// 从redis中判断用户是否登录

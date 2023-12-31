@@ -20,6 +20,8 @@ type (
 	ListTrainStationQueryReq  = pb.ListTrainStationQueryReq
 	ListTrainStationQueryResp = pb.ListTrainStationQueryResp
 	RegionStationQueryRespDTO = pb.RegionStationQueryRespDTO
+	RegionTrainStationJobReq  = pb.RegionTrainStationJobReq
+	RegionTrainStationJobResp = pb.RegionTrainStationJobResp
 	StationQueryRespDTO       = pb.StationQueryRespDTO
 	TrainStationQueryRespDTO  = pb.TrainStationQueryRespDTO
 
@@ -28,6 +30,7 @@ type (
 		ListTrainStationQuery(ctx context.Context, in *ListTrainStationQueryReq, opts ...grpc.CallOption) (*ListTrainStationQueryResp, error)
 		ListRegionStation(ctx context.Context, in *ListRegionStationReq, opts ...grpc.CallOption) (*ListRegionStationResp, error)
 		ListAllStation(ctx context.Context, in *ListAllStationReq, opts ...grpc.CallOption) (*ListAllStationResp, error)
+		RegionTrainStationJob(ctx context.Context, in *RegionTrainStationJobReq, opts ...grpc.CallOption) (*RegionTrainStationJobResp, error)
 	}
 
 	defaultTicket struct {
@@ -54,4 +57,9 @@ func (m *defaultTicket) ListRegionStation(ctx context.Context, in *ListRegionSta
 func (m *defaultTicket) ListAllStation(ctx context.Context, in *ListAllStationReq, opts ...grpc.CallOption) (*ListAllStationResp, error) {
 	client := pb.NewTicketClient(m.cli.Conn())
 	return client.ListAllStation(ctx, in, opts...)
+}
+
+func (m *defaultTicket) RegionTrainStationJob(ctx context.Context, in *RegionTrainStationJobReq, opts ...grpc.CallOption) (*RegionTrainStationJobResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.RegionTrainStationJob(ctx, in, opts...)
 }

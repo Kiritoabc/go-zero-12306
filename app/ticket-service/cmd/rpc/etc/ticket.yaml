@@ -29,4 +29,4 @@ Cache:
 
 Log:
   ServiceName: ticket-rpc
-  Level: info
+  Level: error

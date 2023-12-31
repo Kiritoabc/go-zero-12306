@@ -47,8 +47,8 @@ func (l *ListTrainStationQueryLogic) ListTrainStationQuery(in *pb.ListTrainStati
 		respDTO.Sequence = list[i].Sequence
 		respDTO.Departure = list[i].Departure
 		// 时间赋值
-		respDTO.ArrivalTime = time.Unix(list[i].ArrivalTime.Unix(), 0).Format(constant.TimeTemplate_1)
-		respDTO.DepartureTime = time.Unix(list[i].DepartureTime.Unix(), 0).Format(constant.TimeTemplate_1)
+		respDTO.ArrivalTime = time.Unix(list[i].ArrivalTime.Unix(), 0).Format(constant.Timetemplate1)
+		respDTO.DepartureTime = time.Unix(list[i].DepartureTime.Unix(), 0).Format(constant.Timetemplate1)
 		respDTO.StopoverTime = list[i].StopoverTime.Int64
 		respList = append(respList, respDTO)
 	}

@@ -23,3 +23,8 @@ const USER_REGISTER_REUSE_SHARDING = "index12306-user-service:user-reuse:"
  */
 
 const USER_PASSENGER_LIST = "index12306-user-service:user-passenger-list:"
+
+/**
+ * 站点查询，Key Prefix + 起始城市_终点城市_日期
+ */
+const REGION_TRAIN_STATION = "index12306-ticket-service:region_train_station:%s_%s"
