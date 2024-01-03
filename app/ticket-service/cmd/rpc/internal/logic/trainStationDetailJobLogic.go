@@ -30,7 +30,6 @@ func NewTrainStationDetailJobLogic(ctx context.Context, svcCtx *svc.ServiceConte
 }
 
 func (l *TrainStationDetailJobLogic) TrainStationDetailJob(in *pb.TrainStationDetailJobReq) (*pb.TrainStationDetailJobResp, error) {
-	// todo: add your logic here and delete this linegt
 	var currentPage int64 = 1
 	var size int64 = 1000
 	var dateTime time.Time
