@@ -23,6 +23,7 @@ const (
 	Ticket_ListRegionStation_FullMethodName     = "/pb.ticket/listRegionStation"
 	Ticket_ListAllStation_FullMethodName        = "/pb.ticket/listAllStation"
 	Ticket_RegionTrainStationJob_FullMethodName = "/pb.ticket/regionTrainStationJob"
+	Ticket_TrainStationDetailJob_FullMethodName = "/pb.ticket/trainStationDetailJob"
 )
 
 // TicketClient is the client API for Ticket service.
@@ -39,6 +40,7 @@ type TicketClient interface {
 	// *
 	// 定时任务prc
 	RegionTrainStationJob(ctx context.Context, in *RegionTrainStationJobReq, opts ...grpc.CallOption) (*RegionTrainStationJobResp, error)
+	TrainStationDetailJob(ctx context.Context, in *TrainStationDetailJobReq, opts ...grpc.CallOption) (*TrainStationDetailJobResp, error)
 }
 
 type ticketClient struct {
@@ -85,6 +87,15 @@ func (c *ticketClient) RegionTrainStationJob(ctx context.Context, in *RegionTrai
 	return out, nil
 }
 
+func (c *ticketClient) TrainStationDetailJob(ctx context.Context, in *TrainStationDetailJobReq, opts ...grpc.CallOption) (*TrainStationDetailJobResp, error) {
+	out := new(TrainStationDetailJobResp)
+	err := c.cc.Invoke(ctx, Ticket_TrainStationDetailJob_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TicketServer is the server API for Ticket service.
 // All implementations must embed UnimplementedTicketServer
 // for forward compatibility
@@ -99,6 +110,7 @@ type TicketServer interface {
 	// *
 	// 定时任务prc
 	RegionTrainStationJob(context.Context, *RegionTrainStationJobReq) (*RegionTrainStationJobResp, error)
+	TrainStationDetailJob(context.Context, *TrainStationDetailJobReq) (*TrainStationDetailJobResp, error)
 	mustEmbedUnimplementedTicketServer()
 }
 
@@ -117,6 +129,9 @@ func (UnimplementedTicketServer) ListAllStation(context.Context, *ListAllStation
 }
 func (UnimplementedTicketServer) RegionTrainStationJob(context.Context, *RegionTrainStationJobReq) (*RegionTrainStationJobResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RegionTrainStationJob not implemented")
+}
+func (UnimplementedTicketServer) TrainStationDetailJob(context.Context, *TrainStationDetailJobReq) (*TrainStationDetailJobResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TrainStationDetailJob not implemented")
 }
 func (UnimplementedTicketServer) mustEmbedUnimplementedTicketServer() {}
 
@@ -203,6 +218,24 @@ func _Ticket_RegionTrainStationJob_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ticket_TrainStationDetailJob_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TrainStationDetailJobReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).TrainStationDetailJob(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_TrainStationDetailJob_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).TrainStationDetailJob(ctx, req.(*TrainStationDetailJobReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ticket_ServiceDesc is the grpc.ServiceDesc for Ticket service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -225,6 +258,10 @@ var Ticket_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "regionTrainStationJob",
 			Handler:    _Ticket_RegionTrainStationJob_Handler,
+		},
+		{
+			MethodName: "trainStationDetailJob",
+			Handler:    _Ticket_TrainStationDetailJob_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

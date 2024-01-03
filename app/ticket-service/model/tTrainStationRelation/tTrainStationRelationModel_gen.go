@@ -30,6 +30,7 @@ type (
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
 		SelectBuilder() squirrel.SelectBuilder
 		SelectSratr2End(cxt context.Context, builder squirrel.SelectBuilder, startRegion string, endRegion string) ([]*TTrainStationRelation, error)
+		SelectList(cxt context.Context, builder squirrel.SelectBuilder, trainId string) ([]*TTrainStationRelation, error)
 	}
 
 	defaultTTrainStationRelationModel struct {
@@ -92,6 +93,22 @@ func (m *defaultTTrainStationRelationModel) SelectSratr2End(ctx context.Context,
 	}
 	var resp []*TTrainStationRelation
 	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, value...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultTTrainStationRelationModel) SelectList(cxt context.Context, builder squirrel.SelectBuilder, trainId string) ([]*TTrainStationRelation, error) {
+	builder = builder.Columns(tTrainStationRelationRows)
+	query, values, err := builder.Where("train_id = ?", trainId).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp []*TTrainStationRelation
+	err = m.QueryRowsNoCacheCtx(cxt, &resp, query, values...)
 	switch err {
 	case nil:
 		return resp, nil

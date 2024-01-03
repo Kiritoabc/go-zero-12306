@@ -23,6 +23,8 @@ type (
 	RegionTrainStationJobReq  = pb.RegionTrainStationJobReq
 	RegionTrainStationJobResp = pb.RegionTrainStationJobResp
 	StationQueryRespDTO       = pb.StationQueryRespDTO
+	TrainStationDetailJobReq  = pb.TrainStationDetailJobReq
+	TrainStationDetailJobResp = pb.TrainStationDetailJobResp
 	TrainStationQueryRespDTO  = pb.TrainStationQueryRespDTO
 
 	Ticket interface {
@@ -31,6 +33,7 @@ type (
 		ListRegionStation(ctx context.Context, in *ListRegionStationReq, opts ...grpc.CallOption) (*ListRegionStationResp, error)
 		ListAllStation(ctx context.Context, in *ListAllStationReq, opts ...grpc.CallOption) (*ListAllStationResp, error)
 		RegionTrainStationJob(ctx context.Context, in *RegionTrainStationJobReq, opts ...grpc.CallOption) (*RegionTrainStationJobResp, error)
+		TrainStationDetailJob(ctx context.Context, in *TrainStationDetailJobReq, opts ...grpc.CallOption) (*TrainStationDetailJobResp, error)
 	}
 
 	defaultTicket struct {
@@ -62,4 +65,9 @@ func (m *defaultTicket) ListAllStation(ctx context.Context, in *ListAllStationRe
 func (m *defaultTicket) RegionTrainStationJob(ctx context.Context, in *RegionTrainStationJobReq, opts ...grpc.CallOption) (*RegionTrainStationJobResp, error) {
 	client := pb.NewTicketClient(m.cli.Conn())
 	return client.RegionTrainStationJob(ctx, in, opts...)
+}
+
+func (m *defaultTicket) TrainStationDetailJob(ctx context.Context, in *TrainStationDetailJobReq, opts ...grpc.CallOption) (*TrainStationDetailJobResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.TrainStationDetailJob(ctx, in, opts...)
 }

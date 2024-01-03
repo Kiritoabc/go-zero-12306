@@ -66,7 +66,7 @@ func (l *RegionTrainStationJobLogic) RegionTrainStationJob(in *pb.RegionTrainSta
 				// 存入缓存 constant.REGION_TRAIN_STATION ，存15天
 				//buildCacheKey := fmt.Sprintf(constant.REGION_TRAIN_STATION, startRegin.String, endRegion.String, tomorrowDateStr)
 				buildCacheKey := fmt.Sprintf(constant.REGION_TRAIN_STATION, startRegin.String, endRegion.String)
-				err = l.svcCtx.RedisClient.Set(l.ctx, buildCacheKey, tuples, 15*24*time.Hour).Err()
+				err = l.svcCtx.RedisClient.Set(l.ctx, buildCacheKey, tuples, constant.ADVANCE_TICKET_DAY).Err()
 				if err != nil {
 					panic(err)
 				}

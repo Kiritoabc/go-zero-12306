@@ -21,7 +21,7 @@ func NewRegionTrainStationHandler(svcCtx *svc.ServiceContext) *RegionTrainStatio
 // ProcessTask 地区站点查询定时任务
 func (l *RegionTrainStationJobHandler) ProcessTask(ctx context.Context, task *asynq.Task) error {
 
-	fmt.Println("RegionTrainStationJobHandler--work")
+	fmt.Println("RegionTrainStationJobHandler--start work")
 	// 解析任务参数
 	// 执行任务逻辑
 	_, err := l.svcCtx.TicketRpc.RegionTrainStationJob(ctx, &pb.RegionTrainStationJobReq{})

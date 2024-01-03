@@ -6,7 +6,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/Masterminds/squirrel"
+	"go-zero-12306/common/globalkey"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/cache"
@@ -18,7 +21,7 @@ import (
 var (
 	tTrainFieldNames          = builder.RawFieldNames(&TTrain{})
 	tTrainRows                = strings.Join(tTrainFieldNames, ",")
-	tTrainRowsExpectAutoSet   = strings.Join(stringx.Remove(tTrainFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), ",")
+	tTrainRowsExpectAutoSet   = strings.Join(stringx.Remove(tTrainFieldNames, "`id`"), ",")
 	tTrainRowsWithPlaceHolder = strings.Join(stringx.Remove(tTrainFieldNames, "`id`", "`create_at`", "`create_time`", "`created_at`", "`update_at`", "`update_time`", "`updated_at`"), "=?,") + "=?"
 
 	cache12306TicketTTrainIdPrefix = "cache:12306Ticket:tTrain:id:"
@@ -26,10 +29,9 @@ var (
 
 type (
 	tTrainModel interface {
-		Insert(ctx context.Context, data *TTrain) (sql.Result, error)
-		FindOne(ctx context.Context, id int64) (*TTrain, error)
-		Update(ctx context.Context, data *TTrain) error
-		Delete(ctx context.Context, id int64) error
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+		SelectBuilder() squirrel.SelectBuilder
+		FindPageListByPage(ctx context.Context, builder squirrel.SelectBuilder, page, pageSize int64, dateTime time.Time, orderBy string) ([]*TTrain, error)
 	}
 
 	defaultTTrainModel struct {
@@ -64,50 +66,6 @@ func newTTrainModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option) 
 	}
 }
 
-func (m *defaultTTrainModel) Delete(ctx context.Context, id int64) error {
-	_12306TicketTTrainIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainIdPrefix, id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id)
-	}, _12306TicketTTrainIdKey)
-	return err
-}
-
-func (m *defaultTTrainModel) FindOne(ctx context.Context, id int64) (*TTrain, error) {
-	_12306TicketTTrainIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainIdPrefix, id)
-	var resp TTrain
-	err := m.QueryRowCtx(ctx, &resp, _12306TicketTTrainIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", tTrainRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
-	})
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultTTrainModel) Insert(ctx context.Context, data *TTrain) (sql.Result, error) {
-	_12306TicketTTrainIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainIdPrefix, data.Id)
-	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, tTrainRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.TrainNumber, data.TrainType, data.TrainTag, data.TrainBrand, data.StartStation, data.EndStation, data.StartRegion, data.EndRegion, data.SaleTime, data.SaleStatus, data.DepartureTime, data.ArrivalTime, data.DelFlag)
-	}, _12306TicketTTrainIdKey)
-	return ret, err
-}
-
-func (m *defaultTTrainModel) Update(ctx context.Context, data *TTrain) error {
-	_12306TicketTTrainIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainIdPrefix, data.Id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tTrainRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.TrainNumber, data.TrainType, data.TrainTag, data.TrainBrand, data.StartStation, data.EndStation, data.StartRegion, data.EndRegion, data.SaleTime, data.SaleStatus, data.DepartureTime, data.ArrivalTime, data.DelFlag, data.Id)
-	}, _12306TicketTTrainIdKey)
-	return err
-}
-
 func (m *defaultTTrainModel) formatPrimary(primary any) string {
 	return fmt.Sprintf("%s%v", cache12306TicketTTrainIdPrefix, primary)
 }
@@ -119,4 +77,43 @@ func (m *defaultTTrainModel) queryPrimary(ctx context.Context, conn sqlx.SqlConn
 
 func (m *defaultTTrainModel) tableName() string {
 	return m.table
+}
+
+// 自定义
+func (m *defaultTTrainModel) Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error {
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+}
+
+func (m *defaultTTrainModel) SelectBuilder() squirrel.SelectBuilder {
+	return squirrel.Select().From(m.table)
+}
+
+func (m *defaultTTrainModel) FindPageListByPage(ctx context.Context, builder squirrel.SelectBuilder, page, pageSize int64, dateTime time.Time, orderBy string) ([]*TTrain, error) {
+	builder = builder.Columns(tTrainRows)
+	if orderBy == "" {
+		builder = builder.OrderBy("id DESC")
+	} else {
+		builder = builder.OrderBy(orderBy)
+	}
+	if page < 1 {
+		page = 1
+	}
+	offset := (page - 1) * pageSize
+	query, values, err := builder.
+		Where("del_flag = ? and departure_time > ? and departure_time < ? ", globalkey.DelFlagNo, dateTime, dateTime).
+		Offset(uint64(offset)).
+		Limit(uint64(pageSize)).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp []*TTrain
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
 }

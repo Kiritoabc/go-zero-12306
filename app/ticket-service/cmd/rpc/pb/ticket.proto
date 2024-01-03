@@ -94,6 +94,12 @@ message RegionTrainStationJobReq {
 message RegionTrainStationJobResp {
 }
 
+message TrainStationDetailJobReq {
+  string dateTime = 1;
+}
+
+message TrainStationDetailJobResp {
+}
 
 //  goctl rpc protoc ticket.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../ --style=goZero
 // service
@@ -114,4 +120,5 @@ service ticket {
    */
   rpc regionTrainStationJob(RegionTrainStationJobReq) returns (RegionTrainStationJobResp);
 
+  rpc trainStationDetailJob(TrainStationDetailJobReq) returns (TrainStationDetailJobResp);
 }
