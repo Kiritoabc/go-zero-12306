@@ -6,6 +6,7 @@ import (
 	"go-zero-12306/common/constant"
 	"go-zero-12306/common/tool"
 	"strconv"
+	"strings"
 	"time"
 
 	"go-zero-12306/app/ticket-service/cmd/rpc/internal/svc"
@@ -55,6 +56,7 @@ func (l *TrainStationDetailJobLogic) TrainStationDetailJob(in *pb.TrainStationDe
 
 func (l *TrainStationDetailJobLogic) actualExecute(trainDOPageRecords []*tTrain.TTrain) error {
 	builder := l.svcCtx.TTrainStationRelationModel.SelectBuilder()
+	redisClient := l.svcCtx.RedisClient
 	for i := 0; i < len(trainDOPageRecords); i++ {
 		list, err := l.svcCtx.TTrainStationRelationModel.SelectList(l.ctx, builder, strconv.FormatInt(trainDOPageRecords[i].Id, 10))
 		if err != nil {
@@ -63,12 +65,26 @@ func (l *TrainStationDetailJobLogic) actualExecute(trainDOPageRecords []*tTrain.
 		if len(list) == 0 {
 			return nil
 		}
-		// todo: 存入缓存
 		for _, item := range list {
 			var actualCacheHashValue = map[string]string{}
 			actualCacheHashValue["trainNumber"] = trainDOPageRecords[i].TrainNumber.String
 			actualCacheHashValue["departureFlag"] = strconv.FormatInt(item.DepartureFlag.Int64, 10)
 			actualCacheHashValue["arrivalFlag"] = strconv.FormatInt(item.ArrivalFlag.Int64, 10)
+			actualCacheHashValue["departureTime"] = item.DepartureTime.Time.Format(constant.Timetemplate2)
+			actualCacheHashValue["arrivalTime"] = item.ArrivalTime.Time.Format(constant.Timetemplate2)
+			actualCacheHashValue["saleTime"] = trainDOPageRecords[i].SaleTime.Time.Format(constant.Timetemplate1)
+			actualCacheHashValue["trainTag"] = trainDOPageRecords[i].TrainTag.String
+			buildCacheKey := constant.TRAIN_STATION_DETAIL + strings.Join([]string{
+				strconv.FormatInt(trainDOPageRecords[i].Id, 10),
+				item.Departure.String,
+				item.Arrival.String,
+			}, "_")
+			// 存入缓存
+			err = redisClient.HMSet(l.ctx, buildCacheKey, actualCacheHashValue).Err()
+			if err != nil {
+				return err
+			}
+			redisClient.Expire(l.ctx, buildCacheKey, constant.ADVANCE_TICKET_DAY)
 		}
 	}
 	return nil
