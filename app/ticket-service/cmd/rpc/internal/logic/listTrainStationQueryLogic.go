@@ -40,7 +40,7 @@ func (l *ListTrainStationQueryLogic) ListTrainStationQuery(in *pb.ListTrainStati
 	if err != nil {
 		return &pb.ListTrainStationQueryResp{}, err
 	}
-	var respList = []*pb.TrainStationQueryRespDTO{}
+	var respList []*pb.TrainStationQueryRespDTO
 	// 赋值
 	for i := 0; i < len(list); i++ {
 		var respDTO = &pb.TrainStationQueryRespDTO{}

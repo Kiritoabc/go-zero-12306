@@ -54,8 +54,8 @@ func (l *ListAllStationLogic) ListAllStation(in *pb.ListAllStationReq) (*pb.List
 		// 获取到锁
 		defer lock.Release() // 释放锁
 		// 缓存不存在查询缓存
-		bulder := l.svcCtx.TStationModel.SelectBuilder()
-		list, err := l.svcCtx.TStationModel.List(l.ctx, bulder, "")
+		builder := l.svcCtx.TStationModel.SelectBuilder()
+		list, err := l.svcCtx.TStationModel.List(l.ctx, builder, "")
 		if err != nil {
 			return &pb.ListAllStationResp{}, err
 		}

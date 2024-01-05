@@ -35,20 +35,21 @@ func NewRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Register
 
 func (l *RegisterLogic) Register(in *pb.RegisterReq) (*pb.RegisterResp, error) {
 	// 开启事务
+
+	// 1.redisson上锁
+	g := godisson.NewGodisson(l.svcCtx.RedisClient, godisson.WithWatchDogTimeout(30*time.Second))
+	// lock with watchdog without retry
+	lock := g.NewRLock(constant.LOCK_USER_REGISTER + in.UserName)
+	err := lock.Lock()
+	if err == godisson.ErrLockNotObtained {
+		return &pb.RegisterResp{}, errors.Wrapf(xerr.NewErrCode(xerr.HAS_USERNAME_NOTNULL), "用户名已存在:%v,用户名:%+v", err, in.UserName)
+	} else if err != nil {
+		return &pb.RegisterResp{}, errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "redis获取锁出错")
+	}
+	// 7.解锁
+	defer lock.Unlock()
 	if err := l.svcCtx.User0Model.Trans(l.ctx, func(ctx context.Context, session sqlx.Session) error {
 		// 0.参数检查(暂时不做考虑)
-		// 1.redisson上锁
-		g := godisson.NewGodisson(l.svcCtx.RedisClient, godisson.WithWatchDogTimeout(30*time.Second))
-		// lock with watchdog without retry
-		lock := g.NewRLock(constant.LOCK_USER_REGISTER + in.UserName)
-		err := lock.Lock()
-		// 7.解锁
-		defer lock.Unlock()
-		if err == godisson.ErrLockNotObtained {
-			return errors.Wrapf(xerr.NewErrCode(xerr.HAS_USERNAME_NOTNULL), "用户名已存在:%v,用户名:%+v", err, in.UserName)
-		} else if err != nil {
-			return errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "redis获取锁出错")
-		}
 		// 2.插入用户，判断用户名是否重复
 		user := new(tUser.TUser0)
 		_ = copier.Copy(&user, &in)
