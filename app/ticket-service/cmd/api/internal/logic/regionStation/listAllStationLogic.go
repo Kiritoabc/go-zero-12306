@@ -2,6 +2,8 @@ package regionStation
 
 import (
 	"context"
+	"github.com/jinzhu/copier"
+	"go-zero-12306/app/ticket-service/cmd/rpc/pb"
 
 	"go-zero-12306/app/ticket-service/cmd/api/internal/svc"
 	"go-zero-12306/app/ticket-service/cmd/api/internal/types"
@@ -23,8 +25,12 @@ func NewListAllStationLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Li
 	}
 }
 
-func (l *ListAllStationLogic) ListAllStation(req *types.StationQueryReq) (resp *types.StationQueryRespDTO, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+func (l *ListAllStationLogic) ListAllStation(req *types.StationQueryReq) ([]*types.StationQueryRespDTO, error) {
+	var resp []*types.StationQueryRespDTO
+	listAllStation, err := l.svcCtx.TicketRpc.ListAllStation(l.ctx, &pb.ListAllStationReq{})
+	if err != nil {
+		return nil, err
+	}
+	copier.Copy(&resp, &listAllStation.StationQueryRespDTO)
+	return resp, nil
 }

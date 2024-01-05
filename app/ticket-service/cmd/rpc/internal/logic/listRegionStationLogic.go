@@ -2,11 +2,9 @@ package logic
 
 import (
 	"context"
-
+	"github.com/zeromicro/go-zero/core/logx"
 	"go-zero-12306/app/ticket-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/ticket-service/cmd/rpc/pb"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type ListRegionStationLogic struct {
@@ -25,6 +23,7 @@ func NewListRegionStationLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 
 func (l *ListRegionStationLogic) ListRegionStation(in *pb.ListRegionStationReq) (*pb.ListRegionStationResp, error) {
 	// todo: add your logic here and delete this line
+	//bloomFilter := bloom.New(l.svcCtx.RedisClient1, constant.STATION_ALL, 1024)
 
 	return &pb.ListRegionStationResp{}, nil
 }

@@ -6,6 +6,8 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/Masterminds/squirrel"
+	"go-zero-12306/common/globalkey"
 	"strings"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
@@ -26,10 +28,9 @@ var (
 
 type (
 	tStationModel interface {
-		Insert(ctx context.Context, data *TStation) (sql.Result, error)
-		FindOne(ctx context.Context, id int64) (*TStation, error)
-		Update(ctx context.Context, data *TStation) error
-		Delete(ctx context.Context, id int64) error
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+		SelectBuilder() squirrel.SelectBuilder
+		List(ctx context.Context, builder squirrel.SelectBuilder, orderBy string) ([]*TStation, error)
 	}
 
 	defaultTStationModel struct {
@@ -57,50 +58,6 @@ func newTStationModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...cache.Option
 	}
 }
 
-func (m *defaultTStationModel) Delete(ctx context.Context, id int64) error {
-	_12306TicketTStationIdKey := fmt.Sprintf("%s%v", cache12306TicketTStationIdPrefix, id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id)
-	}, _12306TicketTStationIdKey)
-	return err
-}
-
-func (m *defaultTStationModel) FindOne(ctx context.Context, id int64) (*TStation, error) {
-	_12306TicketTStationIdKey := fmt.Sprintf("%s%v", cache12306TicketTStationIdPrefix, id)
-	var resp TStation
-	err := m.QueryRowCtx(ctx, &resp, _12306TicketTStationIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", tStationRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
-	})
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultTStationModel) Insert(ctx context.Context, data *TStation) (sql.Result, error) {
-	_12306TicketTStationIdKey := fmt.Sprintf("%s%v", cache12306TicketTStationIdPrefix, data.Id)
-	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, tStationRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.Code, data.Name, data.Spell, data.Region, data.RegionName, data.DelFlag)
-	}, _12306TicketTStationIdKey)
-	return ret, err
-}
-
-func (m *defaultTStationModel) Update(ctx context.Context, data *TStation) error {
-	_12306TicketTStationIdKey := fmt.Sprintf("%s%v", cache12306TicketTStationIdPrefix, data.Id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tStationRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.Code, data.Name, data.Spell, data.Region, data.RegionName, data.DelFlag, data.Id)
-	}, _12306TicketTStationIdKey)
-	return err
-}
-
 func (m *defaultTStationModel) formatPrimary(primary any) string {
 	return fmt.Sprintf("%s%v", cache12306TicketTStationIdPrefix, primary)
 }
@@ -112,4 +69,40 @@ func (m *defaultTStationModel) queryPrimary(ctx context.Context, conn sqlx.SqlCo
 
 func (m *defaultTStationModel) tableName() string {
 	return m.table
+}
+
+// 自定义
+
+func (m *defaultTStationModel) Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error {
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+}
+
+func (m *defaultTStationModel) SelectBuilder() squirrel.SelectBuilder {
+	return squirrel.Select().From(m.table)
+}
+
+func (m *defaultTStationModel) List(ctx context.Context, builder squirrel.SelectBuilder, orderBy string) ([]*TStation, error) {
+
+	builder = builder.Columns(tStationRows)
+	if orderBy == "" {
+		builder = builder.OrderBy("id DESC")
+	} else {
+		builder = builder.OrderBy(orderBy)
+	}
+
+	query, values, err := builder.Where("del_flag = ?", globalkey.DelFlagNo).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp []*TStation
+
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
 }

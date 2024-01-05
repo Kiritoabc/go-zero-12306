@@ -79,8 +79,7 @@ func (l *RegisterLogic) Register(in *pb.RegisterReq) (*pb.RegisterResp, error) {
 		if err != nil {
 			return err
 		}
-		// todo: 6.设置布隆过滤器
-		//err = l.svcCtx.RedisClient1.Set(in.UserName, "OK")
+		err = l.svcCtx.RedisClient1.Set(in.UserName, "OK")
 		if err != nil {
 			return errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "redis存储出错")
 		}

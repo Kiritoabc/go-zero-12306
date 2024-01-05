@@ -26,7 +26,7 @@ service ticket {
 
 	@doc "查询车站站点集合信息"
 	@handler listAllStation
-	get /station/all (StationQueryReq) returns (StationQueryRespDTO)
+	get /station/all (StationQueryReq) returns ([]StationQueryRespDTO)
 }
 
 //=======================================TempSeatController v1.0.0===================================================

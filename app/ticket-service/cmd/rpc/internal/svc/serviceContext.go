@@ -38,7 +38,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		RedisClient: redis.NewClient(&redis.Options{
 			Addr:     c.Redis.Host,
 			Password: c.Redis.Pass, // no password set
-			DB:       1,            // use default DB
+			DB:       0,            // use default DB
 		}),
 		RedisClient1: go_redis.New(c.Redis.Host, func(r *go_redis.Redis) {
 			r.Type = c.Redis.Type
