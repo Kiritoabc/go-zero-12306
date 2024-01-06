@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/jinzhu/copier"
 	"github.com/pkg/errors"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/redis"
@@ -36,11 +37,24 @@ func NewListRegionStationLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
  */
 
 func (l *ListRegionStationLogic) ListRegionStation(in *pb.ListRegionStationReq) (*pb.ListRegionStationResp, error) {
-
 	var key string
+	// name 存在，根据name查询
 	if in.Name != "" {
 		key = constant.REGION_STATION + in.Name
-		// 查询
+		builder := l.svcCtx.TStationModel.SelectBuilder()
+
+		return l.safeGetRegionStation(key, func() (*pb.ListRegionStationResp, error) {
+			var resp = &pb.ListRegionStationResp{}
+			tStations, err := l.svcCtx.TStationModel.SelectListByName(l.ctx, builder, in.Name)
+			if err != nil {
+				return nil, err
+			}
+			err = copier.Copy(&resp.RegionStationQueryRespDTO, &tStations)
+			if err != nil {
+				return resp, err
+			}
+			return resp, nil
+		}, in.Name)
 	}
 
 	key = constant.REGION_STATION + strconv.FormatInt(in.QueryType, 10)
@@ -66,21 +80,34 @@ func (l *ListRegionStationLogic) ListRegionStation(in *pb.ListRegionStationReq) 
 		return &pb.ListRegionStationResp{}, errors.Wrapf(errors.New("查询失败，请检查查询参数是否正确"), "查询失败，请检查查询参数是否正确")
 	}
 
-	var resp = &pb.ListRegionStationResp{}
-	// 查询缓存
-	redisValue := l.svcCtx.RedisClient.Get(l.ctx, key)
-	value := redisValue.Val()
+	return l.safeGetRegionStation(key, func() (*pb.ListRegionStationResp, error) {
+		var resp = &pb.ListRegionStationResp{}
+		builder := l.svcCtx.TRegionModel.SelectBuilder()
+		tRegions, err := l.svcCtx.TRegionModel.SelectListByInitialOrPopularFlag(l.ctx, builder, popularFlag, initialList)
+		if err != nil {
+			return resp, err
+		}
+		err = copier.Copy(&resp.RegionStationQueryRespDTO, &tRegions)
+		if err != nil {
+			return resp, err
+		}
+		return resp, nil
+	}, strconv.FormatInt(in.QueryType, 10))
+}
 
-	// 存在，返回
-	if value != "" {
-		err := json.Unmarshal([]byte(value), &resp.TrainStationQueryRespDTO)
+func (l ListRegionStationLogic) safeGetRegionStation(key string, fn func() (*pb.ListRegionStationResp, error), params string) (*pb.ListRegionStationResp, error) {
+	var resp = &pb.ListRegionStationResp{}
+	// 1.查缓存
+	redisValue := l.svcCtx.RedisClient.Get(l.ctx, key).Val()
+	if redisValue != "" {
+		err := copier.Copy(&resp.RegionStationQueryRespDTO, &redisValue)
 		if err != nil {
 			return resp, err
 		}
 		return resp, nil
 	}
 	// 上锁
-	lock := redis.NewRedisLock(l.svcCtx.RedisClient1, fmt.Sprintf(constant.LOCK_QUERY_REGION_STATION_LIST, in.QueryType))
+	lock := redis.NewRedisLock(l.svcCtx.RedisClient1, fmt.Sprintf(constant.LOCK_QUERY_REGION_STATION_LIST, params))
 	// 设置过期时间
 	lock.SetExpire(10)
 	// 尝试获取锁
@@ -90,12 +117,21 @@ func (l *ListRegionStationLogic) ListRegionStation(in *pb.ListRegionStationReq) 
 		return resp, err
 	case acquire:
 		defer lock.Release()
-		// todo: 获取到锁，查询数据库(抽离出来)
-		_ = popularFlag
-		_ = initialList
+		// 查询数据
+		fnResp, err := fn()
+		if err != nil {
+			return resp, err
+		}
+		resp.RegionStationQueryRespDTO = fnResp.RegionStationQueryRespDTO
+		//存入缓存
+		cacheValue, err := json.Marshal(&resp.RegionStationQueryRespDTO)
+		err = l.svcCtx.RedisClient.Set(l.ctx, key, cacheValue, constant.ADVANCE_TICKET_DAY).Err()
+		if err != nil {
+			return resp, err
+		}
+		return resp, nil
 	case !acquire:
 		// await
 	}
-
 	return resp, nil
 }

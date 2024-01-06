@@ -31,6 +31,7 @@ type (
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
 		SelectBuilder() squirrel.SelectBuilder
 		List(ctx context.Context, builder squirrel.SelectBuilder, orderBy string) ([]*TStation, error)
+		SelectListByName(ctx context.Context, builder squirrel.SelectBuilder, name string) ([]*TStation, error)
 	}
 
 	defaultTStationModel struct {
@@ -99,6 +100,24 @@ func (m *defaultTStationModel) List(ctx context.Context, builder squirrel.Select
 	var resp []*TStation
 
 	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultTStationModel) SelectListByName(ctx context.Context, builder squirrel.SelectBuilder, name string) ([]*TStation, error) {
+	builder = builder.Columns(tStationRows)
+
+	query, value, err := builder.Where("del_flag = ?", globalkey.DelFlagNo).
+		Where(squirrel.Or{
+			squirrel.Like{"name": name},
+			squirrel.Like{"spell": name},
+		}).ToSql()
+	var resp []*TStation
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, value...)
 	switch err {
 	case nil:
 		return resp, nil

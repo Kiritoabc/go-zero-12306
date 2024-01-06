@@ -46,7 +46,7 @@ message ListRegionStationReq {
 }
 
 message ListRegionStationResp {
-  repeated TrainStationQueryRespDTO trainStationQueryRespDTO = 1;
+  repeated RegionStationQueryRespDTO regionStationQueryRespDTO =  1;
 }
 message RegionStationQueryRespDTO {
   /**

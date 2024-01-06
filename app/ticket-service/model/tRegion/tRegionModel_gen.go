@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/Masterminds/squirrel"
+	"go-zero-12306/common/globalkey"
 	"strings"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
@@ -30,6 +31,7 @@ type (
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
 		SelectBuilder() squirrel.SelectBuilder
 		FindAll(ctx context.Context, builder squirrel.SelectBuilder, orderBy string) ([]*TRegion, error)
+		SelectListByInitialOrPopularFlag(ctx context.Context, builder squirrel.SelectBuilder, popularFlag int64, initialList []string) ([]*TRegion, error)
 	}
 
 	defaultTRegionModel struct {
@@ -90,12 +92,32 @@ func (m *defaultTRegionModel) FindAll(ctx context.Context, builder squirrel.Sele
 		builder = builder.OrderBy(orderBy)
 	}
 
-	query, values, err := builder.Where("del_flag = ?", 0).ToSql()
+	query, values, err := builder.Where("del_flag = ?", globalkey.DelFlagNo).ToSql()
 	if err != nil {
 		return nil, err
 	}
 	var resp []*TRegion
 	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultTRegionModel) SelectListByInitialOrPopularFlag(ctx context.Context, builder squirrel.SelectBuilder, popularFlag int64, initialList []string) ([]*TRegion, error) {
+	builder = builder.Columns(tRegionRows)
+	builder = builder.Where("del_flag = ?", globalkey.DelFlagNo)
+	if popularFlag == 1 {
+		builder = builder.Where("popular_flag = ?", popularFlag)
+	}
+	query, value, err := builder.Where(squirrel.Eq{"initial": initialList}).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp []*TRegion
+	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, value...)
 	switch err {
 	case nil:
 		return resp, nil
