@@ -12,10 +12,12 @@ info(
 type (
     TicketPageQueryReqDTO {
         FromStation string `form:"fromStation"` //出发地 Code
-        toStation   string `form:"toStation"` //目的地 Code
-        departureDate string `form:"departureDate"` //出发日期
-        departure string `form:"departure"` //出发站点
-        arrival string `form:"arrival"` //到达站点
+        ToStation   string `form:"toStation"` //目的地 Code
+        DepartureDate string `form:"departureDate"` //出发日期
+        Departure string `form:"departure"` //出发站点
+        Arrival string `form:"arrival"` //到达站点
+        Current int64 `form:"current"` // 当前页
+        Size int64 `form:"size"` // 每页显示条数
     }
     TicketPageQueryRespDTO {
         TrainList []TicketListDTO `json:"trainList"` //车次集合数据

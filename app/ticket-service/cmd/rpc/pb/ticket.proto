@@ -101,6 +101,218 @@ message TrainStationDetailJobReq {
 message TrainStationDetailJobResp {
 }
 
+
+message PageListTicketQueryReq {
+    string fromStation = 1;
+    string toStation = 2;
+    string departureDate = 3;
+    string departure = 4;
+    string arrival = 5;
+}
+message PageListTicketQueryResp {
+    repeated TicketListDTO trainList = 1; //车次集合数据
+    repeated int64 trainBrandList = 2; // 车次类型：D-动车 Z-直达 复兴号等
+    repeated string departureStationList = 3; //出发车站
+    repeated string arrivalStationList = 4; //到达车站
+    repeated int64 seatClassTypeList = 5; // 车次
+}
+message TicketListDTO {
+  /**
+ * 列车 ID
+ */
+   string trainId = 1;
+
+  /**
+   * 车次
+   */
+   string trainNumber = 2;
+
+  /**
+   * 出发时间
+   */
+   string departureTime = 3;
+
+  /**
+   * 到达时间
+   */
+   string arrivalTime =4;
+
+  /**
+   * 历时
+   */
+   string duration =5;
+
+  /**
+   * 到达天数
+   */
+   int64 daysArrived =6;
+
+  /**
+   * 出发站点
+   */
+   string departure =7;
+
+  /**
+   * 到达站点
+   */
+   string arrival = 8;
+
+  /**
+   * 始发站标识
+   */
+   bool departureFlag =9;
+
+  /**
+   * 终点站标识
+   */
+   bool arrivalFlag =10;
+
+  /**
+   * 列车类型 0：高铁 1：动车 2：普通车
+   */
+   int64 trainType =11;
+
+  /**
+   * 可售时间
+   */
+   string saleTime =12;
+
+  /**
+   * 销售状态 0：可售 1：不可售 2：未知
+   */
+   int64 saleStatus =13;
+
+  /**
+   * 列车标签集合 0：复兴号 1：智能动车组 2：静音车厢 3：支持选铺
+   */
+   repeated string trainTags =14;
+
+  /**
+   * 列车品牌类型 0：GC-高铁/城际 1：D-动车 2：Z-直达 3：T-特快 4：K-快速 5：其他 6：复兴号 7：智能动车组
+   */
+   string trainBrand =15;
+
+  /**
+   * 席别实体集合
+   */
+  repeated SeatClassDTO seatClassDTO = 16;
+}
+message SeatClassDTO {
+  /**
+   * 席别类型
+   */
+   int64 type = 1;
+
+  /**
+   * 席别数量
+   */
+  int64 quantity = 2;
+
+  /**
+   * 席别价格
+   */
+  int64 price = 3;
+
+  /**
+   * 席别候补标识
+   */
+  bool candidate = 4;
+}
+
+
+message PurchaseTicketsReq {
+  /**
+   * 车次 ID
+   */
+   string trainId = 1;
+
+  /**
+   * 乘车人
+   */
+  repeated PurchaseTicketPassengerDetailDTO passengers =2;
+
+  /**
+   * 选择座位
+   */
+  repeated string chooseSeats = 3;
+
+  /**
+   * 出发站点
+   */
+  string departure =4;
+
+  /**
+   * 到达站点
+   */
+  string arrival =5;
+}
+message PurchaseTicketPassengerDetailDTO {
+  /**
+  * 乘车人 ID
+  */
+  string passengerId =1;
+
+  /**
+   * 座位类型
+   */
+  int64 seatType =2;
+}
+
+message PurchaseTicketsResp {
+
+  /**
+   * 订单号
+   */
+  string orderSn =1;
+
+  /**
+   * 乘车人订单详情
+   */
+  repeated TicketOrderDetailRespDTO ticketOrderDetails=2;
+}
+
+message TicketOrderDetailRespDTO {
+  /**
+ * 席别类型
+ */
+  int64 seatType =1;
+
+  /**
+   * 车厢号
+   */
+  string carriageNumber =2;
+
+  /**
+   * 座位号
+   */
+  string seatNumber =3;
+
+  /**
+   * 真实姓名
+   */
+  string realName =4;
+
+  /**
+   * 证件类型
+   */
+  int64 idType =5;
+
+  /**
+   * 证件号
+   */
+  string idCard =6;
+
+  /**
+   * 车票类型 0：成人 1：儿童 2：学生 3：残疾军人
+   */
+  int64 ticketType =7;
+
+  /**
+   * 订单金额
+   */
+  int64 amount =8;
+}
+
 //  goctl rpc protoc ticket.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../ --style=goZero
 // service
 service ticket {
@@ -121,4 +333,14 @@ service ticket {
   rpc regionTrainStationJob(RegionTrainStationJobReq) returns (RegionTrainStationJobResp);
 
   rpc trainStationDetailJob(TrainStationDetailJobReq) returns (TrainStationDetailJobResp);
+
+  // TODO: TicketControllerRpc
+  /**
+   * 根据条件查询车票
+   */
+  rpc pageListTicketQuery(PageListTicketQueryReq) returns (PageListTicketQueryResp);
+  /**
+  * 购买车票
+  */
+  rpc purchaseTickets(PurchaseTicketsReq) returns (PurchaseTicketsResp);
 }
