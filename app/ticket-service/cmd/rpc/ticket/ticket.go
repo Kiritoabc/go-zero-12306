@@ -13,19 +13,33 @@ import (
 )
 
 type (
-	ListAllStationReq         = pb.ListAllStationReq
-	ListAllStationResp        = pb.ListAllStationResp
-	ListRegionStationReq      = pb.ListRegionStationReq
-	ListRegionStationResp     = pb.ListRegionStationResp
-	ListTrainStationQueryReq  = pb.ListTrainStationQueryReq
-	ListTrainStationQueryResp = pb.ListTrainStationQueryResp
-	RegionStationQueryRespDTO = pb.RegionStationQueryRespDTO
-	RegionTrainStationJobReq  = pb.RegionTrainStationJobReq
-	RegionTrainStationJobResp = pb.RegionTrainStationJobResp
-	StationQueryRespDTO       = pb.StationQueryRespDTO
-	TrainStationDetailJobReq  = pb.TrainStationDetailJobReq
-	TrainStationDetailJobResp = pb.TrainStationDetailJobResp
-	TrainStationQueryRespDTO  = pb.TrainStationQueryRespDTO
+	CancelTicketOrderReq             = pb.CancelTicketOrderReq
+	CancelTicketOrderResp            = pb.CancelTicketOrderResp
+	CommonTicketRefundReq            = pb.CommonTicketRefundReq
+	CommonTicketRefundResp           = pb.CommonTicketRefundResp
+	GetPayInfoReq                    = pb.GetPayInfoReq
+	GetPayInfoResp                   = pb.GetPayInfoResp
+	ListAllStationReq                = pb.ListAllStationReq
+	ListAllStationResp               = pb.ListAllStationResp
+	ListRegionStationReq             = pb.ListRegionStationReq
+	ListRegionStationResp            = pb.ListRegionStationResp
+	ListTrainStationQueryReq         = pb.ListTrainStationQueryReq
+	ListTrainStationQueryResp        = pb.ListTrainStationQueryResp
+	PageListTicketQueryReq           = pb.PageListTicketQueryReq
+	PageListTicketQueryResp          = pb.PageListTicketQueryResp
+	PurchaseTicketPassengerDetailDTO = pb.PurchaseTicketPassengerDetailDTO
+	PurchaseTicketsReq               = pb.PurchaseTicketsReq
+	PurchaseTicketsResp              = pb.PurchaseTicketsResp
+	RegionStationQueryRespDTO        = pb.RegionStationQueryRespDTO
+	RegionTrainStationJobReq         = pb.RegionTrainStationJobReq
+	RegionTrainStationJobResp        = pb.RegionTrainStationJobResp
+	SeatClassDTO                     = pb.SeatClassDTO
+	StationQueryRespDTO              = pb.StationQueryRespDTO
+	TicketListDTO                    = pb.TicketListDTO
+	TicketOrderDetailRespDTO         = pb.TicketOrderDetailRespDTO
+	TrainStationDetailJobReq         = pb.TrainStationDetailJobReq
+	TrainStationDetailJobResp        = pb.TrainStationDetailJobResp
+	TrainStationQueryRespDTO         = pb.TrainStationQueryRespDTO
 
 	Ticket interface {
 		//
@@ -34,6 +48,13 @@ type (
 		ListAllStation(ctx context.Context, in *ListAllStationReq, opts ...grpc.CallOption) (*ListAllStationResp, error)
 		RegionTrainStationJob(ctx context.Context, in *RegionTrainStationJobReq, opts ...grpc.CallOption) (*RegionTrainStationJobResp, error)
 		TrainStationDetailJob(ctx context.Context, in *TrainStationDetailJobReq, opts ...grpc.CallOption) (*TrainStationDetailJobResp, error)
+		// TODO: TicketControllerRpc
+		PageListTicketQuery(ctx context.Context, in *PageListTicketQueryReq, opts ...grpc.CallOption) (*PageListTicketQueryResp, error)
+		PurchaseTickets(ctx context.Context, in *PurchaseTicketsReq, opts ...grpc.CallOption) (*PurchaseTicketsResp, error)
+		PurchaseTicketsV2(ctx context.Context, in *PurchaseTicketsReq, opts ...grpc.CallOption) (*PurchaseTicketsResp, error)
+		CancelTicketOrder(ctx context.Context, in *CancelTicketOrderReq, opts ...grpc.CallOption) (*CancelTicketOrderResp, error)
+		GetPayInfo(ctx context.Context, in *GetPayInfoReq, opts ...grpc.CallOption) (*GetPayInfoResp, error)
+		CommonTicketRefund(ctx context.Context, in *CommonTicketRefundReq, opts ...grpc.CallOption) (*CommonTicketRefundResp, error)
 	}
 
 	defaultTicket struct {
@@ -70,4 +91,35 @@ func (m *defaultTicket) RegionTrainStationJob(ctx context.Context, in *RegionTra
 func (m *defaultTicket) TrainStationDetailJob(ctx context.Context, in *TrainStationDetailJobReq, opts ...grpc.CallOption) (*TrainStationDetailJobResp, error) {
 	client := pb.NewTicketClient(m.cli.Conn())
 	return client.TrainStationDetailJob(ctx, in, opts...)
+}
+
+// TODO: TicketControllerRpc
+func (m *defaultTicket) PageListTicketQuery(ctx context.Context, in *PageListTicketQueryReq, opts ...grpc.CallOption) (*PageListTicketQueryResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.PageListTicketQuery(ctx, in, opts...)
+}
+
+func (m *defaultTicket) PurchaseTickets(ctx context.Context, in *PurchaseTicketsReq, opts ...grpc.CallOption) (*PurchaseTicketsResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.PurchaseTickets(ctx, in, opts...)
+}
+
+func (m *defaultTicket) PurchaseTicketsV2(ctx context.Context, in *PurchaseTicketsReq, opts ...grpc.CallOption) (*PurchaseTicketsResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.PurchaseTicketsV2(ctx, in, opts...)
+}
+
+func (m *defaultTicket) CancelTicketOrder(ctx context.Context, in *CancelTicketOrderReq, opts ...grpc.CallOption) (*CancelTicketOrderResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.CancelTicketOrder(ctx, in, opts...)
+}
+
+func (m *defaultTicket) GetPayInfo(ctx context.Context, in *GetPayInfoReq, opts ...grpc.CallOption) (*GetPayInfoResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.GetPayInfo(ctx, in, opts...)
+}
+
+func (m *defaultTicket) CommonTicketRefund(ctx context.Context, in *CommonTicketRefundReq, opts ...grpc.CallOption) (*CommonTicketRefundResp, error) {
+	client := pb.NewTicketClient(m.cli.Conn())
+	return client.CommonTicketRefund(ctx, in, opts...)
 }

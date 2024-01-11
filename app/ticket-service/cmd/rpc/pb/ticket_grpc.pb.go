@@ -24,6 +24,12 @@ const (
 	Ticket_ListAllStation_FullMethodName        = "/pb.ticket/listAllStation"
 	Ticket_RegionTrainStationJob_FullMethodName = "/pb.ticket/regionTrainStationJob"
 	Ticket_TrainStationDetailJob_FullMethodName = "/pb.ticket/trainStationDetailJob"
+	Ticket_PageListTicketQuery_FullMethodName   = "/pb.ticket/pageListTicketQuery"
+	Ticket_PurchaseTickets_FullMethodName       = "/pb.ticket/purchaseTickets"
+	Ticket_PurchaseTicketsV2_FullMethodName     = "/pb.ticket/purchaseTicketsV2"
+	Ticket_CancelTicketOrder_FullMethodName     = "/pb.ticket/cancelTicketOrder"
+	Ticket_GetPayInfo_FullMethodName            = "/pb.ticket/getPayInfo"
+	Ticket_CommonTicketRefund_FullMethodName    = "/pb.ticket/commonTicketRefund"
 )
 
 // TicketClient is the client API for Ticket service.
@@ -41,6 +47,24 @@ type TicketClient interface {
 	// 定时任务prc
 	RegionTrainStationJob(ctx context.Context, in *RegionTrainStationJobReq, opts ...grpc.CallOption) (*RegionTrainStationJobResp, error)
 	TrainStationDetailJob(ctx context.Context, in *TrainStationDetailJobReq, opts ...grpc.CallOption) (*TrainStationDetailJobResp, error)
+	// *
+	// 根据条件查询车票
+	PageListTicketQuery(ctx context.Context, in *PageListTicketQueryReq, opts ...grpc.CallOption) (*PageListTicketQueryResp, error)
+	// *
+	// 购买车票
+	PurchaseTickets(ctx context.Context, in *PurchaseTicketsReq, opts ...grpc.CallOption) (*PurchaseTicketsResp, error)
+	// *
+	// 购买车票v2
+	PurchaseTicketsV2(ctx context.Context, in *PurchaseTicketsReq, opts ...grpc.CallOption) (*PurchaseTicketsResp, error)
+	// *
+	// 取消车票订单
+	CancelTicketOrder(ctx context.Context, in *CancelTicketOrderReq, opts ...grpc.CallOption) (*CancelTicketOrderResp, error)
+	// *
+	// 支付单详情查询
+	GetPayInfo(ctx context.Context, in *GetPayInfoReq, opts ...grpc.CallOption) (*GetPayInfoResp, error)
+	// *
+	// 公共退款接口
+	CommonTicketRefund(ctx context.Context, in *CommonTicketRefundReq, opts ...grpc.CallOption) (*CommonTicketRefundResp, error)
 }
 
 type ticketClient struct {
@@ -96,6 +120,60 @@ func (c *ticketClient) TrainStationDetailJob(ctx context.Context, in *TrainStati
 	return out, nil
 }
 
+func (c *ticketClient) PageListTicketQuery(ctx context.Context, in *PageListTicketQueryReq, opts ...grpc.CallOption) (*PageListTicketQueryResp, error) {
+	out := new(PageListTicketQueryResp)
+	err := c.cc.Invoke(ctx, Ticket_PageListTicketQuery_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ticketClient) PurchaseTickets(ctx context.Context, in *PurchaseTicketsReq, opts ...grpc.CallOption) (*PurchaseTicketsResp, error) {
+	out := new(PurchaseTicketsResp)
+	err := c.cc.Invoke(ctx, Ticket_PurchaseTickets_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ticketClient) PurchaseTicketsV2(ctx context.Context, in *PurchaseTicketsReq, opts ...grpc.CallOption) (*PurchaseTicketsResp, error) {
+	out := new(PurchaseTicketsResp)
+	err := c.cc.Invoke(ctx, Ticket_PurchaseTicketsV2_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ticketClient) CancelTicketOrder(ctx context.Context, in *CancelTicketOrderReq, opts ...grpc.CallOption) (*CancelTicketOrderResp, error) {
+	out := new(CancelTicketOrderResp)
+	err := c.cc.Invoke(ctx, Ticket_CancelTicketOrder_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ticketClient) GetPayInfo(ctx context.Context, in *GetPayInfoReq, opts ...grpc.CallOption) (*GetPayInfoResp, error) {
+	out := new(GetPayInfoResp)
+	err := c.cc.Invoke(ctx, Ticket_GetPayInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ticketClient) CommonTicketRefund(ctx context.Context, in *CommonTicketRefundReq, opts ...grpc.CallOption) (*CommonTicketRefundResp, error) {
+	out := new(CommonTicketRefundResp)
+	err := c.cc.Invoke(ctx, Ticket_CommonTicketRefund_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TicketServer is the server API for Ticket service.
 // All implementations must embed UnimplementedTicketServer
 // for forward compatibility
@@ -111,6 +189,24 @@ type TicketServer interface {
 	// 定时任务prc
 	RegionTrainStationJob(context.Context, *RegionTrainStationJobReq) (*RegionTrainStationJobResp, error)
 	TrainStationDetailJob(context.Context, *TrainStationDetailJobReq) (*TrainStationDetailJobResp, error)
+	// *
+	// 根据条件查询车票
+	PageListTicketQuery(context.Context, *PageListTicketQueryReq) (*PageListTicketQueryResp, error)
+	// *
+	// 购买车票
+	PurchaseTickets(context.Context, *PurchaseTicketsReq) (*PurchaseTicketsResp, error)
+	// *
+	// 购买车票v2
+	PurchaseTicketsV2(context.Context, *PurchaseTicketsReq) (*PurchaseTicketsResp, error)
+	// *
+	// 取消车票订单
+	CancelTicketOrder(context.Context, *CancelTicketOrderReq) (*CancelTicketOrderResp, error)
+	// *
+	// 支付单详情查询
+	GetPayInfo(context.Context, *GetPayInfoReq) (*GetPayInfoResp, error)
+	// *
+	// 公共退款接口
+	CommonTicketRefund(context.Context, *CommonTicketRefundReq) (*CommonTicketRefundResp, error)
 	mustEmbedUnimplementedTicketServer()
 }
 
@@ -132,6 +228,24 @@ func (UnimplementedTicketServer) RegionTrainStationJob(context.Context, *RegionT
 }
 func (UnimplementedTicketServer) TrainStationDetailJob(context.Context, *TrainStationDetailJobReq) (*TrainStationDetailJobResp, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TrainStationDetailJob not implemented")
+}
+func (UnimplementedTicketServer) PageListTicketQuery(context.Context, *PageListTicketQueryReq) (*PageListTicketQueryResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PageListTicketQuery not implemented")
+}
+func (UnimplementedTicketServer) PurchaseTickets(context.Context, *PurchaseTicketsReq) (*PurchaseTicketsResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PurchaseTickets not implemented")
+}
+func (UnimplementedTicketServer) PurchaseTicketsV2(context.Context, *PurchaseTicketsReq) (*PurchaseTicketsResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PurchaseTicketsV2 not implemented")
+}
+func (UnimplementedTicketServer) CancelTicketOrder(context.Context, *CancelTicketOrderReq) (*CancelTicketOrderResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CancelTicketOrder not implemented")
+}
+func (UnimplementedTicketServer) GetPayInfo(context.Context, *GetPayInfoReq) (*GetPayInfoResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPayInfo not implemented")
+}
+func (UnimplementedTicketServer) CommonTicketRefund(context.Context, *CommonTicketRefundReq) (*CommonTicketRefundResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CommonTicketRefund not implemented")
 }
 func (UnimplementedTicketServer) mustEmbedUnimplementedTicketServer() {}
 
@@ -236,6 +350,114 @@ func _Ticket_TrainStationDetailJob_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Ticket_PageListTicketQuery_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PageListTicketQueryReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).PageListTicketQuery(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_PageListTicketQuery_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).PageListTicketQuery(ctx, req.(*PageListTicketQueryReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Ticket_PurchaseTickets_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PurchaseTicketsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).PurchaseTickets(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_PurchaseTickets_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).PurchaseTickets(ctx, req.(*PurchaseTicketsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Ticket_PurchaseTicketsV2_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PurchaseTicketsReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).PurchaseTicketsV2(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_PurchaseTicketsV2_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).PurchaseTicketsV2(ctx, req.(*PurchaseTicketsReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Ticket_CancelTicketOrder_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CancelTicketOrderReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).CancelTicketOrder(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_CancelTicketOrder_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).CancelTicketOrder(ctx, req.(*CancelTicketOrderReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Ticket_GetPayInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPayInfoReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).GetPayInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_GetPayInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).GetPayInfo(ctx, req.(*GetPayInfoReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Ticket_CommonTicketRefund_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CommonTicketRefundReq)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TicketServer).CommonTicketRefund(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Ticket_CommonTicketRefund_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TicketServer).CommonTicketRefund(ctx, req.(*CommonTicketRefundReq))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Ticket_ServiceDesc is the grpc.ServiceDesc for Ticket service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -262,6 +484,30 @@ var Ticket_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "trainStationDetailJob",
 			Handler:    _Ticket_TrainStationDetailJob_Handler,
+		},
+		{
+			MethodName: "pageListTicketQuery",
+			Handler:    _Ticket_PageListTicketQuery_Handler,
+		},
+		{
+			MethodName: "purchaseTickets",
+			Handler:    _Ticket_PurchaseTickets_Handler,
+		},
+		{
+			MethodName: "purchaseTicketsV2",
+			Handler:    _Ticket_PurchaseTicketsV2_Handler,
+		},
+		{
+			MethodName: "cancelTicketOrder",
+			Handler:    _Ticket_CancelTicketOrder_Handler,
+		},
+		{
+			MethodName: "getPayInfo",
+			Handler:    _Ticket_GetPayInfo_Handler,
+		},
+		{
+			MethodName: "commonTicketRefund",
+			Handler:    _Ticket_CommonTicketRefund_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

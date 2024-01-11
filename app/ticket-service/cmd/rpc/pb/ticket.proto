@@ -313,6 +313,66 @@ message TicketOrderDetailRespDTO {
   int64 amount =8;
 }
 
+
+message CancelTicketOrderReq {
+  /**
+  * 订单号
+  */
+  string orderSn = 1;
+}
+
+message CancelTicketOrderResp {
+
+}
+
+message GetPayInfoReq {
+  string orderSn = 1;
+}
+
+message GetPayInfoResp {
+  /**
+ * 订单号
+ */
+  string orderSn = 1;
+
+  /**
+   * 支付总金额
+   */
+  int64 totalAmount = 2;
+
+  /**
+   * 支付状态
+   */
+  int64 status = 3;
+
+  /**
+   * 支付时间
+   */
+  string gmtPayment = 4;
+}
+
+
+message CommonTicketRefundReq {
+  /**
+   * 订单号
+   */
+  string orderSn = 1;
+
+  /**
+   * 退款类型 0 部分退款 1 全部退款
+   */
+  int64 type = 2;
+
+  /**
+   * 部分退款子订单记录id集合
+   */
+  repeated string subOrderRecordIdReqList = 3;
+}
+
+message CommonTicketRefundResp {
+
+}
+
 //  goctl rpc protoc ticket.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../ --style=goZero
 // service
 service ticket {
@@ -343,4 +403,22 @@ service ticket {
   * 购买车票
   */
   rpc purchaseTickets(PurchaseTicketsReq) returns (PurchaseTicketsResp);
+  /**
+  * 购买车票v2
+  */
+  rpc purchaseTicketsV2(PurchaseTicketsReq) returns (PurchaseTicketsResp);
+  /**
+   * 取消车票订单
+   */
+  rpc cancelTicketOrder(CancelTicketOrderReq) returns (CancelTicketOrderResp);
+
+  /**
+ * 支付单详情查询
+ */
+  rpc getPayInfo(GetPayInfoReq) returns (GetPayInfoResp);
+
+  /**
+ * 公共退款接口
+ */
+  rpc commonTicketRefund(CommonTicketRefundReq) returns (CommonTicketRefundResp);
 }

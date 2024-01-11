@@ -46,3 +46,34 @@ func (s *TicketServer) TrainStationDetailJob(ctx context.Context, in *pb.TrainSt
 	l := logic.NewTrainStationDetailJobLogic(ctx, s.svcCtx)
 	return l.TrainStationDetailJob(in)
 }
+
+// TODO: TicketControllerRpc
+func (s *TicketServer) PageListTicketQuery(ctx context.Context, in *pb.PageListTicketQueryReq) (*pb.PageListTicketQueryResp, error) {
+	l := logic.NewPageListTicketQueryLogic(ctx, s.svcCtx)
+	return l.PageListTicketQuery(in)
+}
+
+func (s *TicketServer) PurchaseTickets(ctx context.Context, in *pb.PurchaseTicketsReq) (*pb.PurchaseTicketsResp, error) {
+	l := logic.NewPurchaseTicketsLogic(ctx, s.svcCtx)
+	return l.PurchaseTickets(in)
+}
+
+func (s *TicketServer) PurchaseTicketsV2(ctx context.Context, in *pb.PurchaseTicketsReq) (*pb.PurchaseTicketsResp, error) {
+	l := logic.NewPurchaseTicketsV2Logic(ctx, s.svcCtx)
+	return l.PurchaseTicketsV2(in)
+}
+
+func (s *TicketServer) CancelTicketOrder(ctx context.Context, in *pb.CancelTicketOrderReq) (*pb.CancelTicketOrderResp, error) {
+	l := logic.NewCancelTicketOrderLogic(ctx, s.svcCtx)
+	return l.CancelTicketOrder(in)
+}
+
+func (s *TicketServer) GetPayInfo(ctx context.Context, in *pb.GetPayInfoReq) (*pb.GetPayInfoResp, error) {
+	l := logic.NewGetPayInfoLogic(ctx, s.svcCtx)
+	return l.GetPayInfo(in)
+}
+
+func (s *TicketServer) CommonTicketRefund(ctx context.Context, in *pb.CommonTicketRefundReq) (*pb.CommonTicketRefundResp, error) {
+	l := logic.NewCommonTicketRefundLogic(ctx, s.svcCtx)
+	return l.CommonTicketRefund(in)
+}
