@@ -25,7 +25,7 @@ func NewPageListTicketQueryLogic(ctx context.Context, svcCtx *svc.ServiceContext
 
 // TODO: TicketControllerRpc
 func (l *PageListTicketQueryLogic) PageListTicketQuery(in *pb.PageListTicketQueryReq) (*pb.PageListTicketQueryResp, error) {
-	// todo: add your logic here and delete this line
+	// todo: 责任链模式？？emmmmm
 
 	return &pb.PageListTicketQueryResp{}, nil
 }
