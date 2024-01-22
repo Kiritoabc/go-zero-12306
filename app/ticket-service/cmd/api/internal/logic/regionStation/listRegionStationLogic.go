@@ -2,9 +2,10 @@ package regionStation
 
 import (
 	"context"
-
+	"github.com/jinzhu/copier"
 	"go-zero-12306/app/ticket-service/cmd/api/internal/svc"
 	"go-zero-12306/app/ticket-service/cmd/api/internal/types"
+	"go-zero-12306/app/ticket-service/cmd/rpc/pb"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -23,8 +24,18 @@ func NewListRegionStationLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 	}
 }
 
-func (l *ListRegionStationLogic) ListRegionStation(req *types.RegionStationQueryReqDTO) (resp *types.RegionStationQueryResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+func (l *ListRegionStationLogic) ListRegionStation(req *types.RegionStationQueryReqDTO) (*types.RegionStationQueryResp, error) {
+	var resp *types.RegionStationQueryResp
+	listRegionStation, err := l.svcCtx.TicketRpc.ListRegionStation(l.ctx, &pb.ListRegionStationReq{
+		QueryType: req.QuerryType,
+		Name:      req.Name,
+	})
+	if err != nil {
+		return resp, err
+	}
+	err = copier.Copy(&resp.List, &listRegionStation)
+	if err != nil {
+		return resp, err
+	}
+	return resp, nil
 }
