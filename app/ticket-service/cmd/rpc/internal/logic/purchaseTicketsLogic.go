@@ -67,9 +67,11 @@ func (l *PurchaseTicketsLogic) executePurchaseTickets(in *pb.PurchaseTicketsReq)
 		if err != nil {
 			return err
 		}
-		// todo:
+		// todo
 		return nil
 	}); err != nil {
 
 	}
+
+	return &pb.PurchaseTicketsResp{}, nil
 }
