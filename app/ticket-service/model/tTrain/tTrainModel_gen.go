@@ -32,6 +32,7 @@ type (
 		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
 		SelectBuilder() squirrel.SelectBuilder
 		FindPageListByPage(ctx context.Context, builder squirrel.SelectBuilder, page, pageSize int64, dateTime time.Time, orderBy string) ([]*TTrain, error)
+		SelectById(ctx context.Context, builder squirrel.SelectBuilder, id int64) (*TTrain, error)
 	}
 
 	defaultTTrainModel struct {
@@ -110,6 +111,23 @@ func (m *defaultTTrainModel) FindPageListByPage(ctx context.Context, builder squ
 	}
 	var resp []*TTrain
 	err = m.QueryRowsNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (m *defaultTTrainModel) SelectById(ctx context.Context, builder squirrel.SelectBuilder, id int64) (*TTrain, error) {
+	builder = builder.Columns(tTrainRows)
+
+	query, values, err := builder.Where("id = ?", id).ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp *TTrain
+	err = m.QueryRowNoCacheCtx(ctx, &resp, query, values...)
 	switch err {
 	case nil:
 		return resp, nil

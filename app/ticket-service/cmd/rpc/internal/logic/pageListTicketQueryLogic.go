@@ -119,6 +119,10 @@ func (l *PageListTicketQueryLogic) PageListTicketQuery(in *pb.PageListTicketQuer
 	})
 
 	// 5. 存入缓存
+	for _, result := range seatResults {
+		// safeGet()
+		print(result)
+	}
 
 	return &pb.PageListTicketQueryResp{}, nil
 }
