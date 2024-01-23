@@ -44,23 +44,5 @@
 
 # 目前接口完成情况
 
-- [x] UserLoginController
-
-  - [x] checkLogin
-  - [x] login
-  - [x] logout
-- [x] UserInfoController
-
-  - [x] queryUserByUsername
-  - [x] queryActualUserByUsername
-  - [x] hasUsername
-  - [x] register
-  - [x] update
-  - [x] deletion
-- [x] PassengerController
-  - [x] listPassengerQueryByUsername
-  - [x] listPassengerQueryByIds
-  - [x] savePassenger
-  - [x] updatePassenger
-  - [x] removePassenger
+ 完成了user-service模块，正在完善ticket-service模块中！！！
 
