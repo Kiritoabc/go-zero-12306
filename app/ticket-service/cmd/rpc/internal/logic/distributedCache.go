@@ -14,6 +14,8 @@ import (
 	"time"
 )
 
+// TODO: 应该要拆离出去
+
 type DistributedCacheLogic struct {
 	ctx    context.Context
 	svcCtx *svc.ServiceContext

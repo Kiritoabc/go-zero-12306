@@ -245,6 +245,10 @@ message PurchaseTicketsReq {
    * 到达站点
    */
   string arrival =5;
+  /**
+  * 乘车用户
+   */
+  string username =6;
 }
 message PurchaseTicketPassengerDetailDTO {
   /**
@@ -371,6 +375,69 @@ message CommonTicketRefundReq {
 
 message CommonTicketRefundResp {
 
+}
+
+message TrainPurchaseTicketRespDTO {
+  /**
+    * 乘车人 ID
+    */
+   string passengerId =1;
+
+  /**
+   * 乘车人姓名
+   */
+   string realName =2;
+
+  /**
+   * 乘车人证件类型
+   */
+   int64 idType =3;
+
+  /**
+   * 乘车人证件号
+   */
+   string idCard =4;
+
+  /**
+   * 乘车人手机号
+   */
+   string phone=5;
+
+  /**
+   * 用户类型 0：成人 1：儿童 2：学生 3：残疾军人
+   */
+   int64 userType=6;
+
+  /**
+   * 席别类型
+   */
+   int64 seatType=7;
+
+  /**
+   * 车厢号
+   */
+   string carriageNumber=8;
+
+  /**
+   * 座位号
+   */
+   string seatNumber=9;
+
+  /**
+   * 座位金额
+   */
+   int64 amount=10;
+}
+
+message RouteDTO {
+  /**
+ * 出发站点
+ */
+  string startStation = 1;
+  /**
+   * 目的站点
+   */
+  string endStation = 2;
 }
 
 //  goctl rpc protoc ticket.proto --go_out=../ --go-grpc_out=../  --zrpc_out=../ --style=goZero

@@ -6,6 +6,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"github.com/Masterminds/squirrel"
 	"strings"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
@@ -26,10 +27,10 @@ var (
 
 type (
 	tTrainStationPriceModel interface {
-		Insert(ctx context.Context, data *TTrainStationPrice) (sql.Result, error)
-		FindOne(ctx context.Context, id int64) (*TTrainStationPrice, error)
-		Update(ctx context.Context, data *TTrainStationPrice) error
-		Delete(ctx context.Context, id int64) error
+		// 自定义
+		Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error
+		SelectBuilder() squirrel.SelectBuilder
+		SelectOne(ctx context.Context, builder squirrel.SelectBuilder) (*TTrainStationPrice, error)
 	}
 
 	defaultTTrainStationPriceModel struct {
@@ -56,51 +57,6 @@ func newTTrainStationPriceModel(conn sqlx.SqlConn, c cache.CacheConf, opts ...ca
 		table:      "`t_train_station_price`",
 	}
 }
-
-func (m *defaultTTrainStationPriceModel) Delete(ctx context.Context, id int64) error {
-	_12306TicketTTrainStationPriceIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationPriceIdPrefix, id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("delete from %s where `id` = ?", m.table)
-		return conn.ExecCtx(ctx, query, id)
-	}, _12306TicketTTrainStationPriceIdKey)
-	return err
-}
-
-func (m *defaultTTrainStationPriceModel) FindOne(ctx context.Context, id int64) (*TTrainStationPrice, error) {
-	_12306TicketTTrainStationPriceIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationPriceIdPrefix, id)
-	var resp TTrainStationPrice
-	err := m.QueryRowCtx(ctx, &resp, _12306TicketTTrainStationPriceIdKey, func(ctx context.Context, conn sqlx.SqlConn, v any) error {
-		query := fmt.Sprintf("select %s from %s where `id` = ? limit 1", tTrainStationPriceRows, m.table)
-		return conn.QueryRowCtx(ctx, v, query, id)
-	})
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
-func (m *defaultTTrainStationPriceModel) Insert(ctx context.Context, data *TTrainStationPrice) (sql.Result, error) {
-	_12306TicketTTrainStationPriceIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationPriceIdPrefix, data.Id)
-	ret, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, tTrainStationPriceRowsExpectAutoSet)
-		return conn.ExecCtx(ctx, query, data.TrainId, data.Departure, data.Arrival, data.SeatType, data.Price, data.DelFlag)
-	}, _12306TicketTTrainStationPriceIdKey)
-	return ret, err
-}
-
-func (m *defaultTTrainStationPriceModel) Update(ctx context.Context, data *TTrainStationPrice) error {
-	_12306TicketTTrainStationPriceIdKey := fmt.Sprintf("%s%v", cache12306TicketTTrainStationPriceIdPrefix, data.Id)
-	_, err := m.ExecCtx(ctx, func(ctx context.Context, conn sqlx.SqlConn) (result sql.Result, err error) {
-		query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, tTrainStationPriceRowsWithPlaceHolder)
-		return conn.ExecCtx(ctx, query, data.TrainId, data.Departure, data.Arrival, data.SeatType, data.Price, data.DelFlag, data.Id)
-	}, _12306TicketTTrainStationPriceIdKey)
-	return err
-}
-
 func (m *defaultTTrainStationPriceModel) formatPrimary(primary any) string {
 	return fmt.Sprintf("%s%v", cache12306TicketTTrainStationPriceIdPrefix, primary)
 }
@@ -112,4 +68,33 @@ func (m *defaultTTrainStationPriceModel) queryPrimary(ctx context.Context, conn 
 
 func (m *defaultTTrainStationPriceModel) tableName() string {
 	return m.table
+}
+
+// 自定义
+// 事务
+func (m *defaultTTrainStationPriceModel) Trans(ctx context.Context, fn func(context context.Context, session sqlx.Session) error) error {
+	return m.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		return fn(ctx, session)
+	})
+}
+
+func (m *defaultTTrainStationPriceModel) SelectBuilder() squirrel.SelectBuilder {
+	return squirrel.Select().From(m.table)
+}
+
+func (m *defaultTTrainStationPriceModel) SelectOne(ctx context.Context, builder squirrel.SelectBuilder) (*TTrainStationPrice, error) {
+	builder = builder.Columns(tTrainStationPriceRows)
+
+	query, values, err := builder.ToSql()
+	if err != nil {
+		return nil, err
+	}
+	var resp *TTrainStationPrice
+	err = m.QueryRowNoCacheCtx(ctx, &resp, query, values...)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
 }

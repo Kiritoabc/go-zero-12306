@@ -1,11 +1,18 @@
 Name: ticket.rpc
 ListenOn: 0.0.0.0:9002
 
+# 服务注册
 Etcd:
   Hosts:
   - 127.0.0.1:2379
   Key: ticket.rpc
 
+# RPC (采用Etcd) 服务发现
+UserRpcConf:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc
 
 #jwtAuth
 JwtAuth:

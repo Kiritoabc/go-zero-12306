@@ -68,6 +68,12 @@ func (l *PurchaseTicketsLogic) executePurchaseTickets(in *pb.PurchaseTicketsReq)
 			return err
 		}
 		// todo
+		selector := NewTrainSeatTypeSelector(l.ctx, l.svcCtx)
+		trainPurchaseTicketResults, err := selector.Select(trainDO.TrainType.Int64, in)
+		_ = trainPurchaseTicketResults
+		if err != nil {
+			return err
+		}
 		return nil
 	}); err != nil {
 

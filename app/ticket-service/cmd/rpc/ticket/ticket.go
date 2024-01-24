@@ -33,10 +33,12 @@ type (
 	RegionStationQueryRespDTO        = pb.RegionStationQueryRespDTO
 	RegionTrainStationJobReq         = pb.RegionTrainStationJobReq
 	RegionTrainStationJobResp        = pb.RegionTrainStationJobResp
+	RouteDTO                         = pb.RouteDTO
 	SeatClassDTO                     = pb.SeatClassDTO
 	StationQueryRespDTO              = pb.StationQueryRespDTO
 	TicketListDTO                    = pb.TicketListDTO
 	TicketOrderDetailRespDTO         = pb.TicketOrderDetailRespDTO
+	TrainPurchaseTicketRespDTO       = pb.TrainPurchaseTicketRespDTO
 	TrainStationDetailJobReq         = pb.TrainStationDetailJobReq
 	TrainStationDetailJobResp        = pb.TrainStationDetailJobResp
 	TrainStationQueryRespDTO         = pb.TrainStationQueryRespDTO

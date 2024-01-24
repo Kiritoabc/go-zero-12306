@@ -4,6 +4,7 @@ import (
 	"github.com/go-redis/redis/v8"
 	go_redis "github.com/zeromicro/go-zero/core/stores/redis"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
+	"github.com/zeromicro/go-zero/zrpc"
 	"go-zero-12306/app/ticket-service/cmd/rpc/internal/config"
 	"go-zero-12306/app/ticket-service/model/tCarriage"
 	"go-zero-12306/app/ticket-service/model/tRegion"
@@ -14,10 +15,12 @@ import (
 	"go-zero-12306/app/ticket-service/model/tTrainStation"
 	"go-zero-12306/app/ticket-service/model/tTrainStationPrice"
 	"go-zero-12306/app/ticket-service/model/tTrainStationRelation"
+	"go-zero-12306/app/user-service/cmd/rpc/user"
 )
 
 type ServiceContext struct {
 	Config                     config.Config
+	UserRpc                    user.User
 	RedisClient                *redis.Client
 	RedisClient1               *go_redis.Redis
 	TCarriageModel             tCarriage.TCarriageModel
@@ -34,7 +37,8 @@ type ServiceContext struct {
 func NewServiceContext(c config.Config) *ServiceContext {
 	sqlCon := sqlx.NewMysql(c.DB.DataSource)
 	return &ServiceContext{
-		Config: c,
+		Config:  c,
+		UserRpc: user.NewUser(zrpc.MustNewClient(c.UserRpcConf)),
 		RedisClient: redis.NewClient(&redis.Options{
 			Addr:     c.Redis.Host,
 			Password: c.Redis.Pass, // no password set
