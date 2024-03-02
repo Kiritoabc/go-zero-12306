@@ -15,16 +15,20 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
+// configFile path
 var configFile = flag.String("f", "etc/user.yaml", "the config file")
 
 func main() {
 	flag.Parse()
 
 	var c config.Config
+	// load config file
 	conf.MustLoad(*configFile, &c)
+	// new a service ctx
 	ctx := svc.NewServiceContext(c)
-
+	// create grpc service
 	s := zrpc.MustNewServer(c.RpcServerConf, func(grpcServer *grpc.Server) {
+		// register userService
 		pb.RegisterUserServer(grpcServer, server.NewUserServer(ctx))
 
 		if c.Mode == service.DevMode || c.Mode == service.TestMode {

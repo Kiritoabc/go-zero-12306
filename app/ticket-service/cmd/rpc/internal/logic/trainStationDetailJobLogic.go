@@ -78,7 +78,7 @@ func (l *TrainStationDetailJobLogic) actualExecute(trainDOPageRecords []*tTrain.
 				item.Departure.String,
 				item.Arrival.String,
 			}, "_")
-			// 存入缓存
+			// 存入缓存  更新缓存？
 			err = redisClient.HMSet(l.ctx, buildCacheKey, actualCacheHashValue).Err()
 			if err != nil {
 				return err

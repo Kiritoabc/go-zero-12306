@@ -2,6 +2,7 @@ package userLogin
 
 import (
 	"fmt"
+	"go-zero-12306/common/result"
 	"net/http"
 
 	"github.com/zeromicro/go-zero/rest/httpx"
@@ -14,17 +15,14 @@ func LogoutHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req types.LogoutReq
 		if err := httpx.Parse(r, &req); err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
+			result.ParamErrorResult(r, w, err)
 			return
 		}
 		uid := r.Context().Value("jwtUserId")
 		fmt.Sprintf("uid:%v", uid)
 		l := userLogin.NewLogoutLogic(r.Context(), svcCtx)
 		resp, err := l.Logout(&req)
-		if err != nil {
-			httpx.ErrorCtx(r.Context(), w, err)
-		} else {
-			httpx.OkJsonCtx(r.Context(), w, resp)
-		}
+
+		result.HttpResult(r, w, resp, err)
 	}
 }

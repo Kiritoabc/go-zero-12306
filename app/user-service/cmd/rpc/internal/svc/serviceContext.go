@@ -25,6 +25,8 @@ type ServiceContext struct {
 	UserReuseModel    tUserReuse.TUserReuseModel
 }
 
+// New a service ctx
+
 func NewServiceContext(c config.Config) *ServiceContext {
 	sqlCon := sqlx.NewMysql(c.DB.DataSource)
 
