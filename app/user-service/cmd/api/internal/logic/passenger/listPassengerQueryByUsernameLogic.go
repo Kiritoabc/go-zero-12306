@@ -2,8 +2,10 @@ package passenger
 
 import (
 	"context"
+	"fmt"
 	"github.com/jinzhu/copier"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
+	"go-zero-12306/common/ctxdata"
 
 	"go-zero-12306/app/user-service/cmd/api/internal/svc"
 	"go-zero-12306/app/user-service/cmd/api/internal/types"
@@ -26,6 +28,8 @@ func NewListPassengerQueryByUsernameLogic(ctx context.Context, svcCtx *svc.Servi
 }
 
 func (l *ListPassengerQueryByUsernameLogic) ListPassengerQueryByUsername(req *types.PassengerReq) (*types.PassengerResp, error) {
+	uid := ctxdata.GetUidFromCtx(l.ctx)
+	fmt.Println(uid)
 	list, err := l.svcCtx.UserRpc.ListPassengerQueryByUsername(l.ctx, &pb.ListPassengerQueryByUsernameReq{
 		Username: req.UserName,
 	})

@@ -44,19 +44,27 @@ func (l *DeletionLogic) Deletion(in *pb.DeletionReq) (*pb.DeletionResp, error) {
 	if userId != user.Id {
 		return nil, errors.Wrapf(xerr.NewErrCode(xerr.NAME_ERROR), "username is error: %v", in.Username)
 	}
+	// 锁放在外面
+	g := godisson.NewGodisson(l.svcCtx.RedisClient, godisson.WithWatchDogTimeout(30*time.Second))
+	lock := g.NewRLock(constant.LOCK_USER_REGISTER + in.Username)
+	// 2.上锁
+	err = lock.Lock()
+	if err == godisson.ErrLockNotObtained {
+		return &pb.DeletionResp{}, errors.Wrapf(xerr.NewErrCode(xerr.HAS_USERNAME_NOTNULL), "用户名已存在:%v,用户名:%+v", err, in.Username)
+	} else if err != nil {
+		return &pb.DeletionResp{}, errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "redis获取锁出错")
+	}
+	// 解锁
+	defer func() {
+		_, err := lock.Unlock()
+		if err != nil {
+			fmt.Printf("解锁出错:%v", err)
+		}
+	}()
+
 	// 开启事务
 	if err = l.svcCtx.User0Model.Trans(l.ctx, func(context context.Context, session sqlx.Session) error {
-		// 2.上锁
-		g := godisson.NewGodisson(l.svcCtx.RedisClient, godisson.WithWatchDogTimeout(30*time.Second))
-		lock := g.NewRLock(constant.LOCK_USER_REGISTER + in.Username)
-		err = lock.Lock()
-		// 解锁
-		defer lock.Unlock()
-		if err == godisson.ErrLockNotObtained {
-			return errors.Wrapf(xerr.NewErrCode(xerr.HAS_USERNAME_NOTNULL), "用户名已存在:%v,用户名:%+v", err, in.Username)
-		} else if err != nil {
-			return errors.Wrap(xerr.NewErrCode(xerr.DB_ERROR), "redis获取锁出错")
-		}
+
 		// 3.插入到注销表
 		var userDeletion tUserDeletion.TUserDeletion
 		_ = copier.Copy(&userDeletion, user)

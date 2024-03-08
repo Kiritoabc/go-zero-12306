@@ -4,10 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/pkg/errors"
-	"go-zero-12306/common/xerr"
-
 	"go-zero-12306/app/user-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/user-service/cmd/rpc/pb"
+	"go-zero-12306/common/xerr"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -27,10 +26,9 @@ func NewCheckLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CheckL
 }
 
 func (l *CheckLoginLogic) CheckLogin(in *pb.CheckLoginReq) (*pb.LoginResp, error) {
-	// 获取到token
-	accessToken := in.AccessToken
+
 	// 从redis中判断用户是否登录
-	stringCmd := l.svcCtx.RedisClient.Get(l.ctx, accessToken)
+	stringCmd := l.svcCtx.RedisClient.Get(l.ctx, in.AccessToken)
 	bytes := []byte(stringCmd.Val())
 	loginResp := &pb.LoginResp{}
 	err := json.Unmarshal(bytes, &loginResp)

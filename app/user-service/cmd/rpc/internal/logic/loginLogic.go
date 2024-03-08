@@ -102,8 +102,10 @@ func (l *LoginLogic) Login(in *pb.LoginReq) (*pb.LoginResp, error) {
 		return &pb.LoginResp{}, err
 	}
 	// todo ；暂时采用10分钟的测试
-	userCacheTokenKey := fmt.Sprintf(globalkey.CacheUserTokenKey, userId)
+	usderIdKey, _ := strconv.ParseInt(userId, 10, 64)
+	userCacheTokenKey := fmt.Sprintf(globalkey.CacheUserTokenKey, usderIdKey)
 	err = l.svcCtx.RedisClient.SetEX(l.ctx, userCacheTokenKey, loginRespJson, 10*time.Minute).Err()
+	err = l.svcCtx.RedisClient.SetEX(l.ctx, tokenResp.AccessToken, loginRespJson, 10*time.Minute).Err()
 	if err != nil {
 		panic(err)
 	}

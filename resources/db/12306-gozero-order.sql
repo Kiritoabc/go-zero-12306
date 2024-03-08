@@ -6,7 +6,7 @@ CREATE TABLE `t_order_0`
     `id`             bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
     `order_sn`       varchar(64) COLLATE utf8mb4_unicode_ci  DEFAULT NULL COMMENT '订单号',
     `user_id`        bigint(20) DEFAULT NULL COMMENT '用户ID',
-    `username`       varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户名',
+    `username `       varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '用户名',
     `train_id`       bigint(20) DEFAULT NULL COMMENT '列车ID',
     `train_number`   varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT '列车车次',
     `riding_date`    date                                    DEFAULT NULL COMMENT '乘车日期',
