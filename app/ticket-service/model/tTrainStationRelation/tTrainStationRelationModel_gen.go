@@ -103,7 +103,10 @@ func (m *defaultTTrainStationRelationModel) SelectSratr2End(ctx context.Context,
 
 func (m *defaultTTrainStationRelationModel) SelectList(cxt context.Context, builder squirrel.SelectBuilder, trainId string) ([]*TTrainStationRelation, error) {
 	builder = builder.Columns(tTrainStationRelationRows)
-	query, values, err := builder.Where("train_id = ?", trainId).ToSql()
+	query, values, err := builder.ToSql()
+	if trainId != "" {
+		query, values, err = builder.Where("train_id = ?", trainId).ToSql()
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -111,6 +114,8 @@ func (m *defaultTTrainStationRelationModel) SelectList(cxt context.Context, buil
 	err = m.QueryRowsNoCacheCtx(cxt, &resp, query, values...)
 	switch err {
 	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
 		return resp, nil
 	default:
 		return nil, err

@@ -95,7 +95,7 @@ func (l *ListRegionStationLogic) ListRegionStation(in *pb.ListRegionStationReq) 
 	}, strconv.FormatInt(in.QueryType, 10))
 }
 
-func (l ListRegionStationLogic) safeGetRegionStation(key string, fn func() (*pb.ListRegionStationResp, error), params string) (*pb.ListRegionStationResp, error) {
+func (l *ListRegionStationLogic) safeGetRegionStation(key string, fn func() (*pb.ListRegionStationResp, error), params string) (*pb.ListRegionStationResp, error) {
 	var resp = &pb.ListRegionStationResp{}
 	// 1.查缓存
 	redisValue := l.svcCtx.RedisClient.Get(l.ctx, key).Val()

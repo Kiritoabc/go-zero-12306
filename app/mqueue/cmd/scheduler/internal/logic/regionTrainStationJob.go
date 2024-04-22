@@ -10,7 +10,7 @@ import (
 func (l *MqueueScheduler) regionTrainStationScheduler() {
 	task := asynq.NewTask(jobtype.RegionTrainStationJob, nil)
 	// every ten minute exec
-	entryID, err := l.svcCtx.Scheduler.Register("*/10 * * * *", task)
+	entryID, err := l.svcCtx.Scheduler.Register("*/1 * * * *", task)
 	if err != nil {
 		logx.WithContext(l.ctx).Errorf("!!!MqueueSchedulerErr!!! ====> 【settleRecordScheduler】 registered  err:%+v , task:%+v", err, task)
 	}

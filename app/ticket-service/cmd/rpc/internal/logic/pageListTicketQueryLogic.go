@@ -6,11 +6,15 @@ import (
 	"fmt"
 	godisson "github.com/cheerego/go-redisson"
 	"go-zero-12306/app/ticket-service/cmd/rpc/internal/dto"
-	"go-zero-12306/common/constant"
-	"sort"
-
 	"go-zero-12306/app/ticket-service/cmd/rpc/internal/svc"
 	"go-zero-12306/app/ticket-service/cmd/rpc/pb"
+	"go-zero-12306/app/ticket-service/model/tTrain"
+	"go-zero-12306/common/constant"
+	"go-zero-12306/common/tool"
+	"go-zero-12306/common/tool/cacheUtil"
+	"sort"
+	"strconv"
+	"strings"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -30,8 +34,8 @@ func NewPageListTicketQueryLogic(ctx context.Context, svcCtx *svc.ServiceContext
 }
 
 // TODO: TicketControllerRpc
+
 func (l *PageListTicketQueryLogic) PageListTicketQuery(in *pb.PageListTicketQueryReq) (*pb.PageListTicketQueryResp, error) {
-	// todo: 责任链模式？？（纯nt）参数不考虑
 	var resp *pb.PageListTicketQueryResp
 	// 1. 从redis中查询到数据
 	redisClient := l.svcCtx.RedisClient
@@ -46,7 +50,10 @@ func (l *PageListTicketQueryLogic) PageListTicketQuery(in *pb.PageListTicketQuer
 	if count > 0 {
 		// redisson 上锁
 		lock := godisson.NewGodisson(redisClient).NewRLock(constant.LOCK_REGION_TRAIN_STATION_MAPPING)
-		lock.Lock()
+		err := lock.Lock()
+		if err != nil {
+			return resp, err
+		}
 		// 再次查询
 		stationDetails = redisClient.
 			HMGet(l.ctx, constant.REGION_TRAIN_STATION_MAPPING, []string{in.FromStation, in.ToStation}...).
@@ -74,7 +81,11 @@ func (l *PageListTicketQueryLogic) PageListTicketQuery(in *pb.PageListTicketQuer
 			lock.Unlock()
 		}
 	}
-	// 3.查询座位
+
+	// 获取 distributedCache
+	distributedCache := NewDistributedCacheLogic(l.ctx, l.svcCtx)
+
+	// 3.查询列车座位信息
 	seatResults := make([]*dto.TicketListDTO, 0)
 	buildRegionTrainStationHashKey := fmt.Sprintf(constant.REGION_TRAIN_STATION,
 		stationDetails[0], stationDetails[1])
@@ -92,12 +103,62 @@ func (l *PageListTicketQueryLogic) PageListTicketQuery(in *pb.PageListTicketQuer
 		regionTrainStationAllMap, _ = redisClient.HGetAll(l.ctx, buildRegionTrainStationHashKey).Result()
 		if regionTrainStationAllMap == nil || len(regionTrainStationAllMap) == 0 {
 			// 查询数据库
+			builder := l.svcCtx.TTrainStationRelationModel.SelectBuilder()
+			trainStationRelationList, err := l.svcCtx.TTrainStationRelationModel.SelectList(l.ctx, builder, "")
+			if err != nil {
+				return resp, err
+			}
+			for _, trainStationRelation := range trainStationRelationList {
+				// 将json字符串反序列化为TicketListDTO对象
+				fmt.Sprintf("%v", trainStationRelation)
+				var trainDO tTrain.TTrain
+				// safeGet() 获取缓存
+				key := constant.TRAIN_INFO + strconv.FormatInt(trainStationRelation.TrainId.Int64, 10)
 
+				target, err := distributedCache.SafeGet(key,
+					trainDO,
+					nil,
+					func() (interface{}, error) {
+						return nil, nil
+					}, nil,
+					constant.ADVANCE_TICKET_DAY)
+				if err != nil {
+					return resp, err
+				}
+				trainDO = target.(tTrain.TTrain)
+
+				result := &dto.TicketListDTO{}
+				result.TrainId = strconv.Itoa(int(trainDO.Id))
+				result.TrainNumber = trainDO.TrainNumber.String
+				result.DepartureTime = tool.ConvertDateToLocalTime(trainStationRelation.DepartureTime.Time.String(), "HH:mm")
+				result.ArrivalTime = tool.ConvertDateToLocalTime(trainStationRelation.ArrivalTime.Time.String(), "HH:mm")
+				result.Duration = strconv.Itoa(tool.CalculateHourDifference(trainStationRelation.DepartureTime.Time.String(), trainStationRelation.ArrivalTime.Time.String()))
+				result.Departure = trainStationRelation.Departure.String
+				result.Arrival = trainStationRelation.Arrival.String
+				result.DepartureFlag = trainStationRelation.DepartureFlag.Int64 == 1
+				result.ArrivalFlag = trainStationRelation.ArrivalFlag.Int64 == 1
+				result.TrainType = int(trainDO.TrainType.Int64)
+				result.TrainBrand = trainDO.TrainBrand.String
+
+				if !trainDO.TrainTag.Valid {
+					result.TrainTags = strings.Split(trainDO.TrainTag.String, ",")
+				}
+				//betweenDay := dateutil.DateDiff("day", trainDO.DepartureTime, trainDO.ArrivalTime, false)
+
+				buildKey, _ := cacheUtil.BuildKey([]string{
+					strconv.FormatInt(trainStationRelation.TrainId.Int64, 10),
+					trainStationRelation.Departure.String,
+					trainStationRelation.Departure.String})
+				resultBytes, _ := json.Marshal(result)
+				regionTrainStationAllMap[buildKey] = string(resultBytes)
+			}
+			// putAll() 存入缓存
+			l.svcCtx.RedisClient.HMSet(l.ctx, buildRegionTrainStationHashKey, regionTrainStationAllMap)
 		}
 		lock.Unlock()
 	}
 
-	// 4. 给seat赋值
+	// 4. 给列车seat信息赋值票价和多少张
 	if len(seatResults) == 0 {
 		// 赋值给seatResults
 		// 将regionTrainStationAllMap的值（JSON字符串）反序列化为TicketListDTO对象
@@ -120,7 +181,11 @@ func (l *PageListTicketQueryLogic) PageListTicketQuery(in *pb.PageListTicketQuer
 
 	// 5. 存入缓存
 	for _, result := range seatResults {
-		// safeGet()
+		// safeGet() 从缓存中获取price数据
+
+		// load price to seat
+
+		// cache get 站点余票查询 TRAIN_STATION_REMAINING_TICKET, 给座位信息赋值，抱愧price，type，quantity
 		print(result)
 	}
 

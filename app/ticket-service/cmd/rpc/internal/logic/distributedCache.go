@@ -47,19 +47,19 @@ func (dc *DistributedCacheLogic) SafeGet(key string,
 	bloomFilter *bloom.Filter,
 	loader CacheLoaderFunc,
 	cacheGetIfAbsent CacheGetIfAbsentExecutor,
-	timeout time.Duration) error {
-	err := dc.Get(key, &target)
+	timeout time.Duration) (interface{}, error) {
+	target, err := dc.Get(key, &target)
 	if err != nil {
-		return err
+		return target, err
 	}
 	// bloom的使用
 	if target != nil {
-		return nil
+		return target, nil
 	}
 	if bloomFilter != nil {
 		f1, _ := bloomFilter.Exists([]byte(key))
 		if !f1 {
-			return nil
+			return target, nil
 		}
 	}
 	// 获取RLock锁
@@ -69,9 +69,9 @@ func (dc *DistributedCacheLogic) SafeGet(key string,
 	defer lock.Unlock()
 
 	// 双重判定锁，减轻获得分布式锁后线程访问数据库压力
-	err = dc.Get(key, &target)
+	target, err = dc.Get(key, &target)
 	if err != nil {
-		return err
+		return target, err
 	}
 	// 如果为空则执行后置操作
 	if target == nil {
@@ -88,19 +88,19 @@ func (dc *DistributedCacheLogic) SafeGet(key string,
 		}
 	}
 	// 返回
-	return nil
+	return target, nil
 }
 
-func (dc *DistributedCacheLogic) Get(key string, target interface{}) error {
+func (dc *DistributedCacheLogic) Get(key string, target interface{}) (interface{}, error) {
 	value, err := dc.svcCtx.RedisClient.Get(dc.ctx, key).Result()
 	if err != nil && errors.Is(err, redis.Nil) {
-		return err
+		return target, err
 	}
-	err = json.Unmarshal([]byte(value), target)
+	err = json.Unmarshal([]byte(value), &target)
 	if err != nil {
-		return fmt.Errorf("failed to unmarshal value for key '%s': %v", key, err)
+		return target, fmt.Errorf("failed to unmarshal value for key '%s': %v", key, err)
 	}
-	return nil
+	return target, nil
 }
 
 func (dc *DistributedCacheLogic) LoadAndSet(key string,
@@ -124,7 +124,7 @@ func (dc *DistributedCacheLogic) LoadAndSet(key string,
 func (dc *DistributedCacheLogic) IsNullOrBlank(s interface{}) bool {
 	switch s.(type) {
 	case string:
-		return s.(string) == "" || s.(string) == "null" // 根据你的实际定义调整为空的检查逻辑
+		return s.(string) == "" || s.(string) == "nil" // 根据你的实际定义调整为空的检查逻辑
 	default:
 		return s == nil
 	}
